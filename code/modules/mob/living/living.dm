@@ -618,39 +618,45 @@ Thanks.
 
 		var/mob/living/M = pulling
 		if (!restrained())
-			var/diag = get_dir(src, pulling)
-			if ((diag - 1) & diag)
-			else
-				diag = null
-			if ((get_dist(src, pulling) > 1 || diag))
-				if(!istype(pulling) || !pulling)
-					WARNING("Pulling disappeared! pulling = [pulling] old pulling = [M]")
-				else if(isturf(pulling.loc))
-					if (isliving(pulling))
-						M = pulling
-						var/ok = 1
-						if (locate(/obj/item/weapon/grab, M.grabbed_by))
-							if (prob(75))
-								var/obj/item/weapon/grab/G = pick(M.grabbed_by)
-								if (istype(G, /obj/item/weapon/grab))
-									visible_message("<span class='danger'>[src] has pulled [G.affecting] from [G.assailant]'s grip.</span>",
-										drugged_message="<span class='danger'>[src] has pulled [G.affecting] from [G.assailant]'s hug.</span>")
-									qdel(G)
-							else
-								ok = 0
-							if (locate(/obj/item/weapon/grab, M.grabbed_by.len))
-								ok = 0
-						if (ok)
-							var/atom/movable/t = M.pulling
-							M.stop_pulling()
-							pulling.Move(T, get_dir(pulling, T))
-							if(M)
-								M.start_pulling(t)
-					else
-						if (pulling)
-							pulling.Move(T, get_dir(pulling, T))
-				else
-					stop_pulling()
+
+			if(pulling)
+				if(src.Adjacent(pulling) && bounds_dist(src,pulling) > 15)
+					step(pulling, get_dir(pulling, src))
+				
+
+			//var/diag = get_dir(src, pulling)
+			//if ((diag - 1) & diag)
+			//else
+			//	diag = null
+			//if ((get_dist(src, pulling) > 1 || diag))
+			//	if(!istype(pulling) || !pulling)
+			//		WARNING("Pulling disappeared! pulling = [pulling] old pulling = [M]")
+			//	else if(isturf(pulling.loc))
+			//		if (isliving(pulling))
+			//			M = pulling
+			//			var/ok = 1
+			//			if (locate(/obj/item/weapon/grab, M.grabbed_by))
+			//				if (prob(75))
+			//					var/obj/item/weapon/grab/G = pick(M.grabbed_by)
+			//					if (istype(G, /obj/item/weapon/grab))
+			//						visible_message("<span class='danger'>[src] has pulled [G.affecting] from [G.assailant]'s grip.</span>",
+			//							drugged_message="<span class='danger'>[src] has pulled [G.affecting] from [G.assailant]'s hug.</span>")
+			//						qdel(G)
+			//				else
+			//					ok = 0
+			//				if (locate(/obj/item/weapon/grab, M.grabbed_by.len))
+			//					ok = 0
+			//			if (ok)
+			//				var/atom/movable/t = M.pulling
+			//				M.stop_pulling()
+			//				step(pulling, get_dir(pulling, src))
+			//				if(M)
+			//					M.start_pulling(t)
+			//		else
+			//			if (pulling)
+			//				step(pulling, get_dir(pulling, src))
+			//	else
+			//		stop_pulling()
 	else
 		stop_pulling()
 		. = ..()

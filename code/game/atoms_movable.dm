@@ -43,6 +43,8 @@
 	// Can we send relaymove() if gravity is disabled or we are in space? (Should be handled by relaymove, but shitcode abounds)
 	var/internal_gravity = 0
 
+	step_size = 1 //honk
+
 /atom/movable/New()
 	. = ..()
 	areaMaster = get_area_master(src)
@@ -52,6 +54,9 @@
 	locked_atoms            = list()
 	locking_categories      = list()
 	locking_categories_name = list()
+
+/atom/movable/proc/debugdist() //STEP DEBUG
+	to_chat(usr, "[bounds_dist(usr, src)]")
 
 /atom/movable/Destroy()
 	if(flags & HEAR && !ismob(src))
@@ -110,20 +115,14 @@
 	..()
 
 /atom/movable/Move(newLoc,Dir=0,step_x=0,step_y=0)
-	if(!loc || !newLoc)
-		return 0
-	//set up glide sizes before the move
-	//ensure this is a step, not a jump
-
-	//. = ..(NewLoc,Dir,step_x,step_y)
 	if(timestopped)
-		if(!pulledby || pulledby.timestopped) //being moved by our wizard maybe?
+		if(pulledby && pulledby.timestopped) //being moved by our wizard maybe?
 			return 0
-	var/move_delay = max(5 * world.tick_lag, 1)
-	if(ismob(src))
-		var/mob/M = src
-		if(M.client)
-			move_delay = (3+(M.client.move_delayer.next_allowed - world.time))*world.tick_lag
+//	var/move_delay = max(5 * world.tick_lag, 1)
+//	if(ismob(src))
+//		var/mob/M = src
+//		if(M.client)
+//			move_delay = (3+(M.client.move_delayer.next_allowed - world.time))*world.tick_lag
 
 	var/can_pull_tether = 0
 	if(tether)
@@ -131,22 +130,18 @@
 			can_pull_tether = 1
 		else
 			return 0
-	glide_size = Ceiling(32 / move_delay * world.tick_lag) - 1 //We always split up movements into cardinals for issues with diagonal movements.
 	var/atom/oldloc = loc
-	if((bound_height != 32 || bound_width != 32) && (loc == newLoc))
-		. = ..()
 
-		update_dir()
-		return
+//	if(loc != newLoc)
+//		if (!(Dir & (Dir - 1))) //Cardinal move
+//			. = ..()
+//		else //Diagonal move, split it into cardinal moves
+//			if (step(src, Dir & NORTH|SOUTH))
+//				. = step(src, Dir & EAST|WEST)
+//			else if (step(src, Dir & EAST|WEST))
+//				. = step(src, Dir & NORTH|SOUTH)
 
-	if(loc != newLoc)
-		if (!(Dir & (Dir - 1))) //Cardinal move
-			. = ..()
-		else //Diagonal move, split it into cardinal moves
-			if (step(src, Dir & NORTH|SOUTH))
-				. = step(src, Dir & EAST|WEST)
-			else if (step(src, Dir & EAST|WEST))
-				. = step(src, Dir & NORTH|SOUTH)
+	. = ..()
 
 	if(. && locked_atoms && locked_atoms.len)	//The move was succesful, update locked atoms.
 		spawn(0)
@@ -156,9 +151,9 @@
 
 	update_dir()
 
-	if(!loc || (loc == oldloc && oldloc != newLoc))
-		last_move = 0
-		return
+//	if(!loc || (loc == oldloc && oldloc != newLoc))
+//		last_move = 0
+//		return
 
 	if(tether && can_pull_tether && !tether_pull)
 		tether.follow(src,oldloc)

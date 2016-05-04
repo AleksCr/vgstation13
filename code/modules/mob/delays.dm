@@ -34,7 +34,7 @@
 // Constructor args are currently all the same, but placed here for ease of tuning.
 /client // Yep, clients are snowflakes.
 	// Walking speed is 7, as is grab speed.
-	var/datum/delay_controller/move_delayer    = new (0.3,ARBITRARILY_LARGE_NUMBER) // /mob/delayNextMove()
+	var/datum/delay_controller/move_delayer    = new (0,ARBITRARILY_LARGE_NUMBER) // /mob/delayNextMove()
 /mob
 	var/datum/delay_controller/click_delayer   = new (1,ARBITRARILY_LARGE_NUMBER) // (Handled in Click())
 	var/datum/delay_controller/attack_delayer  = new (1,ARBITRARILY_LARGE_NUMBER) // delayNextAttack() See setup.dm, 12

@@ -74,17 +74,28 @@
 	* In the case of a multiple-tile object, all valid locations are checked for adjacency.
 */
 /atom/movable/Adjacent(var/atom/neighbor)
-	if(neighbor == loc) return 1
-	if(!isturf(loc)) return 0
-	if(locs.len > 1)
-		for(var/turf/T in locs)
-			if(T.Adjacent(neighbor, src))
-				return 1
-	else
-		var/turf/T = loc
-		if(T.Adjacent(neighbor, src))
-			return 1
-	return 0
+	//Just for debug purposes. Actual checks for blockages will be added later.
+	if(!neighbor)
+		return 0
+	
+	if(bounds_dist(src, neighbor) > 16)
+		return 0
+	return 1
+
+
+//Nope
+
+//	if(neighbor == loc) return 1
+//	if(!isturf(loc)) return 0
+//	if(locs.len > 1)
+//		for(var/turf/T in locs)
+//			if(T.Adjacent(neighbor, src))
+//				return 1
+//	else
+//		var/turf/T = loc
+//		if(T.Adjacent(neighbor, src))
+//			return 1
+//	return 0
 
 // This is necessary for storage items not on your person.
 /obj/item/Adjacent(var/atom/neighbor, var/recurse = 1)

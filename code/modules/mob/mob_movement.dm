@@ -1,3 +1,9 @@
+/mob/verb/debugstep() //STEP DEBUG
+	set name = "Reset step"
+	set category = "Debug"
+	step_x = 0
+	step_y = 0
+
 /mob/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
 	if(air_group || (height==0)) return 1
 
@@ -304,7 +310,7 @@
 		move_delay = max(move_delay,1)
 		if(mob.movement_speed_modifier)
 			move_delay *= (1/mob.movement_speed_modifier)
-		mob.delayNextMove(move_delay)
+		mob.delayNextMove(move_delay / (32 / mob.step_size)) //whop
 		//Something with pulling things
 		if(Findgrab)
 			var/list/L = mob.ret_grab()
@@ -543,9 +549,9 @@
 		var/mob/M = pulling
 		var/atom/movable/t = M.pulling
 		M.stop_pulling()
-		step(pulling, get_dir(pulling.loc, A))
+		step(pulling, get_dir(pulling.loc, A), 32)
 		if(M)
 			M.start_pulling(t)
 	else
-		step(pulling, get_dir(pulling.loc, A))
+		step(pulling, get_dir(pulling.loc, A), 32)
 	return
