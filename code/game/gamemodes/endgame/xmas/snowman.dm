@@ -35,7 +35,8 @@
 	var/obj/item/carrot = null
 
 /mob/living/simple_animal/hostile/retaliate/snowman/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 
 	..()
 	if(!ckey && !stat)
@@ -78,7 +79,7 @@
 		if(user.drop_item(W, src))
 			visible_message("<span class='notice'>[user] puts \a [W] on \the [src]'s nose.</span>")
 			carrot = W
-			overlays += "snowman_carrot"
+			overlays += image(icon = icon, icon_state = "snowman_carrot")
 			speak -= "Would you happen to have a carrot for my nose?"
 			src.say("Ah, most excellent!")
 			if(prob(30))
@@ -96,7 +97,8 @@
 
 			overlays += image('icons/mob/head.dmi', hat.icon_state)
 
-	else	..()
+	else
+		..()
 
 /obj/item/projectile/snowball
 	name = "flying snowball"

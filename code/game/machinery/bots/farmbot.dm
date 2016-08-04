@@ -5,7 +5,7 @@
 // A plant analyzer, a bucket, a mini-hoe and then a proximity sensor (in that order)
 
 // Will water, weed and fertilize plants that need it
-// When emagged, it will "water", "weed" and "fertilize" humans instead
+// When emagged, it will WATER, "weed" and "fertilize" humans instead
 // Holds up to 10 fertilizers (only the type dispensed by the machines, not chemistry bottles)
 // It will fill up it's water tank at a sink when low.
 
@@ -31,7 +31,6 @@
 	icon = 'icons/obj/aibots.dmi'
 	icon_state = "farmbot0"
 	icon_initial = "farmbot"
-	layer = 5.0
 	density = 1
 	anchored = 0
 	health = 50
@@ -144,7 +143,7 @@
 		else
 			turn_on()
 
-	else if((href_list["water"]) && (!src.locked))
+	else if((href_list[WATER]) && (!src.locked))
 		setting_water = !setting_water
 	else if((href_list["refill"]) && (!src.locked))
 		setting_refill = !setting_refill
@@ -190,7 +189,8 @@
 
 /obj/machinery/bot/farmbot/Emag(mob/user as mob)
 	..()
-	if(user) to_chat(user, "<span class='warning'>You short out [src]'s plant identifier circuits.</span>")
+	if(user)
+		to_chat(user, "<span class='warning'>You short out [src]'s plant identifier circuits.</span>")
 	spawn(0)
 		for(var/mob/O in hearers(src, null))
 			O.show_message("<span class='danger'>[src] buzzes oddly!</span>", 1)
@@ -445,7 +445,7 @@
 
 			src.visible_message("<span class='danger'>[src] [attackVerb] [human]!</span>")
 			var/damage = 15
-			var/dam_zone = pick("chest", "l_hand", "r_hand", "l_leg", "r_leg")
+			var/dam_zone = pick(LIMB_CHEST, LIMB_LEFT_HAND, LIMB_RIGHT_HAND, LIMB_LEFT_LEG, LIMB_RIGHT_LEG)
 			var/datum/organ/external/affecting = human.get_organ(ran_zone(dam_zone))
 			var/armor = human.run_armor_check(affecting, "melee")
 			human.apply_damage(damage,BRUTE,affecting,armor)
@@ -485,11 +485,11 @@
 			mode = 0
 	else
 		var /obj/machinery/portable_atmospherics/hydroponics/tray = target
-		var/b_amount = tank.reagents.get_reagent_amount("water")
+		var/b_amount = tank.reagents.get_reagent_amount(WATER)
 		if(b_amount > 0 && tray.waterlevel < 100)
 			if(b_amount + tray.waterlevel > 100)
 				b_amount = 100 - tray.waterlevel
-			tank.reagents.remove_reagent("water", b_amount)
+			tank.reagents.remove_reagent(WATER, b_amount)
 			tray.adjust_water(b_amount)
 			playsound(get_turf(src), 'sound/effects/slosh.ogg', 25, 1)
 
@@ -510,7 +510,7 @@
 	spawn(300)
 		src.visible_message("<span class='notice'>[src] finishes filling it's tank.</span>")
 		src.mode = 0
-		tank.reagents.add_reagent("water", tank.reagents.maximum_volume - tank.reagents.total_volume )
+		tank.reagents.add_reagent(WATER, tank.reagents.maximum_volume - tank.reagents.total_volume )
 		playsound(get_turf(src), 'sound/effects/slosh.ogg', 25, 1)
 
 
@@ -521,7 +521,7 @@
 	icon_state = "water_arm"
 	var/build_step = 0
 	var/created_name = "Farmbot" //To preserve the name if it's a unique farmbot I guess
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 
 	New()
 		..()
@@ -542,7 +542,6 @@
 	var/obj/item/weapon/farmbot_arm_assembly/A = new /obj/item/weapon/farmbot_arm_assembly
 
 	A.loc = src.loc
-	A.layer = 20
 	to_chat(user, "You add the robot arm to the [src]")
 	src.loc = A //Place the water tank into the assembly, it will be needed for the finished bot
 

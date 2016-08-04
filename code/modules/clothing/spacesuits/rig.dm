@@ -15,7 +15,8 @@
 	max_heat_protection_temperature = SPACE_SUIT_MAX_HEAT_PROTECTION_TEMPERATURE
 	pressure_resistance = 200 * ONE_ATMOSPHERE
 	eyeprot = 3
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 
 /obj/item/clothing/head/helmet/space/rig/New()
 	..()
@@ -31,6 +32,9 @@
 	icon_state = "ghettorig"
 	_color = "ghetto"
 	armor = list(melee = 0, bullet = 0, laser = 0,energy = 0, bomb = 0, bio = 0, rad = 0)
+	eyeprot = 0
+	species_fit = list(GREY_SHAPED)
+
 
 /obj/item/clothing/head/helmet/space/rig/examine(mob/user)
 
@@ -85,12 +89,12 @@
 	icon_state = "rig-engineering"
 	item_state = "eng_hardsuit"
 	slowdown = 1
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	armor = list(melee = 40, bullet = 5, laser = 20,energy = 5, bomb = 35, bio = 100, rad = 80)
 	allowed = list(/obj/item/device/flashlight,/obj/item/weapon/tank,/obj/item/weapon/storage/bag/ore,/obj/item/device/t_scanner,/obj/item/weapon/pickaxe, /obj/item/device/rcd, /obj/item/weapon/wrench/socket)
 	max_heat_protection_temperature = SPACE_SUIT_MAX_HEAT_PROTECTION_TEMPERATURE
 	pressure_resistance = 200 * ONE_ATMOSPHERE
-
 
 /obj/item/clothing/suit/space/rig/ghettorig
 	name = "jury-rigged firesuit"
@@ -98,6 +102,8 @@
 	item_state = "ghettorig"
 	desc = "Let me give it to you straight like a pear cider made from 100% pears, this space suit isn't particularly good"
 	armor = list(melee = 0, bullet = 0, laser = 0,energy = 0, bomb = 0, bio = 0, rad = 0)
+	species_fit = list(GREY_SHAPED)
+
 
 //Chief Engineer's rig
 /obj/item/clothing/head/helmet/space/rig/elite
@@ -106,14 +112,16 @@
 	icon_state = "rig0-white"
 	item_state = "ce_helm"
 	_color = "white"
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	max_heat_protection_temperature = FIRE_HELMET_MAX_HEAT_PROTECTION_TEMPERATURE
 	flags = FPRINT  | PLASMAGUARD
 
 /obj/item/clothing/suit/space/rig/elite
 	icon_state = "rig-white"
 	name = "advanced hardsuit"
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	desc = "An advanced suit that protects against hazardous, low pressure environments. Shines with a high polish."
 	item_state = "ce_hardsuit"
 	max_heat_protection_temperature = FIRESUIT_MAX_HEAT_PROTECTION_TEMPERATURE
@@ -127,7 +135,8 @@
 	icon_state = "rig0-mining"
 	item_state = "mining_helm"
 	_color = "mining"
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	pressure_resistance = 40 * ONE_ATMOSPHERE
 
 /obj/item/clothing/suit/space/rig/mining
@@ -135,7 +144,7 @@
 	name = "mining hardsuit"
 	desc = "A special suit that protects against hazardous, low pressure environments. Has reinforced plating."
 	item_state = "mining_hardsuit"
-	species_restricted = list("exclude","Vox")
+	species_restricted = list("exclude",VOX_SHAPED)
 	pressure_resistance = 40 * ONE_ATMOSPHERE
 
 
@@ -145,7 +154,7 @@
 	desc = "An advanced helmet designed for work in special operations. Property of Gorlex Marauders."
 	icon_state = "rig0-syndi"
 	item_state = "syndie_helm"
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED, GREY_SHAPED)
 	_color = "syndi"
 	armor = list(melee = 60, bullet = 50, laser = 30,energy = 15, bomb = 35, bio = 100, rad = 60)
 	action_button_name = "Toggle Helmet Camera" //This helmet does not have a light, but we'll do as if
@@ -175,9 +184,10 @@
 	name = "blood-red hardsuit"
 	desc = "An advanced suit that protects against injuries during special operations. Property of Gorlex Marauders."
 	item_state = "syndie_hardsuit"
-	species_fit = list("Vox")
+	species_fit = list(GREY_SHAPED)
+	species_fit = list(VOX_SHAPED)
 	slowdown = 1
-	w_class = 3
+	w_class = W_CLASS_MEDIUM
 	armor = list(melee = 60, bullet = 50, laser = 30, energy = 15, bomb = 35, bio = 100, rad = 60)
 	allowed = list(/obj/item/device/flashlight,/obj/item/weapon/tank,/obj/item/weapon/gun,/obj/item/ammo_storage,/obj/item/ammo_casing,/obj/item/weapon/melee/baton,/obj/item/weapon/melee/energy/sword,/obj/item/weapon/handcuffs)
 	siemens_coefficient = 0.6
@@ -192,7 +202,8 @@
 	icon_state = "rig0-wiz"
 	item_state = "wiz_helm"
 	_color = "wiz"
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	unacidable = 1 //No longer shall our kind be foiled by lone chemists with spray bottles!
 	armor = list(melee = 40, bullet = 20, laser = 20,energy = 20, bomb = 35, bio = 100, rad = 60)
 	siemens_coefficient = 0.7
@@ -207,9 +218,10 @@
 	desc = "A bizarre gem-encrusted suit that radiates magical energies."
 	item_state = "wiz_hardsuit"
 	slowdown = 1
-	w_class = 3
+	w_class = W_CLASS_MEDIUM
 	unacidable = 1
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	armor = list(melee = 40, bullet = 20, laser = 20,energy = 20, bomb = 35, bio = 100, rad = 60)
 	siemens_coefficient = 0.7
 
@@ -224,7 +236,8 @@
 	icon_state = "rig0-medical"
 	item_state = "medical_helm"
 	_color = "medical"
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	pressure_resistance = 40 * ONE_ATMOSPHERE
 
 /obj/item/clothing/suit/space/rig/medical
@@ -232,7 +245,8 @@
 	name = "medical hardsuit"
 	desc = "A special suit that protects against hazardous, low pressure environments. Has minor radiation shielding."
 	item_state = "medical_hardsuit"
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	allowed = list(/obj/item/device/flashlight,/obj/item/weapon/tank,/obj/item/weapon/storage/firstaid,/obj/item/device/healthanalyzer,/obj/item/stack/medical)
 	pressure_resistance = 40 * ONE_ATMOSPHERE
 
@@ -244,7 +258,8 @@
 	icon_state = "rig0-sec"
 	item_state = "sec_helm"
 	_color = "sec"
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	armor = list(melee = 60, bullet = 10, laser = 30, energy = 5, bomb = 45, bio = 100, rad = 10)
 	siemens_coefficient = 0.7
 	pressure_resistance = 40 * ONE_ATMOSPHERE
@@ -254,7 +269,8 @@
 	name = "security hardsuit"
 	desc = "A special suit that protects against hazardous low pressure environments. Has an additional layer of armor."
 	item_state = "sec_hardsuit"
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	armor = list(melee = 60, bullet = 10, laser = 30, energy = 5, bomb = 45, bio = 100, rad = 10)
 	allowed = list(/obj/item/weapon/gun,/obj/item/device/flashlight,/obj/item/weapon/tank,/obj/item/weapon/melee/baton)
 	siemens_coefficient = 0.7
@@ -281,7 +297,8 @@
 	icon_state = "rig0-atmos"
 	item_state = "atmos_helm"
 	_color = "atmos"
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	flags = FPRINT  | PLASMAGUARD
 	armor = list(melee = 40, bullet = 0, laser = 0, energy = 0, bomb = 25, bio = 100, rad = 0)
 	max_heat_protection_temperature = FIRE_HELMET_MAX_HEAT_PROTECTION_TEMPERATURE
@@ -291,8 +308,9 @@
 	icon_state = "rig-atmos"
 	name = "atmos hardsuit"
 	item_state = "atmos_hardsuit"
-	species_restricted = list("exclude","Vox")
+	species_restricted = list("exclude",VOX_SHAPED)
 	flags = FPRINT  |  PLASMAGUARD
+	species_fit = list(GREY_SHAPED)
 	armor = list(melee = 40, bullet = 0, laser = 0, energy = 0, bomb = 25, bio = 100, rad = 0)
 	max_heat_protection_temperature = FIRESUIT_MAX_HEAT_PROTECTION_TEMPERATURE
 
@@ -304,7 +322,8 @@
 	icon_state = "rig0-atmos_gold"
 	item_state = "atmos_gold_helm"
 	_color = "atmos_gold"
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	no_light = 1
 
 /obj/item/clothing/suit/space/rig/atmos/gold
@@ -316,6 +335,7 @@
 	name = "atmos hardsuit"
 	item_state = "atmos_gold_hardsuit"
 	slowdown = 2
+	species_fit = list(GREY_SHAPED)
 	armor = list(melee = 30, bullet = 5, laser = 40,energy = 5, bomb = 35, bio = 100, rad = 60)
 	allowed = list(/obj/item/device/flashlight,/obj/item/weapon/tank,/obj/item/weapon/storage/backpack/satchel_norm,/obj/item/device/t_scanner,/obj/item/weapon/pickaxe, /obj/item/device/rcd, /obj/item/weapon/extinguisher, /obj/item/weapon/)
 
@@ -325,7 +345,8 @@
 	desc = "This is the face of das vaterland's top elite. Gas or energy are your only escapes."
 	item_state = "rig0-nazi"
 	icon_state = "rig0-nazi"
-	species_restricted = list("exclude","Vox")//GAS THE VOX
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)//GAS THE VOX
 	armor = list(melee = 40, bullet = 30, laser = 30, energy = 15, bomb = 35, bio = 100, rad = 20)
 	_color = "nazi"
 	pressure_resistance = 40 * ONE_ATMOSPHERE
@@ -336,7 +357,8 @@
 	item_state = "rig-nazi"
 	icon_state = "rig-nazi"
 	slowdown = 1
-	species_restricted = list("exclude","Vox")//GAS THE VOX
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)//GAS THE VOX
 	armor = list(melee = 40, bullet = 30, laser = 30, energy = 15, bomb = 35, bio = 100, rad = 20)
 	allowed = list(/obj/item/weapon/gun,/obj/item/device/flashlight,/obj/item/weapon/tank,/obj/item/weapon/melee/)
 	pressure_resistance = 40 * ONE_ATMOSPHERE
@@ -346,7 +368,8 @@
 	desc = "Crafted with the pride of the proletariat. The vengeful gaze of the visor roots out all fascists and capitalists."
 	item_state = "rig0-soviet"
 	icon_state = "rig0-soviet"
-	species_restricted = list("exclude","Vox")//HET
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)//HET
 	armor = list(melee = 40, bullet = 30, laser = 30, energy = 15, bomb = 35, bio = 100, rad = 20)
 	_color = "soviet"
 	pressure_resistance = 40 * ONE_ATMOSPHERE
@@ -357,7 +380,8 @@
 	item_state = "rig-soviet"
 	icon_state = "rig-soviet"
 	slowdown = 1
-	species_restricted = list("exclude","Vox")//HET
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)//HET
 	armor = list(melee = 40, bullet = 30, laser = 30, energy = 15, bomb = 35, bio = 100, rad = 20)
 	allowed = list(/obj/item/weapon/gun,/obj/item/device/flashlight,/obj/item/weapon/tank,/obj/item/weapon/melee/)
 	pressure_resistance = 40 * ONE_ATMOSPHERE
@@ -372,7 +396,8 @@
 	armor = list(melee = 65, bullet = 55, laser = 35,energy = 20, bomb = 40, bio = 100, rad = 60)
 	max_heat_protection_temperature = FIRE_HELMET_MAX_HEAT_PROTECTION_TEMPERATURE
 	siemens_coefficient = 0.2
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	_color = "deathsquad"
 	flags = FPRINT | PLASMAGUARD
 
@@ -385,7 +410,8 @@
 	armor = list(melee = 80, bullet = 60, laser = 50,energy = 25, bomb = 60, bio = 100, rad = 60)
 	max_heat_protection_temperature = FIRESUIT_MAX_HEAT_PROTECTION_TEMPERATURE
 	siemens_coefficient = 0.5
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	flags = FPRINT | PLASMAGUARD
 
 
@@ -398,7 +424,8 @@
 	armor = list(melee = 60, bullet = 40, laser = 40,energy = 30, bomb = 50, bio = 100, rad = 60)
 	max_heat_protection_temperature = FIRE_HELMET_MAX_HEAT_PROTECTION_TEMPERATURE
 	siemens_coefficient = 0.2
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	_color = "knight"
 	flags = FPRINT | PLASMAGUARD
 
@@ -412,7 +439,8 @@
 	armor = list(melee = 60, bullet = 40, laser = 40,energy = 30, bomb = 50, bio = 100, rad = 60)
 	max_heat_protection_temperature = FIRESUIT_MAX_HEAT_PROTECTION_TEMPERATURE
 	siemens_coefficient = 0.5
-	species_restricted = list("exclude","Vox")
+	species_fit = list(GREY_SHAPED)
+	species_restricted = list("exclude",VOX_SHAPED)
 	flags = FPRINT | PLASMAGUARD
 
 /obj/item/clothing/head/helmet/space/rig/knight/black
@@ -422,6 +450,7 @@
 	item_state = "rig0-blackknight"
 	armor = list(melee = 70, bullet = 65, laser = 50,energy = 25, bomb = 60, bio = 100, rad = 60)
 	_color="blackknight"
+	species_fit = list(GREY_SHAPED)
 
 /obj/item/clothing/suit/space/rig/knight/black
 	name = "Black Knight's armour"
@@ -429,6 +458,7 @@
 	icon_state = "rig-blackknight"
 	item_state = "rig-blackknight"
 	armor = list(melee = 70, bullet = 65, laser = 50,energy = 25, bomb = 60, bio = 100, rad = 60)
+	species_fit = list(GREY_SHAPED)
 
 /obj/item/clothing/head/helmet/space/rig/knight/solaire
 	name = "Solar helm"

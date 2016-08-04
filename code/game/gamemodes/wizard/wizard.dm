@@ -78,7 +78,8 @@
 	update_all_wizard_icons()
 	if(!mixed)
 		spawn (rand(waittime_l, waittime_h))
-			if(!mixed) send_intercept()
+			if(!mixed)
+				send_intercept()
 		..()
 	return
 
@@ -182,22 +183,27 @@
 	qdel(wizard_mob.wear_suit)
 	qdel(wizard_mob.head)
 	qdel(wizard_mob.shoes)
-	qdel(wizard_mob.r_hand)
 	qdel(wizard_mob.r_store)
 	qdel(wizard_mob.l_store)
+
+	if(!wizard_mob.find_empty_hand_index())
+		wizard_mob.u_equip(wizard_mob.held_items[GRASP_LEFT_HAND])
 
 	wizard_mob.equip_to_slot_or_del(new /obj/item/device/radio/headset(wizard_mob), slot_ears)
 	wizard_mob.equip_to_slot_or_del(new /obj/item/clothing/under/lightpurple(wizard_mob), slot_w_uniform)
 	wizard_mob.equip_to_slot_or_del(new /obj/item/clothing/shoes/sandal(wizard_mob), slot_shoes)
 	wizard_mob.equip_to_slot_or_del(new /obj/item/clothing/suit/wizrobe(wizard_mob), slot_wear_suit)
 	wizard_mob.equip_to_slot_or_del(new /obj/item/clothing/head/wizard(wizard_mob), slot_head)
-	if(wizard_mob.backbag == 2) wizard_mob.equip_to_slot_or_del(new /obj/item/weapon/storage/backpack(wizard_mob), slot_back)
-	if(wizard_mob.backbag == 3) wizard_mob.equip_to_slot_or_del(new /obj/item/weapon/storage/backpack/satchel_norm(wizard_mob), slot_back)
-	if(wizard_mob.backbag == 4) wizard_mob.equip_to_slot_or_del(new /obj/item/weapon/storage/backpack/satchel(wizard_mob), slot_back)
+	if(wizard_mob.backbag == 2)
+		wizard_mob.equip_to_slot_or_del(new /obj/item/weapon/storage/backpack(wizard_mob), slot_back)
+	if(wizard_mob.backbag == 3)
+		wizard_mob.equip_to_slot_or_del(new /obj/item/weapon/storage/backpack/satchel_norm(wizard_mob), slot_back)
+	if(wizard_mob.backbag == 4)
+		wizard_mob.equip_to_slot_or_del(new /obj/item/weapon/storage/backpack/satchel(wizard_mob), slot_back)
 	wizard_mob.equip_to_slot_or_del(new /obj/item/weapon/storage/box(wizard_mob), slot_in_backpack)
 //	wizard_mob.equip_to_slot_or_del(new /obj/item/weapon/scrying_gem(wizard_mob), slot_l_store) For scrying gem.
 	wizard_mob.equip_to_slot_or_del(new /obj/item/weapon/teleportation_scroll(wizard_mob), slot_r_store)
-	wizard_mob.equip_to_slot_or_del(new /obj/item/weapon/spellbook(wizard_mob), slot_r_hand)
+	wizard_mob.put_in_hands(new /obj/item/weapon/spellbook(wizard_mob))
 
 	wizard_mob.make_all_robot_parts_organic()
 
@@ -376,7 +382,8 @@ Made a proc so this is not repeated 14 (or more) times.*/
 							var/imageloc = wizard_mind_1.current
 							if(istype(wizard_mind_1.current.loc,/obj/mecha))
 								imageloc = wizard_mind_1.current.loc
-							var/I = image('icons/mob/mob.dmi', loc = imageloc, icon_state = "wizard", layer = 13)
+							var/image/I = image('icons/mob/mob.dmi', loc = imageloc, icon_state = "wizard")
+							I.plane = WIZ_ANTAG_HUD_PLANE
 							wizard_mind.current.client.images += I
 
 /datum/game_mode/proc/update_wizard_icons_added(datum/mind/wizard_mind)
@@ -386,7 +393,8 @@ Made a proc so this is not repeated 14 (or more) times.*/
 				var/imageloc = wizard_mind.current
 				if(istype(wizard_mind.current.loc,/obj/mecha))
 					imageloc = wizard_mind.current.loc
-				var/I = image('icons/mob/mob.dmi', loc = imageloc, icon_state = "wizard", layer = 13)
+				var/image/I = image('icons/mob/mob.dmi', loc = imageloc, icon_state = "wizard")
+				I.plane = WIZ_ANTAG_HUD_PLANE
 				wizard_mind.current.client.images += I
 
 /datum/game_mode/proc/update_wizard_icons_removed(datum/mind/wizard_mind)

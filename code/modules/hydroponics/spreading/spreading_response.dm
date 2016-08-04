@@ -46,7 +46,8 @@
 /obj/effect/plantsegment/proc/do_thorns(var/mob/living/carbon/human/victim, var/chance)
 	if(!seed || !seed.thorny)
 		return
-	if(!istype(victim)) return
+	if(!istype(victim))
+		return
 	var/cuts = 0
 	for(var/datum/organ/external/Ex in victim.organs) //hahaha shit this is probably going to MINCE people
 		if(Ex && Ex.is_existing() && Ex.is_organic())
@@ -58,13 +59,15 @@
 				if(victim.stat != DEAD)
 					to_chat(victim, "<span class='danger'>Your [Ex.display_name] is pierced by the thorns on \the [src]!</span>")
 				cuts++
-				if(cuts >= 3) break
+				if(cuts >= 3)
+					break
 	last_special = world.time
 
 /obj/effect/plantsegment/proc/do_sting(var/mob/living/carbon/human/victim, var/chance)
 	if(!seed || !seed.stinging || victim.stat == DEAD)
 		return
-	if(!istype(victim)) return
+	if(!istype(victim))
+		return
 	if(victim.get_exposed_body_parts() && prob(chance))
 		if(seed.chems && seed.chems.len)
 			for(var/rid in seed.chems)
@@ -83,7 +86,7 @@
 		victim.adjustBruteLoss(damage)
 		return
 	else
-		var/datum/organ/external/affecting = victim.get_organ(pick("l_foot","r_foot","l_leg","r_leg","l_hand","r_hand","l_arm", "r_arm","head","chest","groin"))
+		var/datum/organ/external/affecting = victim.get_organ(pick(victim.organs_by_name))
 		if(affecting && affecting.is_existing() && affecting.is_organic())
 			victim.apply_damage(damage, BRUTE, affecting)
 			if(affecting.parent)
@@ -103,9 +106,9 @@
 			victim.reagents.add_reagent(rid,injecting)
 		last_special = world.time
 	if(seed.hematophage)
-		var/drawing = min(25, victim.vessel.get_reagent_amount("blood"))
+		var/drawing = min(25, victim.vessel.get_reagent_amount(BLOOD))
 		if(drawing)
-			victim.vessel.remove_reagent("blood", drawing)
+			victim.vessel.remove_reagent(BLOOD, drawing)
 			last_special = world.time
 
 /obj/effect/plantsegment/proc/manual_unbuckle(mob/user as mob)

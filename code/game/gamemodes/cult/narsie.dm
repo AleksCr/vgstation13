@@ -6,8 +6,8 @@ var/global/list/narsie_list = list()
 	desc = "Your mind begins to bubble and ooze as it tries to comprehend what it sees."
 	icon = 'icons/obj/narsie.dmi'
 	icon_state = "narsie-small"
-	pixel_x = -236
-	pixel_y = -256
+	pixel_x = -236 * PIXEL_MULTIPLIER
+	pixel_y = -256 * PIXEL_MULTIPLIER
 
 	current_size = 9 //It moves/eats like a max-size singulo, aside from range. --NEO.
 	contained = 0 // Are we going to move around?
@@ -30,8 +30,8 @@ var/global/list/narsie_list = list()
 	icon_state = "narsie"//mobs perceive the geometer of blood through their see_narsie proc
 
 	// Pixel stuff centers Narsie.
-	pixel_x = -236
-	pixel_y = -256
+	pixel_x = -236 * PIXEL_MULTIPLIER
+	pixel_y = -256 * PIXEL_MULTIPLIER
 	light_range = 1
 	light_color = LIGHT_COLOR_RED
 
@@ -102,14 +102,16 @@ var/global/list/narsie_list = list()
 
 
 /obj/machinery/singularity/narsie/large/Bump(atom/A)
-	if(!narnar) return
+	if(!narnar)
+		return
 	if(isturf(A))
 		narsiewall(A)
 	else if(istype(A, /obj/structure/cult))
 		qdel(A)
 
 /obj/machinery/singularity/narsie/large/Bumped(atom/A)
-	if(!narnar) return
+	if(!narnar)
+		return
 	if(isturf(A))
 		narsiewall(A)
 	else if(istype(A, /obj/structure/cult))
@@ -216,8 +218,6 @@ var/global/list/narsie_list = list()
 
 //OLD BEHAVIOUR
 	else if(narsie_behaviour == "Nar-Singulo")
-		if(!(A.singuloCanEat()))
-			return 0
 
 		if (istype(A, /mob/living/))
 			var/mob/living/C2 = A
@@ -248,8 +248,6 @@ var/global/list/narsie_list = list()
 					continue
 
 				if (dist > consume_range && canPull(AM2))
-					if(!(AM2.singuloCanEat()))
-						continue
 
 					if (101 == AM2.invisibility)
 						continue
@@ -263,8 +261,6 @@ var/global/list/narsie_list = list()
 
 
 /obj/machinery/singularity/narsie/consume(const/atom/A) //This one is for the small ones.
-	if(!(A.singuloCanEat()))
-		return 0
 
 	if (istype(A, /mob/living/))
 		var/mob/living/C2 = A
@@ -295,8 +291,6 @@ var/global/list/narsie_list = list()
 				continue
 
 			if (dist > consume_range && canPull(AM2))
-				if(!(AM2.singuloCanEat()))
-					continue
 
 				if (101 == AM2.invisibility)
 					continue
@@ -389,7 +383,6 @@ var/global/list/narsie_list = list()
 ////////////////Glow//////////////////
 /obj/machinery/singularity/narsie/proc/updateicon()
 	overlays = 0
-	var/overlay_layer = LIGHTING_LAYER+1
 	overlays += image(icon,"glow-[icon_state]",overlay_layer)
 */
 
@@ -452,15 +445,13 @@ var/global/mr_clean_targets = list(
 	overlays = 0
 
 	if (target && !isturf(target))
-		overlays += "eyes"
+		overlays += image(icon = icon, icon_state = "eyes")
 
 /obj/machinery/singularity/narsie/large/clean/acquire(var/mob/food)
 	..()
 	update_icon()
 
 /obj/machinery/singularity/narsie/large/clean/consume(const/atom/A)
-	if(!(A.singuloCanEat()))
-		return 0
 
 	if (istype(A, /mob/living/))
 
@@ -491,8 +482,6 @@ var/global/mr_clean_targets = list(
 				continue
 
 			if (dist > consume_range && canPull(AM))
-				if(!(AM.singuloCanEat()))
-					continue
 
 				if (101 == AM.invisibility)
 					continue

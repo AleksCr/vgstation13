@@ -22,7 +22,7 @@
 	var/capacity = 500; //the number of seeds it can carry.
 	flags = FPRINT
 	slot_flags = SLOT_BELT
-	w_class = 1
+	w_class = W_CLASS_TINY
 	var/list/item_quants = list()
 
 /obj/item/weapon/seedbag/attack_self(mob/user as mob)
@@ -141,13 +141,14 @@
 	flags = 0
 	slot_flags = SLOT_HEAD
 	throwforce = 1
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throw_speed = 1
 	throw_range = 3
 	attack_verb = list("sears", "heats", "whacks", "steams")*/
 
 /*/obj/item/weapon/grown/novaflower/attack(mob/living/carbon/M as mob, mob/user as mob)
-	if(!..()) return
+	if(!..())
+		return
 	if(istype(M, /mob/living))
 		to_chat(M, "<span class='warning'>You are heated by the warmth of the of the [name]!</span>")
 		M.bodytemperature += potency/2 * TEMPERATURE_DAMAGE_COEFFICIENT*/
@@ -194,7 +195,8 @@
 			to_chat(user, "<span class='warning'>You are stunned by the Deathnettle when you try picking it up!</span>")
 
 /obj/item/weapon/grown/deathnettle/attack(mob/living/carbon/M as mob, mob/user as mob)
-	if(!..()) return
+	if(!..())
+		return
 	if(istype(M, /mob/living))
 		to_chat(M, "<span class='warning'>You are stunned by the powerful acid of the Deathnettle!</span>")
 		M.attack_log += text("\[[time_stamp()]\] <font color='orange'>Had the [src.name] used on them by [user.name] ([user.ckey])</font>")

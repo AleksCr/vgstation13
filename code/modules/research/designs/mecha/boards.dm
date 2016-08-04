@@ -4,9 +4,9 @@
 	name = "Circuit Design (APLU \"Ripley\" Central Control module)"
 	desc = "Allows for the construction of a \"Ripley\" Central Control module."
 	id = "ripley_main"
-	req_tech = list("programming" = 3)
+	req_tech = list(Tc_PROGRAMMING = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/ripley/main
 
@@ -14,9 +14,9 @@
 	name = "Circuit Design (APLU \"Ripley\" Peripherals Control module)"
 	desc = "Allows for the construction of a  \"Ripley\" Peripheral Control module."
 	id = "ripley_peri"
-	req_tech = list("programming" = 3)
+	req_tech = list(Tc_PROGRAMMING = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/ripley/peripherals
 
@@ -26,9 +26,9 @@
 	name = "Circuit Design (\"Odysseus\" Central Control module)"
 	desc = "Allows for the construction of a \"Odysseus\" Central Control module."
 	id = "odysseus_main"
-	req_tech = list("programming" = 3,"biotech" = 2)
+	req_tech = list(Tc_PROGRAMMING = 3, Tc_BIOTECH = 2)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/odysseus/main
 
@@ -36,9 +36,9 @@
 	name = "Circuit Design (\"Odysseus\" Peripherals Control module)"
 	desc = "Allows for the construction of a \"Odysseus\" Peripheral Control module."
 	id = "odysseus_peri"
-	req_tech = list("programming" = 3,"biotech" = 2)
+	req_tech = list(Tc_PROGRAMMING = 3, Tc_BIOTECH = 2)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/odysseus/peripherals
 
@@ -48,9 +48,9 @@
 	name = "Circuit Design (\"Phazon\" Central Control module)"
 	desc = "Allows for the construction of a \"Phazon\" Central Control module."
 	id = "phazon_main"
-	req_tech = list("materials" = 9,"bluespace" = 10)
+	req_tech = list(Tc_MATERIALS = 9, Tc_BLUESPACE = 10)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/phazon/main
 
@@ -58,9 +58,9 @@
 	name = "Circuit Design (\"Phazon\" Peripherals Control module)"
 	desc = "Allows for the construction of a \"Phazon\" Peripheral Control module."
 	id = "phazon_peri"
-	req_tech = list("materials" = 9,"bluespace" = 10)
+	req_tech = list(Tc_MATERIALS = 9, Tc_BLUESPACE = 10)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/phazon/peripherals
 
@@ -70,9 +70,9 @@
 	name = "Circuit Design (\"Gygax\" Central Control module)"
 	desc = "Allows for the construction of a \"Gygax\" Central Control module."
 	id = "gygax_main"
-	req_tech = list("programming" = 4)
+	req_tech = list(Tc_PROGRAMMING = 4)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/gygax/main
 
@@ -80,9 +80,9 @@
 	name = "Circuit Design (\"Gygax\" Peripherals Control module)"
 	desc = "Allows for the construction of a \"Gygax\" Peripheral Control module."
 	id = "gygax_peri"
-	req_tech = list("programming" = 4)
+	req_tech = list(Tc_PROGRAMMING = 4)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/gygax/peripherals
 
@@ -90,9 +90,9 @@
 	name = "Circuit Design (\"Gygax\" Weapons & Targeting Control module)"
 	desc = "Allows for the construction of a \"Gygax\" Weapons & Targeting Control module."
 	id = "gygax_targ"
-	req_tech = list("programming" = 4, "combat" = 2)
+	req_tech = list(Tc_PROGRAMMING = 4, Tc_COMBAT = 2)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/gygax/targeting
 
@@ -102,9 +102,9 @@
 	name = "Circuit Design (\"Durand\" Central Control module)"
 	desc = "Allows for the construction of a \"Durand\" Central Control module."
 	id = "durand_main"
-	req_tech = list("programming" = 4)
+	req_tech = list(Tc_PROGRAMMING = 4)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/durand/main
 
@@ -112,9 +112,9 @@
 	name = "Circuit Design (\"Durand\" Peripherals Control module)"
 	desc = "Allows for the construction of a \"Durand\" Peripheral Control module."
 	id = "durand_peri"
-	req_tech = list("programming" = 4)
+	req_tech = list(Tc_PROGRAMMING = 4)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/durand/peripherals
 
@@ -122,9 +122,9 @@
 	name = "Circuit Design (\"Durand\" Weapons & Targeting Control module)"
 	desc = "Allows for the construction of a \"Durand\" Weapons & Targeting Control module."
 	id = "durand_targ"
-	req_tech = list("programming" = 4, "combat" = 2)
+	req_tech = list(Tc_PROGRAMMING = 4, Tc_COMBAT = 2)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/durand/targeting
 
@@ -134,9 +134,9 @@
 	name = "Circuit Design (\"H.O.N.K\" Central Control module)"
 	desc = "Allows for the construction of a \"H.O.N.K\" Central Control module."
 	id = "honker_main"
-	req_tech = list("programming" = 3)
+	req_tech = list(Tc_PROGRAMMING = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/honker/main
 
@@ -144,9 +144,9 @@
 	name = "Circuit Design (\"H.O.N.K\" Peripherals Control module)"
 	desc = "Allows for the construction of a \"H.O.N.K\" Peripheral Control module."
 	id = "honker_peri"
-	req_tech = list("programming" = 3)
+	req_tech = list(Tc_PROGRAMMING = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/honker/peripherals
 
@@ -154,8 +154,8 @@
 	name = "Circuit Design (\"H.O.N.K\" Weapons & Targeting Control module)"
 	desc = "Allows for the construction of a \"H.O.N.K\" Weapons & Targeting Control module."
 	id = "honker_targ"
-	req_tech = list("programming" = 3)
+	req_tech = list(Tc_PROGRAMMING = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Mecha Boards"
 	build_path = /obj/item/weapon/circuitboard/mecha/honker/targeting

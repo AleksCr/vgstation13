@@ -31,14 +31,20 @@
 				"<span class='warning'>[M.name] struggles to break free of the gelatinous resin...</span>",\
 				"<span class='warning'>You struggle to break free from the gelatinous resin...</span>",\
 				"<span class='notice'>You hear squelching...</span>")
-			spawn(1200)
-				if(user && M && user.locked_to == src)
+
+			if(do_after(user,src,1200,60,needhand = FALSE))
+				if(user && M && (user.locked_to == src))
 					unlock_atom(M)
 					overlays.len = 0
 		src.add_fingerprint(user)
 
 /obj/structure/bed/nest/buckle_mob(mob/M as mob, mob/user as mob)
 	if (locked_atoms.len || !ismob(M) || (get_dist(src, user) > 1) || (M.loc != src.loc) || user.restrained() || user.stat || M.locked_to || istype(user, /mob/living/silicon/pai) )
+		return
+
+	if(ishuman(M) && M.client && !M.lying)
+		to_chat(user,"<span class='warning'>You must tackle them down before you can trap them on \the [src]</span>")
+		to_chat(M,"<span class='warning'>\The [user] is trying in vain to trap you on \the [src]</span>")
 		return
 
 	if(istype(M,/mob/living/carbon/alien))
@@ -55,7 +61,9 @@
 			"<span class='notice'>You hear squelching...</span>")
 	lock_atom(M, /datum/locking_category/bed/nest)
 	src.add_fingerprint(user)
-	overlays += image(icon,"nest-covering",MOB_LAYER)
+	var/image/nest_covering = image(icon,"nest-covering")
+	nest_covering.plane = ABOVE_OBJ_PLANE
+	overlays += nest_covering
 	stabilize()
 
 /obj/structure/bed/nest/attackby(obj/item/weapon/W as obj, mob/user as mob)
@@ -87,8 +95,8 @@
 
 	var/mob/M = locked_atoms[1]
 
-	if(iscarbon(M) && (M.stat != DEAD) && (M.reagents.get_reagent_amount("stabilizine") < 1))
-		M.reagents.add_reagent("stabilizine", 2)
+	if(iscarbon(M) && (M.stat != DEAD) && (M.reagents.get_reagent_amount(STABILIZINE) < 1))
+		M.reagents.add_reagent(STABILIZINE, 2)
 	else
 		return
 
@@ -99,4 +107,4 @@
 #undef ALIEN_NEST_LOCKED_Y_OFFSET
 
 /datum/locking_category/bed/nest
-	pixel_y_offset = 6
+	pixel_y_offset = 6 * PIXEL_MULTIPLIER

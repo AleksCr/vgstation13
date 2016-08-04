@@ -9,7 +9,7 @@
 	icon_state = "bush1"
 	density = 1
 	anchored = 1
-	layer = 3.2
+	layer = ABOVE_OBJ_LAYER
 	var/indestructable = 0
 	var/stump = 0
 
@@ -56,7 +56,7 @@
 //*******************************//
 
 var/list/fruit_icon_states = list("badrecipe","kudzupod","reishi","lime","grapes","boiledrorocore","chocolateegg")
-var/list/reagent_effects = list("toxin","anti_toxin","stoxin","space_drugs","mindbreaker","zombiepowder","impedrezene")
+var/list/reagent_effects = list(TOXIN,ANTI_TOXIN,STOXIN,SPACE_DRUGS,MINDBREAKER,ZOMBIEPOWDER,IMPEDREZENE)
 var/jungle_plants_init = 0
 
 /proc/init_jungle_plants()

@@ -27,8 +27,8 @@
 	if (flags & DENSE_WHEN_LOCKING || AM.lockflags & DENSE_WHEN_LOCKED)
 		owner.density = TRUE
 
-	AM.pixel_x += pixel_x_offset
-	AM.pixel_y += pixel_y_offset
+	AM.pixel_x += pixel_x_offset * PIXEL_MULTIPLIER
+	AM.pixel_y += pixel_y_offset * PIXEL_MULTIPLIER
 
 	update_lock(AM)
 	AM.change_dir(owner.dir, owner)
@@ -41,19 +41,26 @@
 	var/new_y = y_offset
 
 	if (rotate_offsets)
+		//The shit below can be done through maths but I've decided to do it a simpler way
+		//Basically, imagine a point with coordinates [x_offset; y_offset]
+		//And that point is rotated around the point [0;0]
+		//Default position is NORTH - 0 degrees
+		//EAST means it's rotated 90 degrees clockwise
+		//SOUTH means it's rotated 180 degrees, and so on
+
 		switch (owner.dir)
 			if (NORTH) //up
 				new_x = x_offset
 				new_y = y_offset
 			if (EAST) // right
-				new_x = x_offset
-				new_y = -y_offset
+				new_x = y_offset
+				new_y = -x_offset
 			if (SOUTH) //down
 				new_x = -x_offset
 				new_y = -y_offset
 			if (WEST) //left
-				new_x = -x_offset
-				new_y = y_offset
+				new_x = -y_offset
+				new_y = x_offset
 
 	if (new_x || new_y)
 		var/newer_loc = locate(owner.x + new_x, owner.y + new_y, owner.z)
@@ -91,8 +98,8 @@
 		var/mob/M = AM
 		M.update_canmove()
 
-	AM.pixel_x -= pixel_x_offset
-	AM.pixel_y -= pixel_y_offset
+	AM.pixel_x -= pixel_x_offset * PIXEL_MULTIPLIER
+	AM.pixel_y -= pixel_y_offset * PIXEL_MULTIPLIER
 
 /datum/locking_category/New(var/atom/new_owner)
 	locked = list()

@@ -31,8 +31,8 @@
 	flags = OPENCONTAINER|FPRINT
 	slot_flags = SLOT_BACK
 	throwforce = 3
-	w_class = 4.0
-	origin_tech = "bluespace=3;materials=3;engineering=5"
+	w_class = W_CLASS_LARGE
+	origin_tech = Tc_BLUESPACE + "=3;" + Tc_MATERIALS + "=3;" + Tc_ENGINEERING + "=5"
 	var/safety = 0
 	var/primed = 0
 	var/stage = 0
@@ -91,13 +91,20 @@
 
 		var/percent = round((reagents.total_volume / volume) * 100)
 		switch(percent)
-			if(0 to 9)		filling.icon_state = "[initial(icon_state)]-10"
-			if(10 to 24) 	filling.icon_state = "[initial(icon_state)]10"
-			if(25 to 49)	filling.icon_state = "[initial(icon_state)]25"
-			if(50 to 74)	filling.icon_state = "[initial(icon_state)]50"
-			if(75 to 79)	filling.icon_state = "[initial(icon_state)]75"
-			if(80 to 90)	filling.icon_state = "[initial(icon_state)]80"
-			if(91 to INFINITY)	filling.icon_state = "[initial(icon_state)]100"
+			if(0 to 9)
+				filling.icon_state = "[initial(icon_state)]-10"
+			if(10 to 24)
+				filling.icon_state = "[initial(icon_state)]10"
+			if(25 to 49)
+				filling.icon_state = "[initial(icon_state)]25"
+			if(50 to 74)
+				filling.icon_state = "[initial(icon_state)]50"
+			if(75 to 79)
+				filling.icon_state = "[initial(icon_state)]75"
+			if(80 to 90)
+				filling.icon_state = "[initial(icon_state)]80"
+			if(91 to INFINITY)
+				filling.icon_state = "[initial(icon_state)]100"
 
 		filling.icon += mix_color_from_reagents(reagents.reagent_list)
 		filling.alpha = mix_alpha_from_reagents(reagents.reagent_list)
@@ -114,23 +121,21 @@
 		fillinghandl.alpha = mix_alpha_from_reagents(reagents.reagent_list)
 
 		dynamic_overlay["[BACK_LAYER]"] = fillingback
-		dynamic_overlay["[L_HAND_LAYER]"] = fillinghandl
-		dynamic_overlay["[R_HAND_LAYER]"] = fillinghandr
+		dynamic_overlay["[HAND_LAYER]-[GRASP_LEFT_HAND]"] = fillinghandl
+		dynamic_overlay["[HAND_LAYER]-[GRASP_RIGHT_HAND]"] = fillinghandr
 
 		overlays += filling
 		if (istype(loc,/mob/living/carbon/human)) //Needs to always update its own overlay, but only update mob overlays if it's actually on a mob.
 			H.update_inv_back()
-			H.update_inv_r_hand()
-			H.update_inv_l_hand()
+			H.update_inv_hands()
 
 	else
 		dynamic_overlay["[BACK_LAYER]"] = null
-		dynamic_overlay["[L_HAND_LAYER]"] = null
-		dynamic_overlay["[R_HAND_LAYER]"] = null
+		dynamic_overlay["[HAND_LAYER]-[GRASP_LEFT_HAND]"] = null
+		dynamic_overlay["[HAND_LAYER]-[GRASP_RIGHT_HAND]"] = null
 		if (istype(loc,/mob/living/carbon/human))
 			H.update_inv_back()
-			H.update_inv_r_hand()
-			H.update_inv_l_hand()
+			H.update_inv_hands()
 
 /obj/item/weapon/reagent_containers/chempack/verb/flush_tanks() //Completely empties the chempack's tanks, since you can't pour it onto the floor or into something else.
 	set name = "Flush chemical tanks"
@@ -235,8 +240,7 @@ obj/item/weapon/reagent_containers/chempack/verb/set_fill()
 					slot_flags = null
 					to_chat(user, "<span class='notice'>You unscrew the maintenance panel of \the [src].</span>")
 					icon_state = "[initial(icon_state)]3"
-					user.update_inv_r_hand() //These procs are to force the item's in_hand mob overlay to update to reflect the different stages of building. It was the only way I could find to accomplish this.
-					user.update_inv_l_hand()
+					user.update_inv_hands() //These procs are to force the item's in_hand mob overlay to update to reflect the different stages of building. It was the only way I could find to accomplish this.
 					return
 		if(1)
 			if (iscrowbar(W))
@@ -246,8 +250,7 @@ obj/item/weapon/reagent_containers/chempack/verb/set_fill()
 					stage = 3
 				to_chat(user, "<span class='notice'>You pry open the maintenance panel of \the [src].</span>")
 				icon_state = "[initial(icon_state)]2"
-				user.update_inv_r_hand()
-				user.update_inv_l_hand()
+				user.update_inv_hands()
 				return
 			else if (isscrewdriver(W))
 				stage = 0
@@ -255,12 +258,10 @@ obj/item/weapon/reagent_containers/chempack/verb/set_fill()
 				to_chat(user, "<span class='notice'>You secure the maintenance panel of \the [src].</span>")
 				if (safety == 0)
 					icon_state = "[initial(icon_state)]"
-					user.update_inv_r_hand()
-					user.update_inv_l_hand()
+					user.update_inv_hands()
 				else
 					icon_state = "[initial(icon_state)]1"
-					user.update_inv_r_hand()
-					user.update_inv_l_hand()
+					user.update_inv_hands()
 				return
 		if(2)
 			if (iswirecutter(W))
@@ -272,8 +273,7 @@ obj/item/weapon/reagent_containers/chempack/verb/set_fill()
 				stage = 1
 				to_chat(user, "<span class='notice'>You close the maintenance panel of \the [src].</span>")
 				icon_state = "[initial(icon_state)]3"
-				user.update_inv_r_hand()
-				user.update_inv_l_hand()
+				user.update_inv_hands()
 				return
 		if(3)
 			if (ismultitool(W))
@@ -290,8 +290,7 @@ obj/item/weapon/reagent_containers/chempack/verb/set_fill()
 				stage = 1
 				to_chat(user, "<span class='notice'>You close the maintenance panel of \the [src].</span>")
 				icon_state = "[initial(icon_state)]3"
-				user.update_inv_r_hand()
-				user.update_inv_l_hand()
+				user.update_inv_hands()
 				return
 
 /obj/item/weapon/reagent_containers/chempack/override
@@ -307,16 +306,16 @@ obj/item/weapon/reagent_containers/chempack/verb/set_fill()
 	..()
 	beaker = new /obj/item/weapon/reagent_containers/glass/beaker/large
 	var/obj/item/weapon/reagent_containers/glass/B = beaker
-	B.reagents.add_reagent("creatine",100)
-	reagents.add_reagent("kelotane", 125)
-	reagents.add_reagent("dermaline", 125)
-	reagents.add_reagent("tricordrazine", 125)
-	reagents.add_reagent("anti_toxin", 210)
-	reagents.add_reagent("bicaridine", 125)
-	reagents.add_reagent("hyperzine", 22)
-	reagents.add_reagent("imidazoline", 122)
-	reagents.add_reagent("arithrazine", 32)
-	reagents.add_reagent("hyronalin", 32)
-	reagents.add_reagent("alkysine", 32)
-	reagents.add_reagent("dexalinp", 125)
-	reagents.add_reagent("leporazine", 125)
+	B.reagents.add_reagent(CREATINE,100)
+	reagents.add_reagent(KELOTANE, 125)
+	reagents.add_reagent(DERMALINE, 125)
+	reagents.add_reagent(TRICORDRAZINE, 125)
+	reagents.add_reagent(ANTI_TOXIN, 210)
+	reagents.add_reagent(BICARIDINE, 125)
+	reagents.add_reagent(HYPERZINE, 22)
+	reagents.add_reagent(IMIDAZOLINE, 122)
+	reagents.add_reagent(ARITHRAZINE, 32)
+	reagents.add_reagent(HYRONALIN, 32)
+	reagents.add_reagent(ALKYSINE, 32)
+	reagents.add_reagent(DEXALINP, 125)
+	reagents.add_reagent(LEPORAZINE, 125)

@@ -4,6 +4,8 @@
 	desc = "The final frontier."
 	icon_state = "0"
 
+	plane = PLANE_SPACE_BACKGROUND
+
 	temperature = TCMB
 	thermal_conductivity = OPEN_HEAT_TRANSFER_COEFFICIENT
 	heat_capacity = 700000
@@ -16,8 +18,12 @@
 	if(loc)
 		var/area/A = loc
 		A.area_turfs += src
-
 	icon_state = "[((x + y) ^ ~(x * y) + z) % 25]"
+	var/image/I = image('icons/turf/space_parallax1.dmi',"[icon_state]")
+	I.plane = PLANE_SPACE_DUST
+	I.alpha = 80
+	I.blend_mode = BLEND_ADD
+	overlays += I
 
 /turf/space/attack_paw(mob/user as mob)
 	return src.attack_hand(user)
@@ -46,12 +52,6 @@
 		return 1
 	return BUILD_FAILURE
 
-// Ported from unstable r355
-
-/turf/space/Entered(atom/movable/A as mob|obj)
-	..()
-	inertial_drift(A)
-
 /turf/space/proc/Sandbox_Spacemove(atom/movable/A as mob|obj)
 	var/cur_x
 	var/cur_y
@@ -63,7 +63,8 @@
 	if(src.x <= 1)
 
 		var/list/cur_pos = src.get_global_map_pos()
-		if(!cur_pos) return
+		if(!cur_pos)
+			return
 		cur_x = cur_pos["x"]
 		cur_y = cur_pos["y"]
 		next_x = (--cur_x||global_map.len)
@@ -89,7 +90,8 @@
 			return
 
 		var/list/cur_pos = src.get_global_map_pos()
-		if(!cur_pos) return
+		if(!cur_pos)
+			return
 		cur_x = cur_pos["x"]
 		cur_y = cur_pos["y"]
 		next_x = (++cur_x > global_map.len ? 1 : cur_x)
@@ -114,7 +116,8 @@
 			A = null
 			return
 		var/list/cur_pos = src.get_global_map_pos()
-		if(!cur_pos) return
+		if(!cur_pos)
+			return
 		cur_x = cur_pos["x"]
 		cur_y = cur_pos["y"]
 		y_arr = global_map[cur_x]
@@ -140,7 +143,8 @@
 			A = null
 			return
 		var/list/cur_pos = src.get_global_map_pos()
-		if(!cur_pos) return
+		if(!cur_pos)
+			return
 		cur_x = cur_pos["x"]
 		cur_y = cur_pos["y"]
 		y_arr = global_map[cur_x]
@@ -167,5 +171,16 @@
 /turf/space/ChangeTurf(var/turf/N, var/tell_universe=1, var/force_lighting_update = 0, var/allow = 1)
 	return ..(N, tell_universe, 1, allow)
 
-/turf/space/lighting_build_overlays()
+/turf/space/lighting_build_overlay()
 	return
+
+/turf/space/void
+	name = "the void"
+	icon_state = "void"
+	desc = "The final final frontier."
+
+/turf/space/void/New()
+	return
+
+/turf/space/has_gravity()
+	return 0

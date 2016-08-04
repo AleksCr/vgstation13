@@ -7,9 +7,8 @@
 	fire_resist = 2
 	var/resource_delay = 0
 	spawning = 0
-	layer = 6.4
+	layer = BLOB_RESOURCE_LAYER
 
-	layer_new = 6.4
 	icon_new = "resource"
 	icon_classic = "blob_resource"
 
@@ -23,7 +22,9 @@
 /obj/effect/blob/resource/Destroy()
 	blob_resources -= src
 	if(!manual_remove && overmind)
-		to_chat(overmind,"<span class='warning'>You lost a resource blob.</span>")
+		to_chat(overmind,"<span class='warning'>You lost a resource blob.</span> <b><a href='?src=\ref[overmind];blobjump=\ref[loc]'>(JUMP)</a></b>")
+		overmind.special_blobs -= src
+		overmind.update_specialblobs()
 	..()
 
 /obj/effect/blob/resource/update_health()
@@ -40,6 +41,8 @@
 		if(B)
 			to_chat(B,"<span class='notice'>You take control of the resource blob.</span>")
 			overmind = B
+			B.special_blobs += src
+			B.update_specialblobs()
 			update_icon()
 	..()
 
@@ -66,11 +69,12 @@
 	if(blob_looks[looks] == 64)
 		spawn(1)
 			overlays.len = 0
-			overlays += image(icon,"roots", layer = 3)
+			underlays.len = 0
+			underlays += image(icon,"roots")
 
 			if(!spawning)
 				for(var/obj/effect/blob/B in orange(src,1))
-					overlays += image(icon,"resourceconnect",dir = get_dir(src,B), layer = layer+0.1)
+					overlays += image(icon,"resourceconnect",dir = get_dir(src,B))
 			if(spawnend)
 				spawn(10)
 					update_icon()

@@ -35,7 +35,8 @@
 /obj/item/weapon/melee/lance/proc/lower_lance(mob/user)
 	if(!trigger)
 		trigger = new(get_step(usr, usr.dir), usr, src)
-		if(user) user.visible_message("<span class='danger'>[user] couches \the [src]!</span>", "<span class='notice'>You couch \the [src] and prepare to charge.</span>")
+		if(user)
+			user.visible_message("<span class='danger'>[user] couches \the [src]!</span>", "<span class='notice'>You couch \the [src] and prepare to charge.</span>")
 		item_state = "lance_lowered"
 		force = initial(force)
 		attack_verb = couch_attack_verbs
@@ -43,10 +44,7 @@
 	if(isliving(loc))
 		var/mob/living/owner = loc
 
-		if(src == owner.l_hand)
-			owner.update_inv_l_hand()
-		else
-			owner.update_inv_r_hand()
+		owner.update_inv_hand(owner.active_hand)
 
 /obj/item/weapon/melee/lance/proc/raise_lance(mob/user)
 	if(trigger)
@@ -54,7 +52,8 @@
 
 	trigger = null
 
-	if(user) user.visible_message("<span class='danger'>[user] raises \the [src].</span>", "<span class='notice'>You raise \the [src].</span>")
+	if(user)
+		user.visible_message("<span class='danger'>[user] raises \the [src].</span>", "<span class='notice'>You raise \the [src].</span>")
 	item_state = "lance"
 	force = initial(force)
 	attack_verb = default_attack_verbs
@@ -63,10 +62,7 @@
 	if(isliving(loc))
 		var/mob/living/owner = loc
 
-		if(src == owner.l_hand)
-			owner.update_inv_l_hand()
-		else
-			owner.update_inv_r_hand()
+		owner.update_inv_hand(owner.active_hand)
 
 /obj/item/weapon/melee/lance/attack(mob/living/M, mob/living/user)
 	if(istype(M) && trigger) //Lance is couched
@@ -136,20 +132,24 @@
 		L.raise_lance()
 		return
 
-	if(!L) return
+	if(!L)
+		return
 	amount_of_turfs_charged++
 	L.force += 3
 
 	if(amount_of_turfs_charged > 0)
 		if(istype(new_loc))
 			for(var/mob/living/victim in new_loc)
-				if(victim.lying) continue
+				if(victim.lying)
+					continue
 
 				return Crossed(victim)
 
 /obj/effect/lance_trigger/Crossed(atom/movable/O)
-	if(!L || !owner) return qdel(src)
-	if(L.loc != owner) return qdel(src)
+	if(!L || !owner)
+		return qdel(src)
+	if(L.loc != owner)
+		return qdel(src)
 	if(!isturf(owner.loc))
 		L.raise_lance()
 		return

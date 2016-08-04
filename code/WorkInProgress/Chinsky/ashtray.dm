@@ -1,17 +1,18 @@
 /obj/item/ashtray
 	icon = 'icons/ashtray.dmi'
-	var/
-		max_butts 	= 0
-		empty_desc 	= ""
-		icon_empty 	= ""
-		icon_half  	= ""
-		icon_full  	= ""
-		icon_broken	= ""
+	w_class = W_CLASS_TINY
+
+	var/max_butts 	= 0
+	var/empty_desc 	= ""
+	var/icon_empty 	= ""
+	var/icon_half  	= ""
+	var/icon_full  	= ""
+	var/icon_broken	= ""
 
 /obj/item/ashtray/New()
 	..()
-	src.pixel_y = rand(-5, 5)
-	src.pixel_x = rand(-6, 6)
+	src.pixel_y = rand(-5, 5) * PIXEL_MULTIPLIER
+	src.pixel_x = rand(-6, 6) * PIXEL_MULTIPLIER
 	return
 
 /obj/item/ashtray/attackby(obj/item/weapon/W as obj, mob/user as mob)

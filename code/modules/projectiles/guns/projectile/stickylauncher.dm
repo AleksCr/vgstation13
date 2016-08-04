@@ -7,11 +7,11 @@
 	icon_state = "stickybomb"
 	item_state = null
 	slot_flags = SLOT_BELT
-	origin_tech = "materials=3;combat=4;programming=3"
+	origin_tech = Tc_MATERIALS + "=3;" + Tc_COMBAT + "=4;" + Tc_PROGRAMMING + "=3"
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/guns_experimental.dmi', "right_hand" = 'icons/mob/in-hand/right/guns_experimental.dmi')
 	recoil = 1
 	flags = FPRINT
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	fire_delay = 2
 	fire_sound = 'sound/weapons/grenadelauncher.ogg'
 	var/list/loaded = list()
@@ -73,7 +73,8 @@
 		..()
 
 /obj/item/weapon/gun/stickybomb/process_chambered()
-	if(in_chamber) return 1
+	if(in_chamber)
+		return 1
 	if(loaded.len)
 		var/obj/item/stickybomb/B = pick(loaded)
 		loaded -= B
@@ -101,7 +102,7 @@
 	flags = FPRINT
 	force = 1
 	throwforce = 1
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	var/obj/item/weapon/gun/stickybomb/fired_from = null
 	var/live = 0
 	var/atom/stuck_to = null
@@ -110,8 +111,8 @@
 
 /obj/item/stickybomb/New()
 	..()
-	pixel_x = rand(-10.0, 10)
-	pixel_y = rand(-10.0, 10)
+	pixel_x = rand(-10, 10) * PIXEL_MULTIPLIER
+	pixel_y = rand(-10, 10) * PIXEL_MULTIPLIER
 
 /obj/item/stickybomb/Destroy()
 	if(fired_from)
@@ -141,21 +142,21 @@
 /obj/item/stickybomb/proc/stick_to(var/atom/A as mob|obj|turf, var/side = null)
 	stuck_to = A
 	loc = A
-	pixel_x = rand(-10, 10)
-	pixel_y = rand(-10, 10)
+	pixel_x = rand(-10, 10) * PIXEL_MULTIPLIER
+	pixel_y = rand(-10, 10) * PIXEL_MULTIPLIER
 	playsound(A, 'sound/items/metal_impact.ogg', 30, 1)
 
 	if(isturf(A))
 		anchored = 1
 		switch(side)
 			if(NORTH)
-				pixel_y = 16
+				pixel_y = WORLD_ICON_SIZE/2
 			if(SOUTH)
-				pixel_y = -16
+				pixel_y = -WORLD_ICON_SIZE/2
 			if(EAST)
-				pixel_x = 16
+				pixel_x = WORLD_ICON_SIZE/2
 			if(WEST)
-				pixel_x = -16
+				pixel_x = -WORLD_ICON_SIZE/2
 		sleep(50)
 		if(stuck_to == A)
 			flick("stickybomb_flick",src)
@@ -203,14 +204,15 @@
 	if(ismob(stuck_to))
 		stuck_to.overlays -= self_overlay
 		self_overlay.icon_state = "stickybomb_flick"
-		self_overlay.layer = 13
+		self_overlay.layer = PROJECTILE_LAYER
+		self_overlay.plane = EFFECTS_PLANE
 		stuck_to.overlays += self_overlay
 	alpha = 255
 	spawn(3)
 		if(ismob(stuck_to))
 			stuck_to.overlays -= self_overlay
 
-		T.turf_animation('icons/effects/96x96.dmi',"explosion_sticky",pixel_x-32, pixel_y-32, 13)
+		T.turf_animation('icons/effects/96x96.dmi',"explosion_sticky",pixel_x-WORLD_ICON_SIZE, pixel_y-WORLD_ICON_SIZE, 13)
 		playsound(T, "explosion_small", 75, 1)
 
 		for(var/mob/living/L in range(T,3))
@@ -248,7 +250,7 @@
 
 /obj/item/stickybomb/bullet_act(var/obj/item/projectile/Proj)
 	if(istype(Proj ,/obj/item/projectile/beam)||istype(Proj,/obj/item/projectile/bullet)||istype(Proj,/obj/item/projectile/ricochet))
-		if(!istype(Proj ,/obj/item/projectile/beam/lastertag) && !istype(Proj ,/obj/item/projectile/beam/practice) )
+		if(!istype(Proj ,/obj/item/projectile/beam/lasertag) && !istype(Proj ,/obj/item/projectile/beam/practice) )
 			detonate()
 
 #undef MAX_STICKYBOMBS

@@ -11,11 +11,11 @@
 	throwforce = 10.0
 	throw_speed = 1
 	throw_range = 5
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	starting_materials = list(MAT_IRON = 500)
 	w_type = RECYK_MISC
 	melt_temperature = MELTPOINT_STEEL
-	origin_tech = "combat=1;plasmatech=1"
+	origin_tech = Tc_COMBAT + "=1;" + Tc_PLASMATECH + "=1"
 	ejectshell = 0
 	caliber = null
 	ammo_type = null
@@ -55,7 +55,7 @@
 	var/turf/location = loc
 	if(istype(location, /mob/))
 		var/mob/M = location
-		if(M.l_hand == src || M.r_hand == src)
+		if(M.is_holding_item(src))
 			location = M.loc
 	if(isturf(location)) //start a fire if possible
 		location.hotspot_expose(700, 2,surfaces=istype(loc,/turf))
@@ -65,11 +65,11 @@
 /obj/item/weapon/gun/projectile/flamethrower/update_icon()
 	overlays.len = 0
 	if(igniter)
-		overlays += "+igniter[status]"
+		overlays += image(icon = icon, icon_state = "+igniter[status]")
 	if(ptank)
-		overlays += "+ptank"
+		overlays += image(icon = icon, icon_state = "+ptank")
 	if(lit)
-		overlays += "+lit"
+		overlays += image(icon = icon, icon_state = "+lit")
 		item_state = "flamethrower_1"
 	else
 		item_state = "flamethrower_0"
@@ -134,7 +134,8 @@
 		flamethrower_window(user)
 
 /obj/item/weapon/gun/projectile/flamethrower/attackby(obj/item/W as obj, mob/user as mob)
-	if(user.stat || user.restrained() || user.lying)	return
+	if(user.stat || user.restrained() || user.lying)
+		return
 	if(iswrench(W) && !status)//Taking this apart
 		var/turf/T = get_turf(src)
 		if(weldtool)
@@ -158,8 +159,10 @@
 
 	if(isigniter(W))
 		var/obj/item/device/assembly/igniter/I = W
-		if(I.secured)	return
-		if(igniter)		return
+		if(I.secured)
+			return
+		if(igniter)
+			return
 		if(user.drop_item(I, src))
 			igniter = I
 			update_icon()
@@ -186,7 +189,8 @@
 
 
 /obj/item/weapon/gun/projectile/flamethrower/attack_self(mob/user as mob)
-	if(user.stat || user.restrained() || user.lying)	return
+	if(user.stat || user.restrained() || user.lying)
+		return
 	window_open = 1
 	flamethrower_window(user)
 	return
@@ -204,10 +208,12 @@
 		usr.unset_machine()
 		window_open = 0
 		return
-	if(usr.stat || usr.restrained() || usr.lying)	return
+	if(usr.stat || usr.restrained() || usr.lying)
+		return
 	usr.set_machine(src)
 	if(href_list["light"])
-		if(!status)	return
+		if(!status)
+			return
 		lit = !lit
 		if(lit)
 			processing_objects.Add(src)
@@ -226,8 +232,7 @@
 	update_icon()
 	if(istype(loc, /mob/living/carbon))
 		var/mob/living/carbon/C = loc
-		C.update_inv_r_hand()
-		C.update_inv_l_hand()
+		C.update_inv_hands()
 	return
 
 /obj/item/weapon/gun/projectile/flamethrower/full/New(var/loc)

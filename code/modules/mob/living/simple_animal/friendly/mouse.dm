@@ -20,7 +20,6 @@
 	response_harm   = "stamps on the"
 	density = 0
 	var/_color //brown, gray and white, leave blank for random
-	layer = MOB_LAYER
 	min_oxy = 16 //Require atleast 16kPA oxygen
 	minbodytemp = 223		//Below -50 Degrees Celcius
 	maxbodytemp = 323	//Above 50 Degrees Celcius
@@ -31,7 +30,8 @@
 	holder_type = /obj/item/weapon/holder/animal/mouse
 
 /mob/living/simple_animal/mouse/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 	..()
 	if(!stat && prob(speak_chance))
 		for(var/mob/M in view())
@@ -65,8 +65,8 @@
 	icon_living = "mouse_[_color]"
 	icon_dead = "mouse_[_color]_dead"
 	desc = "It's a small [_color] rodent, often seen hiding in maintenance areas and making a nuisance of itself."
-	add_language("Mouse")
-	default_language = all_languages["Mouse"]
+	add_language(LANGUAGE_MOUSE)
+	default_language = all_languages[LANGUAGE_MOUSE]
 
 
 /mob/living/simple_animal/mouse/proc/splat()
@@ -95,8 +95,8 @@
 	if(isUnconscious())
 		return
 
-	if (layer != TURF_LAYER+0.2)
-		layer = TURF_LAYER+0.2
+	if (plane != HIDING_MOB_PLANE)
+		plane = HIDING_MOB_PLANE
 		to_chat(src, text("<span class='notice'>You are now hiding.</span>"))
 		/*
 		for(var/mob/O in oviewers(src, null))
@@ -104,7 +104,7 @@
 				to_chat(O, text("<B>[] scurries to the ground!</B>", src))
 		*/
 	else
-		layer = MOB_LAYER
+		plane = MOB_PLANE
 		to_chat(src, text("<span class='notice'>You have stopped hiding.</span>"))
 		/*
 		for(var/mob/O in oviewers(src, null))

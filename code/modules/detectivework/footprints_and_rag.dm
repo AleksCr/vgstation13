@@ -16,7 +16,7 @@
 /obj/item/weapon/reagent_containers/glass/rag
 	name = "rag" //changed to "rag" from "damp rag" - Hinaichigo
 	desc = "For cleaning up messes, you suppose."
-	w_class = 1
+	w_class = W_CLASS_TINY
 	icon = 'icons/obj/toy.dmi'
 	icon_state = "rag"
 	amount_per_transfer_from_this = 5
@@ -41,7 +41,8 @@
 		..()
 
 /obj/item/weapon/reagent_containers/glass/rag/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
-	if(!proximity_flag) return 0 // Not adjacent
+	if(!proximity_flag)
+		return 0 // Not adjacent
 
 	if(reagents.total_volume < 1)
 		to_chat(user, "<span class='notice'>Your rag is dry!</span>")

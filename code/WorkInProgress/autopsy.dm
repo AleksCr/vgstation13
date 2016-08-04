@@ -9,8 +9,8 @@
 	icon_state = ""
 	flags = FPRINT
 	siemens_coefficient = 1
-	w_class = 1.0
-	origin_tech = "materials=1;biotech=1"
+	w_class = W_CLASS_TINY
+	origin_tech = Tc_MATERIALS + "=1;" + Tc_BIOTECH + "=1"
 	var/list/datum/autopsy_data_scanner/wdata = list()
 	var/list/datum/autopsy_data_scanner/chemtraces = list()
 	var/target_name = null
@@ -39,7 +39,8 @@
 		return W
 
 /obj/item/weapon/autopsy_scanner/proc/add_data(var/datum/organ/external/O)
-	if(!O.autopsy_data.len && !O.trace_chemicals.len) return
+	if(!O.autopsy_data.len && !O.trace_chemicals.len)
+		return
 
 	for(var/V in O.autopsy_data)
 		var/datum/autopsy_data/W = O.autopsy_data[V]
@@ -103,8 +104,10 @@
 
 			var/wname = W.pretend_weapon
 
-			if(wname in weapon_chances) weapon_chances[wname] += W.damage
-			else weapon_chances[wname] = max(W.damage, 1)
+			if(wname in weapon_chances)
+				weapon_chances[wname] += W.damage
+			else
+				weapon_chances[wname] = max(W.damage, 1)
 			total_score+=W.damage
 
 
@@ -128,7 +131,8 @@
 			if(30 to 1000)
 				damage_desc = "<font color='red'>severe</font>"
 
-		if(!total_score) total_score = D.organs_scanned.len
+		if(!total_score)
+			total_score = D.organs_scanned.len
 
 		scan_data += "<b>Weapon #[n]</b><br>"
 		if(damaging_weapon)
@@ -158,22 +162,11 @@
 	var/obj/item/weapon/paper/P = new(usr.loc)
 	P.name = "Autopsy Data ([target_name])"
 	P.info = "<tt>[scan_data]</tt>"
-	P.overlays += "paper_words"
+	P.overlays += image(icon = P.icon, icon_state = "paper_words")
 
 	if(istype(usr,/mob/living/carbon))
 		// place the item in the usr's hand if possible
-		if(!usr.r_hand)
-			P.loc = usr
-			usr.r_hand = P
-			P.layer = 20
-		else if(!usr.l_hand)
-			P.loc = usr
-			usr.l_hand = P
-			P.layer = 20
-
-	if(istype(usr,/mob/living/carbon/human))
-		usr:update_inv_l_hand()
-		usr:update_inv_r_hand()
+		usr.put_in_hands(P)
 
 /obj/item/weapon/autopsy_scanner/attack(mob/living/carbon/human/M as mob, mob/living/carbon/user as mob)
 	if(!istype(M))

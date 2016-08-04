@@ -12,14 +12,14 @@
 	endWhen = rand(45, 90) //More drawn out than the shower, but not too powerful. Supposed to be a devastating event
 
 /datum/event/meteor_wave/announce()
-	command_alert("A meteor storm has been detected on collision course with the station. Seek shelter within the core of the station immediately.", "Meteor Alert",alert='sound/AI/meteors.ogg')
+	command_alert(/datum/command_alert/meteor_wave)
 
 //Two to three waves. So 40 to 120
 /datum/event/meteor_wave/tick()
 	meteor_wave(rand(20, 40), max_size = 2) //Large waves, panic is mandatory
 
 /datum/event/meteor_wave/end()
-	command_alert("The station has cleared the meteor storm.", "Meteor Alert")
+	command_alert(/datum/command_alert/meteor_wave_end)
 
 //One to two vawes
 /datum/event/meteor_shower
@@ -30,7 +30,7 @@
 	endWhen	= rand(45, 60) //From thirty seconds to one minute
 
 /datum/event/meteor_shower/announce()
-	command_alert("The station is about to be hit by a small-intensity meteor storm. Seek shelter within the core of the station immediately.", "Meteor Alert")
+	command_alert(/datum/command_alert/meteor_storm)
 
 //Meteor showers are lighter and more common
 //Sometimes a single wave, most likely two, so anywhere from 10 to 30 small meteors
@@ -38,7 +38,7 @@
 	meteor_wave(rand(10, 15), max_size = 1) //Much more clement
 
 /datum/event/meteor_shower/end()
-	command_alert("The station has cleared the meteor shower.", "Meteor Alert")
+	command_alert(/datum/command_alert/meteor_wave_end)
 
 //Meteor wave that doesn't trigger an announcement. Perfect for adminbus involving extended meteor bombardments without spamming the crew with Meteor alerts.
 /datum/event/meteor_shower/meteor_quiet
@@ -74,6 +74,40 @@ var/global/list/thing_storm_types = list(
 		/obj/item/weapon/reagent_containers/food/snacks/sausage,
 		/obj/item/weapon/reagent_containers/food/snacks/faggot,
 	),
+	"blob shower" = list(
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob/node,
+	),
+	"blob storm" = list(
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob,
+		/obj/item/projectile/meteor/blob/node,
+		/obj/item/projectile/meteor/blob/node,
+		/obj/item/projectile/meteor/blob/node,
+		/obj/item/projectile/meteor/blob/node,
+		/obj/item/projectile/meteor/blob/node,
+		/obj/item/projectile/meteor/blob/node,
+		/obj/item/projectile/meteor/blob/node,
+		/obj/item/projectile/meteor/blob/node,
+		/obj/item/projectile/meteor/blob/node,
+		/obj/item/projectile/meteor/blob/node,
+	),
 )
 
 /datum/event/thing_storm
@@ -90,7 +124,7 @@ var/global/list/thing_storm_types = list(
 	storm_name=pick(possible_names)
 
 /datum/event/thing_storm/announce()
-	command_alert("The station is about to be hit by a small-intensity meteor storm. Seek shelter within the core of the station immediately.", "Meteor Alert")
+	command_alert(/datum/command_alert/meteor_storm)
 
 //Meteor showers are lighter and more common
 //Since this isn't rocks of pure pain and explosion, we have more, anywhere from 10 to 40 items
@@ -114,3 +148,42 @@ var/global/list/thing_storm_types = list(
 
 /datum/event/thing_storm/meaty_gore/end()
 	command_alert("The station has cleared the organic debris field.", "Organic Debris Field")
+
+/datum/event/thing_storm/blob_shower
+
+/datum/event/thing_storm/blob_shower/setup()
+	endWhen = rand(45, 60) + 10
+	storm_name="blob shower"
+
+/datum/event/thing_storm/blob_shower/tick()
+	meteor_wave(rand(12, 24), types = thing_storm_types[storm_name])
+
+/datum/event/thing_storm/blob_shower/announce()
+	command_alert(/datum/command_alert/blob_storm)
+
+/datum/event/thing_storm/blob_shower/end()
+	command_alert(/datum/command_alert/blob_storm/end)
+
+/datum/event/thing_storm/blob_storm
+	var/cores_spawned = 0
+
+/datum/event/thing_storm/blob_storm/setup()
+	endWhen = rand(60, 90) + 10
+	storm_name="blob storm"
+
+/datum/event/thing_storm/blob_storm/tick()
+	var/chosen_dir = meteor_wave(rand(20, 40), types = thing_storm_types[storm_name])
+	if(!cores_spawned)
+		var/living = 0
+		for(var/mob/living/M in player_list)
+			if(M.stat == CONSCIOUS)
+				living++
+		cores_spawned = round(living/BLOB_CORE_PROPORTION) //Cores spawned depends on living players
+		for(var/i = 0 to cores_spawned)
+			spawn_meteor(chosen_dir, /obj/item/projectile/meteor/blob/core)
+
+/datum/event/thing_storm/blob_storm/announce()
+	command_alert(/datum/command_alert/blob_storm/overminds)
+
+/datum/event/thing_storm/blob_storm/end()
+	command_alert(/datum/command_alert/blob_storm/overminds/end)

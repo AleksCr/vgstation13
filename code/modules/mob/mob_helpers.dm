@@ -20,6 +20,9 @@
 	if(M_NOIR in mutations)
 		return NOIRMATRIX
 
+/mob/proc/can_wield()
+	return 0
+
 /mob/dead/observer/get_screen_colour()
 	return default_colour_matrix
 
@@ -34,12 +37,13 @@
 	. = ..()
 	if(.)
 		return .
-	else if(has_reagent_in_blood("detcoffee"))
+	else if(has_reagent_in_blood(DETCOFFEE))
 		return NOIRMATRIX
 	var/datum/organ/internal/eyes/eyes = internal_organs_by_name["eyes"]
 	if(eyes && eyes.colourmatrix.len && !(eyes.robotic))
 		return eyes.colourmatrix
-	else return default_colour_matrix
+	else
+		return default_colour_matrix
 
 /mob/proc/update_colour(var/time = 50,var/forceupdate = 0)
 	if(!client || (client.updating_colour && !forceupdate))
@@ -108,53 +112,60 @@
 
 /proc/check_holy(var/mob/A) //checks to see if the tile the mob stands on is holy
 	var/turf/T = get_turf(A)
-	if(!T) return 0
-	if(!T.holy) return 0
+	if(!T)
+		return 0
+	if(!T.holy)
+		return 0
 	return 1  //The tile is holy. Beware!
 
 proc/hasorgans(A)
 	return ishuman(A)
 
-/proc/hsl2rgb(h, s, l)
-	return
-
 
 /proc/check_zone(zone)
-	if(!zone)	return "chest"
+	if(!zone)
+		return LIMB_CHEST
 	switch(zone)
 		if("eyes")
-			zone = "head"
+			zone = LIMB_HEAD
 		if("mouth")
-			zone = "head"
-/*		if("l_hand")
-			zone = "l_arm"
-		if("r_hand")
-			zone = "r_arm"
-		if("l_foot")
-			zone = "l_leg"
-		if("r_foot")
-			zone = "r_leg"
-		if("groin")
-			zone = "chest"
+			zone = LIMB_HEAD
+/*		if(LIMB_LEFT_HAND)
+			zone = LIMB_LEFT_ARM
+		if(LIMB_RIGHT_HAND)
+			zone = LIMB_RIGHT_ARM
+		if(LIMB_LEFT_FOOT)
+			zone = LIMB_LEFT_LEG
+		if(LIMB_RIGHT_FOOT)
+			zone = LIMB_RIGHT_LEG
+		if(LIMB_GROIN)
+			zone = LIMB_CHEST
 */
 	return zone
 
 
 /proc/ran_zone(zone, probability)
 	zone = check_zone(zone)
-	if(!probability)	probability = 90
-	if(probability == 100)	return zone
+	if(!probability)
+		probability = 90
+	if(probability == 100)
+		return zone
 
-	if(zone == "chest")
-		if(prob(probability))	return "chest"
+	if(zone == LIMB_CHEST)
+		if(prob(probability))
+			return LIMB_CHEST
 		var/t = rand(1, 9)
 		switch(t)
-			if(1 to 3)	return "head"
-			if(4 to 6)	return "l_arm"
-			if(7 to 9)	return "r_arm"
+			if(1 to 3)
+				return LIMB_HEAD
+			if(4 to 6)
+				return LIMB_LEFT_ARM
+			if(7 to 9)
+				return LIMB_RIGHT_ARM
 
-	if(prob(probability * 0.75))	return zone
-	return "chest"
+	if(prob(probability * 0.75))
+		return zone
+	return LIMB_CHEST
 
 // Emulates targetting a specific body part, and miss chances
 // May return null if missed
@@ -166,23 +177,23 @@ proc/hasorgans(A)
 	if(!target.locked_to && !target.lying)
 		var/miss_chance = 10
 		switch(zone)
-			if("head")
+			if(LIMB_HEAD)
 				miss_chance = 40
-			if("l_leg")
+			if(LIMB_LEFT_LEG)
 				miss_chance = 20
-			if("r_leg")
+			if(LIMB_RIGHT_LEG)
 				miss_chance = 20
-			if("l_arm")
+			if(LIMB_LEFT_ARM)
 				miss_chance = 20
-			if("r_arm")
+			if(LIMB_RIGHT_ARM)
 				miss_chance = 20
-			if("l_hand")
+			if(LIMB_LEFT_HAND)
 				miss_chance = 50
-			if("r_hand")
+			if(LIMB_RIGHT_HAND)
 				miss_chance = 50
-			if("l_foot")
+			if(LIMB_LEFT_FOOT)
 				miss_chance = 50
-			if("r_foot")
+			if(LIMB_RIGHT_FOOT)
 				miss_chance = 50
 		miss_chance = max(miss_chance + miss_chance_mod, 0)
 		if(prob(miss_chance))
@@ -191,16 +202,26 @@ proc/hasorgans(A)
 			else
 				var/t = rand(1, 10)
 				switch(t)
-					if(1)	return "head"
-					if(2)	return "l_arm"
-					if(3)	return "r_arm"
-					if(4) 	return "chest"
-					if(5) 	return "l_foot"
-					if(6)	return "r_foot"
-					if(7)	return "l_hand"
-					if(8)	return "r_hand"
-					if(9)	return "l_leg"
-					if(10)	return "r_leg"
+					if(1)
+						return LIMB_HEAD
+					if(2)
+						return LIMB_LEFT_ARM
+					if(3)
+						return LIMB_RIGHT_ARM
+					if(4)
+						return LIMB_CHEST
+					if(5)
+						return LIMB_LEFT_FOOT
+					if(6)
+						return LIMB_RIGHT_FOOT
+					if(7)
+						return LIMB_LEFT_HAND
+					if(8)
+						return LIMB_RIGHT_HAND
+					if(9)
+						return LIMB_LEFT_LEG
+					if(10)
+						return LIMB_RIGHT_LEG
 
 	return zone
 
@@ -237,14 +258,21 @@ proc/slur(phrase)
 	while(counter>=1)
 		newletter=copytext(phrase,(leng-counter)+1,(leng-counter)+2)
 		if(rand(1,3)==3)
-			if(lowertext(newletter)=="o")	newletter="u"
-			if(lowertext(newletter)=="s")	newletter="ch"
-			if(lowertext(newletter)=="a")	newletter="ah"
-			if(lowertext(newletter)=="c")	newletter="k"
+			if(lowertext(newletter)=="o")
+				newletter="u"
+			if(lowertext(newletter)=="s")
+				newletter="ch"
+			if(lowertext(newletter)=="a")
+				newletter="ah"
+			if(lowertext(newletter)=="c")
+				newletter="k"
 		switch(rand(1,15))
-			if(1,3,5,8)	newletter="[lowertext(newletter)]"
-			if(2,4,6,15)	newletter="[uppertext(newletter)]"
-			if(7)	newletter+="'"
+			if(1,3,5,8)
+				newletter="[lowertext(newletter)]"
+			if(2,4,6,15)
+				newletter="[uppertext(newletter)]"
+			if(7)
+				newletter+="'"
 			//if(9,10)	newletter="<b>[newletter]</b>"
 			//if(11,12)	newletter="<big>[newletter]</big>"
 			//if(13)	newletter="<small>[newletter]</small>"
@@ -320,8 +348,8 @@ proc/Gibberish(t, p)//t is the inputted message, and any value higher than 70 fo
 			if(!M || !M.client)
 				M.shakecamera = 0
 				return //somebody disconnected while being shaken
-			M.client.pixel_x = 32*rand(-strength, strength)
-			M.client.pixel_y = 32*rand(-strength, strength)
+			M.client.pixel_x = WORLD_ICON_SIZE*rand(-strength, strength)
+			M.client.pixel_y = WORLD_ICON_SIZE*rand(-strength, strength)
 			sleep(1)
 
 		M.shakecamera = 0
@@ -339,10 +367,13 @@ proc/Gibberish(t, p)//t is the inputted message, and any value higher than 70 fo
 
 
 /mob/proc/abiotic(var/full_body = 0)
-	if(full_body && ((src.l_hand && !( src.l_hand.abstract )) || (src.r_hand && !( src.r_hand.abstract )) || (src.back || src.wear_mask)))
+	for(var/obj/item/I in held_items)
+		if(I.abstract)
+			continue
+
 		return 1
 
-	if((src.l_hand && !( src.l_hand.abstract )) || (src.r_hand && !( src.r_hand.abstract )))
+	if(full_body && (src.back || src.wear_mask))
 		return 1
 
 	return 0
@@ -352,16 +383,24 @@ var/list/intents = list(I_HELP,I_DISARM,I_GRAB,I_HURT)
 /proc/intent_numeric(argument)
 	if(istext(argument))
 		switch(argument)
-			if(I_HELP)		return 0
-			if(I_DISARM)	return 1
-			if(I_GRAB)		return 2
-			else			return 3
+			if(I_HELP)
+				return 0
+			if(I_DISARM)
+				return 1
+			if(I_GRAB)
+				return 2
+			else
+				return 3
 	else
 		switch(argument)
-			if(0)			return I_HELP
-			if(1)			return I_DISARM
-			if(2)			return I_GRAB
-			else			return I_HURT
+			if(0)
+				return I_HELP
+			if(1)
+				return I_DISARM
+			if(2)
+				return I_GRAB
+			else
+				return I_HURT
 
 //change a mob's act-intent. Input the intent as a string such as I_HELP or use "right"/"left
 /mob/verb/a_intent_change(input as text)
@@ -440,9 +479,12 @@ proc/is_blind(A)
 /proc/broadcast_medical_hud_message(var/message, var/broadcast_source)
 	broadcast_hud_message(message, broadcast_source, med_hud_users, /obj/item/clothing/glasses/hud/health)
 
-/proc/broadcast_hud_message(var/message, var/broadcast_source, var/list/targets, var/icon)
+/proc/broadcast_hud_message(var/message, var/broadcast_source, var/list/targets, var/obj/ic)
+	var/biconthing = initial(ic.icon)
+	var/biconthingstate = initial(ic.icon_state)
+	var/icon/I = new(biconthing, biconthingstate)
 	var/turf/sourceturf = get_turf(broadcast_source)
 	for(var/mob/M in targets)
 		var/turf/targetturf = get_turf(M)
 		if((targetturf.z == sourceturf.z))
-			M.show_message("<span class='info'>[bicon(icon)] [message]</span>", 1)
+			M.show_message("<span class='info'>[bicon(I)] [message]</span>", 1)

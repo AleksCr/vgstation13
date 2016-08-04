@@ -4,11 +4,11 @@
 	icon_state = "silenced_pistol"
 	item_state = null
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/guninhands_left.dmi', "right_hand" = 'icons/mob/in-hand/right/guninhands_right.dmi')
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	max_shells = 10
 	caliber = list(".45"  = 1)
 	silenced = 1
-	origin_tech = "combat=2;materials=2;syndicate=8"
+	origin_tech = Tc_COMBAT + "=2;" + Tc_MATERIALS + "=2;" + Tc_SYNDICATE + "=8"
 	ammo_type = "/obj/item/ammo_casing/c45"
 	mag_type = "/obj/item/ammo_storage/magazine/c45"
 	load_method = 2
@@ -51,7 +51,7 @@
 	max_shells = 8
 	caliber = list("75" = 1)
 	fire_sound = 'sound/weapons/elecfire.ogg'
-	origin_tech = "combat=3"
+	origin_tech = Tc_COMBAT + "=3"
 	ammo_type = "/obj/item/ammo_casing/a75"
 	mag_type = "/obj/item/ammo_storage/magazine/a75"
 	load_method = 2
@@ -70,11 +70,11 @@
 	name = "\improper Stechtkin pistol"
 	desc = "A small, easily concealable gun. Uses 9mm rounds."
 	icon_state = "pistol"
-	w_class = 2
+	w_class = W_CLASS_SMALL
 	max_shells = 8
 	caliber = list("9mm" = 1)
 	silenced = 0
-	origin_tech = "combat=2;materials=2;syndicate=2"
+	origin_tech = Tc_COMBAT + "=2;" + Tc_MATERIALS + "=2;" + Tc_SYNDICATE + "=2"
 	ammo_type = "/obj/item/ammo_casing/c9mm"
 	mag_type = "/obj/item/ammo_storage/magazine/mc9mm"
 	load_method = 2

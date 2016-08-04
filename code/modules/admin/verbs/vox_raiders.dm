@@ -22,19 +22,19 @@ var/global/vox_tick = 1
 			var/obj/item/weapon/crossbow/W = new(src)
 			W.cell = new /obj/item/weapon/cell/crap(W)
 			W.cell.charge = 500
-			equip_to_slot_or_del(W, slot_r_hand)
+			put_in_hands(W)
 
 			var/obj/item/stack/rods/A = new(src)
 			A.amount = 20
-			equip_to_slot_or_del(A, slot_l_hand)
+			put_in_hands(A)
 
 		if(2) // Vox engineer!
 			equip_to_slot_or_del(new /obj/item/clothing/suit/space/vox/pressure(src), slot_wear_suit)
 			equip_to_slot_or_del(new /obj/item/clothing/head/helmet/space/vox/pressure(src), slot_head)
 			equip_to_slot_or_del(new /obj/item/weapon/storage/belt/utility/full(src), slot_belt)
 			equip_to_slot_or_del(new /obj/item/clothing/glasses/scanner/meson(src), slot_glasses) // REPLACE WITH CODED VOX ALTERNATIVE.
-			equip_to_slot_or_del(new /obj/item/weapon/storage/box/emps(src), slot_r_hand)
-			equip_to_slot_or_del(new /obj/item/device/multitool(src), slot_l_hand)
+			put_in_hands(new /obj/item/weapon/storage/box/emps(src))
+			put_in_hands(new /obj/item/device/multitool(src))
 
 
 		if(3) // Vox saboteur!
@@ -43,8 +43,8 @@ var/global/vox_tick = 1
 			equip_to_slot_or_del(new /obj/item/weapon/storage/belt/utility/full(src), slot_belt)
 			equip_to_slot_or_del(new /obj/item/clothing/glasses/thermal/monocle(src), slot_glasses) // REPLACE WITH CODED VOX ALTERNATIVE.
 			equip_to_slot_or_del(new /obj/item/weapon/card/emag(src), slot_l_store)
-			equip_to_slot_or_del(new /obj/item/weapon/gun/dartgun/vox/raider(src), slot_r_hand)
-			equip_to_slot_or_del(new /obj/item/device/multitool(src), slot_l_hand)
+			put_in_hands(new /obj/item/weapon/gun/dartgun/vox/raider(src))
+			put_in_hands(new /obj/item/device/multitool(src))
 
 		if(4) // Vox medic!
 			equip_to_slot_or_del(new /obj/item/clothing/suit/space/vox/pressure(src), slot_wear_suit)
@@ -52,18 +52,21 @@ var/global/vox_tick = 1
 			equip_to_slot_or_del(new /obj/item/weapon/storage/belt/utility/full(src), slot_belt) // Who needs actual surgical tools?
 			equip_to_slot_or_del(new /obj/item/clothing/glasses/hud/health(src), slot_glasses) // REPLACE WITH CODED VOX ALTERNATIVE.
 			equip_to_slot_or_del(new /obj/item/weapon/circular_saw(src), slot_l_store)
-			equip_to_slot_or_del(new /obj/item/weapon/gun/dartgun/vox/medical, slot_r_hand)
+			put_in_hands(new /obj/item/weapon/gun/dartgun/vox/medical)
 
 	equip_to_slot_or_del(new /obj/item/clothing/mask/breath/vox(src), slot_wear_mask)
 	equip_to_slot_or_del(new /obj/item/weapon/tank/nitrogen(src), slot_back)
 	equip_to_slot_or_del(new /obj/item/device/flashlight(src), slot_r_store)
 
 	var/obj/item/weapon/card/id/syndicate/C = new(src)
-	C.name = "[real_name]'s Legitimate Human ID Card"
-	C.icon_state = "id"
-	C.access = list(access_syndicate)
-	C.assignment = "Trader"
+	//C.name = "[real_name]'s Legitimate Human ID Card"
 	C.registered_name = real_name
+	C.assignment = "Trader"
+	C.UpdateName()
+	C.SetOwnerInfo(src)
+
+	C.icon_state = "trader"
+	C.access = list(access_syndicate, access_trade)
 	//C.registered_user = src
 	var/obj/item/weapon/storage/wallet/W = new(src)
 	W.handle_item_insertion(C)

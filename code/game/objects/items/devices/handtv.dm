@@ -3,7 +3,7 @@ var/global/list/camera_bugs = list()
 	name = "handheld tv"
 	desc = "A handheld tv meant for remote viewing."
 	icon_state = "handtv"
-	w_class = 1
+	w_class = W_CLASS_TINY
 	var/obj/item/device/camera_bug/current
 	var/network
 
@@ -30,7 +30,8 @@ var/global/list/camera_bugs = list()
 		if (C.c_tag == target)
 			target = C
 			break
-	if(user.stat) return
+	if(user.stat)
+		return
 	if(target)
 		user.client.eye = target
 		user.set_machine(src)

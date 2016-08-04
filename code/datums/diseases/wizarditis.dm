@@ -3,7 +3,7 @@
 	max_stages = 4
 	spread = "Airborne"
 	cure = "The Manly Dorf"
-	cure_id = "manlydorf"
+	cure_id = MANLYDORF
 	cure_chance = 100
 	agent = "Rincewindus Vulgaris"
 	affected_species = list("Human")
@@ -62,27 +62,27 @@ STI KALY - blind
 				if(H.head)
 					H.drop_from_inventory(H.head)
 				H.head = new /obj/item/clothing/head/wizard(H)
-				H.head.layer = 20
+				H.head.hud_layerise()
 			return
 		if(prob(chance))
 			if(!istype(H.wear_suit, /obj/item/clothing/suit/wizrobe))
 				if(H.wear_suit)
 					H.drop_from_inventory(H.wear_suit)
 				H.wear_suit = new /obj/item/clothing/suit/wizrobe(H)
-				H.wear_suit.layer = 20
+				H.wear_suit.hud_layerise()
 			return
 		if(prob(chance))
 			if(!istype(H.shoes, /obj/item/clothing/shoes/sandal))
 				if(H.shoes)
 					H.drop_from_inventory(H.shoes)
 				H.shoes = new /obj/item/clothing/shoes/sandal(H)
-				H.shoes.layer = 20
+				H.hud_layerise()
 			return
 	else
 		var/mob/living/carbon/H = affected_mob
 		if(prob(chance))
-			if(!istype(H.r_hand, /obj/item/weapon/staff))
-				if(H.r_hand || H.drop_item(H.r_hand))
+			if(!istype(H.get_held_item_by_index(GRASP_RIGHT_HAND), /obj/item/weapon/staff))
+				if(H.drop_item(H.get_held_item_by_index(GRASP_RIGHT_HAND)))
 					H.put_in_r_hand( new /obj/item/weapon/staff(H) )
 			return
 	return
@@ -92,7 +92,8 @@ STI KALY - blind
 /datum/disease/wizarditis/proc/teleport()
 	var/list/theareas = new/list()
 	for(var/area/AR in orange(80, affected_mob))
-		if(theareas.Find(AR) || isspace(AR)) continue
+		if(theareas.Find(AR) || isspace(AR))
+			continue
 		theareas += AR
 
 	if(!theareas)
@@ -102,8 +103,10 @@ STI KALY - blind
 
 	var/list/L = list()
 	for(var/turf/T in get_area_turfs(thearea.type))
-		if(T.z != affected_mob.z) continue
-		if(T.name == "space") continue
+		if(T.z != affected_mob.z)
+			continue
+		if(T.name == "space")
+			continue
 		if(!T.density)
 			var/clear = 1
 			for(var/obj/O in T)

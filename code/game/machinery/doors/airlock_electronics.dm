@@ -4,7 +4,7 @@
 	name = "airlock electronics"
 	icon = 'icons/obj/doors/door_assembly.dmi'
 	icon_state = "door_electronics"
-	w_class = 2.0 //It should be tiny! -Agouri
+	w_class = W_CLASS_SMALL //It should be tiny! -Agouri
 	starting_materials = list(MAT_IRON = 50, MAT_GLASS = 50)
 	w_type = RECYK_ELECTRONIC
 	melt_temperature = MELTPOINT_SILICON
@@ -88,8 +88,9 @@
 	onclose(user, "airlock")
 
 /obj/item/weapon/circuitboard/airlock/Topic(href, href_list)
-	if(..()) return 1 //Its not as though this does ANYTHING
-	if(!Adjacent(usr) || usr.stat || usr.restrained() || (!ishuman(usr) && !isrobot(usr)) || icon_state == "door_electronics_smoked" || installed)
+	if(..())
+		return 1 //Its not as though this does ANYTHING
+	if(!Adjacent(usr) || usr.incapacitated() || (!ishuman(usr) && !isrobot(usr)) || icon_state == "door_electronics_smoked" || installed)
 		return
 	if(href_list["close"])
 		usr << browse(null, "window=airlock")
@@ -97,20 +98,12 @@
 
 	if(href_list["login"])
 		if(ishuman(usr))
-			var/mob/living/carbon/human/H=usr
-			var/obj/item/I = usr.get_active_hand()
-			if(!istype(I, /obj/item/weapon/card) || !istype(I, /obj/item/device/pda))
-				I = H.wear_id
-			if(!I && (istype(H.wear_id,/obj/item/weapon/card) || istype(H.wear_id, /obj/item/device/pda)))
-				I = H.wear_id
-			if (istype(I, /obj/item/device/pda))
-				var/obj/item/device/pda/pda = I
-				I = pda.id
-			if (I && src.check_access(I))
+			var/obj/item/weapon/card/id/I = usr.get_id_card()
+			if(istype(I) && src.check_access(I))
 				src.locked = 0
-				src.last_configurator = I:registered_name
+				src.last_configurator = I.registered_name
 		if(isrobot(usr))
-			src.locked=0
+			src.locked = 0
 			src.last_configurator = usr.name
 
 	if(locked)
@@ -142,4 +135,3 @@
 			conf_access -= req
 			if (!conf_access.len)
 				conf_access = null
-

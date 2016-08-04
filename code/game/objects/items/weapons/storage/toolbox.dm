@@ -13,13 +13,14 @@
 	throw_range = 7
 	starting_materials = list(MAT_IRON = 5000)
 	w_type = RECYK_METAL
-	w_class = 4.0
+	w_class = W_CLASS_LARGE
 	melt_temperature = MELTPOINT_STEEL
-	origin_tech = "combat=1"
+	origin_tech = Tc_COMBAT + "=1"
 	attack_verb = list("robusts", "batters", "staves in")
+	fits_max_w_class = W_CLASS_MEDIUM
 	storage_slots = 14
 	max_combined_w_class = 28
-	fits_ignoring_w_class = list(
+	/*fits_ignoring_w_class = list(
 		"/obj/item/weapon/weldingtool/hugetank",
 		"/obj/item/device/rcd/matter/engineering",
 		"/obj/item/device/rcd/rpd",
@@ -34,7 +35,10 @@
 		"/obj/item/stack/sheet/glass",
 		"/obj/item/stack/sheet/mineral",
 		"/obj/item/stack/sheet/wood"
-		)
+		)*/
+
+
+//see /obj/item/weapon/storage/toolbox/mechanical/attackby(var/obj/item/stack/tile/plasteel/T, mob/user as mob) override in floorbot.dm
 
 /obj/item/weapon/storage/toolbox/suicide_act(mob/user)
 	to_chat(viewers(user), "<span class='danger'>[user] is [pick("staving","robusting")] \his head in with the [src.name]! It looks like \he's  trying to commit suicide!</span>")
@@ -94,7 +98,7 @@
 	name = "suspicious looking toolbox"
 	icon_state = "syndicate"
 	item_state = "toolbox_syndi"
-	origin_tech = "combat=1;syndicate=1"
+	origin_tech = Tc_COMBAT + "=1;" + Tc_SYNDICATE + "=1"
 	force = 15.0
 
 /obj/item/weapon/storage/toolbox/syndicate/New()

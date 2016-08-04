@@ -13,6 +13,7 @@
 	var/datum/pipe_network/network2
 
 	var/activity_log = ""
+	layer = BINARY_PIPE_LAYER
 
 /obj/machinery/atmospherics/binary/investigation_log(var/subject, var/message)
 	activity_log += ..()
@@ -86,7 +87,8 @@
 	..()
 
 /obj/machinery/atmospherics/binary/initialize()
-	if(node1 && node2) return
+	if(node1 && node2)
+		return
 
 	node1 = findConnecting(turn(dir, 180))
 	node2 = findConnecting(dir)

@@ -62,8 +62,10 @@ datum/controller/game_controller/New()
 //		to_chat(world, "<span class='danger'>Job setup complete in </span>")
 		log_startup_progress("Job setup complete in [stop_watch(watch)]s.")
 
-	if(!syndicate_code_phrase)		syndicate_code_phrase	= generate_code_phrase()
-	if(!syndicate_code_response)	syndicate_code_response	= generate_code_phrase()
+	if(!syndicate_code_phrase)
+		syndicate_code_phrase	= generate_code_phrase()
+	if(!syndicate_code_response)
+		syndicate_code_response	= generate_code_phrase()
 	/*if(!emergency_shuttle)			emergency_shuttle = new /datum/shuttle_controller/emergency_shuttle()*/
 /*
 	if(global.garbageCollector)
@@ -76,7 +78,9 @@ datum/controller/game_controller/proc/setup()
 	socket_talk = new /datum/socket_talk()
 	socket_talk.send_raw("type=startup")
 
-	createRandomZlevel()
+	if(config.enable_roundstart_away_missions)
+		log_startup_progress("Attempting to generate an away mission...")
+		createRandomZlevel()
 /*
 	if(!air_master)
 		air_master = new /datum/controller/air_system()
@@ -99,6 +103,10 @@ datum/controller/game_controller/proc/setup()
 	log_startup_progress("Caching damage icons...")
 	cachedamageicons()
 	log_startup_progress("  Finished caching damage icons in [stop_watch(watch)]s.")
+
+	log_startup_progress("Caching space parallax simulation...")
+	create_global_parallax_icons()
+	log_startup_progress("  Finished caching space parallax simulation in [stop_watch(watch)]s.")
 
 	buildcamlist()
 
@@ -136,12 +144,12 @@ datum/controller/game_controller/proc/buildcamlist()
 	if(!istype(cameranet) || !istype(cameranet.cameras) || !cameranet.cameras.len)
 		world.log << "cameranet has not been initialized before us, finding cameras manually."
 		for(var/obj/machinery/camera/C in world) //can't use machines list because cameras are removed from it.
-			if(C.z == 1 || C.z == 5)
+			if(C.z == map.zMainStation || C.z == map.zAsteroid)
 				var/list/ourlist = adv_camera.camerasbyzlevel["[C.z]"]
 				ourlist += C
 	else
 		for(var/obj/machinery/camera/C in cameranet.cameras) //can't use machines list because cameras are removed from it.
-			if(C.z == 1 || C.z == 5)
+			if(C.z == map.zMainStation || C.z == map.zAsteroid)
 				var/list/ourlist = adv_camera.camerasbyzlevel["[C.z]"]
 				ourlist += C
 	for(var/key in adv_camera.camerasbyzlevel)
@@ -186,6 +194,11 @@ datum/controller/game_controller/proc/cachedamageicons()
 		log_startup_progress("  Finished placing structures in [stop_watch(watch)]s.")
 	else
 		log_startup_progress("Not generating vaults - SKIP_VAULT_GENERATION found in config/config.txt")
+
+	watch = start_watch()
+	log_startup_progress("Building powernets...")
+	makepowernets()
+	log_startup_progress("  Finished building powernets in [stop_watch(watch)]s.")
 
 	watch = start_watch()
 	log_startup_progress("Initializing objects...")
@@ -478,7 +491,8 @@ datum/controller/game_controller/recover()		//Mostly a placeholder for now.
 	var/msg = "## DEBUG: [time2text(world.timeofday)] MC restarted. Reports:\n"
 	for(var/varname in master_controller.vars)
 		switch(varname)
-			if("tag","type","parent_type","vars")	continue
+			if("tag","type","parent_type","vars")
+				continue
 			else
 				var/varval = master_controller.vars[varname]
 				if(istype(varval,/datum))

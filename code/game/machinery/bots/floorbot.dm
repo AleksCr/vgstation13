@@ -1,6 +1,6 @@
 //Floorbot assemblies
 /obj/item/weapon/toolbox_tiles
-	desc = "It's a toolbox with tiles sticking out the top"
+	desc = "It's a toolbox with tiles sticking out the top."
 	name = "tiles and toolbox"
 	icon = 'icons/obj/aibots.dmi'
 	icon_state = "toolbox_tiles"
@@ -8,12 +8,12 @@
 	throwforce = 10.0
 	throw_speed = 2
 	throw_range = 5
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	flags = 0
 	var/created_name = "Floorbot"
 
 /obj/item/weapon/toolbox_tiles_sensor
-	desc = "It's a toolbox with tiles sticking out the top and a sensor attached"
+	desc = "It's a toolbox with tiles sticking out the top and a sensor attached."
 	name = "tiles, toolbox and sensor arrangement"
 	icon = 'icons/obj/aibots.dmi'
 	icon_state = "toolbox_tiles_sensor"
@@ -21,7 +21,7 @@
 	throwforce = 10.0
 	throw_speed = 2
 	throw_range = 5
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	flags = 0
 	var/created_name = "Floorbot"
 
@@ -35,7 +35,6 @@ var/global/list/floorbot_targets=list()
 	icon = 'icons/obj/aibots.dmi'
 	icon_state = "floorbot0"
 	icon_initial = "floorbot"
-	layer = 5.0
 	density = 0
 	anchored = 0
 	health = 25
@@ -154,7 +153,8 @@ var/global/list/floorbot_targets=list()
 /obj/machinery/bot/floorbot/Emag(mob/user as mob)
 	..()
 	if(open && !locked)
-		if(user) to_chat(user, "<span class='notice'>The [src] buzzes and beeps.</span>")
+		if(user)
+			to_chat(user, "<span class='notice'>The [src] buzzes and beeps.</span>")
 
 /obj/machinery/bot/floorbot/Topic(href, href_list)
 	if(..())
@@ -269,7 +269,8 @@ var/global/list/floorbot_targets=list()
 				src.path = AStar(src.loc, src.target.loc, /turf/proc/AdjacentTurfsSpace, /turf/proc/Distance, 0, 30, id=botcard)
 			else
 				src.path = AStar(src.loc, src.target, /turf/proc/AdjacentTurfsSpace, /turf/proc/Distance, 0, 30, id=botcard)
-			if (!src.path) src.path = list()
+			if (!src.path)
+				src.path = list()
 			if(src.path.len == 0)
 				src.oldtarget = src.target
 				floorbot_targets -= src.target
@@ -650,7 +651,8 @@ var/global/list/floorbot_targets=list()
 
 	var/datum/radio_frequency/frequency = radio_controller.return_frequency(freq)
 
-	if(!frequency) return
+	if(!frequency)
+		return
 
 	var/datum/signal/signal = getFromPool(/datum/signal)
 	signal.source = src
@@ -706,14 +708,11 @@ var/global/list/floorbot_targets=list()
 
 
 /obj/item/weapon/storage/toolbox/mechanical/attackby(var/obj/item/stack/tile/plasteel/T, mob/user as mob)
-	if(!istype(T, /obj/item/stack/tile/plasteel))
-		. = ..()
-		return
-	if(src.contents.len >= 1)
-		to_chat(user, "<span class='notice'>They wont fit in as there is already stuff inside.</span>")
-		return
-	if(user.s_active)
-		user.s_active.close(user)
+	if(!istype(T, /obj/item/stack/tile/plasteel) || src.contents.len >= 1) //Only do this if the thing is empty
+		return ..()
+	/*if(user.s_active)
+		user.s_active.close(user)*/
+	user.remove_from_mob(T)
 	qdel(T)
 	T = null
 	var/obj/item/weapon/toolbox_tiles/B = new /obj/item/weapon/toolbox_tiles

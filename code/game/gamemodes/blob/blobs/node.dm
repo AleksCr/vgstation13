@@ -6,19 +6,18 @@
 	maxhealth = 100
 	fire_resist = 2
 	custom_process=1
-	layer = 6.8
+	layer = BLOB_NODE_LAYER
 	spawning = 0
 
-	layer_new = 6.8
 	icon_new = "node"
 	icon_classic = "blob_node"
 
-/obj/effect/blob/node/New(loc,newlook = "new")
+/obj/effect/blob/node/New(loc,newlook = "new",no_morph = 0)
 	blob_nodes += src
 	processing_objects.Add(src)
 	..(loc, newlook)
 
-	if(blob_looks[looks] == 64)
+	if((blob_looks[looks] == 64) && !no_morph)
 		flick("morph_node",src)
 
 /obj/effect/blob/node/fire_act(datum/gas_mixture/air, exposed_temperature, exposed_volume)
@@ -27,17 +26,20 @@
 /obj/effect/blob/node/Destroy()
 	blob_nodes -= src
 	if(!manual_remove && overmind)
-		to_chat(overmind,"<span class='warning'>A node blob that you had created has been destroyed.</span>")
+		to_chat(overmind,"<span class='warning'>A node blob that you had created has been destroyed.</span> <b><a href='?src=\ref[overmind];blobjump=\ref[loc]'>(JUMP)</a></b>")
+		overmind.special_blobs -= src
+		overmind.update_specialblobs()
 	processing_objects.Remove(src)
 	..()
 
 /obj/effect/blob/node/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 
 	if(blob_looks[looks] == 64)
 		anim(target = loc, a_icon = icon, flick_anim = "nodepulse", sleeptime = 15, lay = 12, offX = -16, offY = -16, alph = 150)
 		for(var/mob/M in viewers(src))
-			M.playsound_local(loc, 'sound/effects/blob_pulse.ogg', 50, 0, null, FALLOFF_SOUNDS, 0)
+			M.playsound_local(loc, adminblob_beat, 50, 0, null, FALLOFF_SOUNDS, 0)
 
 	for(var/i = 1; i < 8; i += i)
 		Pulse(5, i)
@@ -61,12 +63,13 @@
 	if(blob_looks[looks] == 64)
 		spawn(1)
 			overlays.len = 0
+			underlays.len = 0
 
-			overlays += image(icon,"roots", layer = 3)
+			underlays += image(icon,"roots")
 
 			if(!spawning)
 				for(var/obj/effect/blob/B in orange(src,1))
-					overlays += image(icon,"nodeconnect",dir = get_dir(src,B), layer = layer+0.1)
+					overlays += image(icon,"nodeconnect",dir = get_dir(src,B))
 			if(spawnend)
 				spawn(10)
 					update_icon()

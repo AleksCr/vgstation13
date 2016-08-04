@@ -18,7 +18,7 @@
 	desc = "A microchip that removes certain access when applied to ID cards."
 	icon = 'icons/obj/card.dmi'
 	icon_state = "demote_chip"
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	var/target_name = null
 	var/cap = 0
 	var/hos = 0
@@ -38,7 +38,8 @@
 		return
 	else
 		var/str = copytext(reject_bad_text(input(user,"Enter the properly capitalized name for demotion","Set name","") as text|null),1,MAX_NAME_LEN)
-		if (!Adjacent(user) || user.stat) return
+		if (!Adjacent(user) || user.stat)
+			return
 		if(!str)
 			alert("Invalid name.")
 			target_name = null

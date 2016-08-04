@@ -1,4 +1,4 @@
-//This file was auto-corrected by findeclaration.exe on 25.5.2012 20:42:32
+
 
 /* Tools!
  * Note: Multitools are /obj/item/device
@@ -41,11 +41,11 @@
 	slot_flags = SLOT_BELT
 	force = 5.0
 	throwforce = 7.0
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	starting_materials = list(MAT_IRON = 150)
 	w_type = RECYK_METAL
 	melt_temperature = MELTPOINT_STEEL
-	origin_tech = "materials=1;engineering=1"
+	origin_tech = Tc_MATERIALS + "=1;" + Tc_ENGINEERING + "=1"
 	attack_verb = list("bashes", "batters", "bludgeons", "whacks")
 
 /obj/item/weapon/wrench/attackby(obj/item/weapon/W, mob/user)
@@ -66,7 +66,7 @@
 	name = "socket wrench"
 	desc = "A wrench intended to be wrenchier than other wrenches. It's the wrenchiest."
 	icon_state = "socket_wrench"
-	w_class = 4.0 //big shit, to balance its power
+	w_class = W_CLASS_LARGE //big shit, to balance its power
 
 /*
  * Screwdriver
@@ -82,7 +82,7 @@
 	sharpness = 1
 	slot_flags = SLOT_BELT
 	force = 5.0
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throwforce = 5.0
 	throw_speed = 3
 	throw_range = 5
@@ -123,13 +123,14 @@
 			item_state = "screwdriver_yellow"
 
 	if (prob(75))
-		src.pixel_y = rand(0, 16)
+		src.pixel_y = rand(0, 16) * PIXEL_MULTIPLIER
 
 /obj/item/weapon/screwdriver/attack(mob/living/carbon/M as mob, mob/living/carbon/user as mob)
-	if(!istype(M))	return ..()
+	if(!istype(M))
+		return ..()
 	if(can_operate(M))
 		return ..()
-	if(user.zone_sel.selecting != "eyes" && user.zone_sel.selecting != "head")
+	if(user.zone_sel.selecting != "eyes" && user.zone_sel.selecting != LIMB_HEAD)
 		return ..()
 	if((M_CLUMSY in user.mutations) && prob(50))
 		M = user
@@ -140,7 +141,8 @@
 		var/obj/item/stack/cable_coil/C = O
 		var/mob/M = usr
 		if(ishuman(M) && !M.restrained() && !M.stat && !M.paralysis && ! M.stunned)
-			if(!istype(M.loc,/turf)) return
+			if(!istype(M.loc,/turf))
+				return
 			if(C.amount < 10)
 				to_chat(usr, "<span class='warning'>You need at least 10 lengths to make a bolas wire!</span>")
 				return
@@ -172,11 +174,11 @@
 	force = 6.0
 	throw_speed = 2
 	throw_range = 9
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	starting_materials = list(MAT_IRON = 80)
 	w_type = RECYK_METAL
 	melt_temperature = MELTPOINT_STEEL
-	origin_tech = "materials=1;engineering=1"
+	origin_tech = Tc_MATERIALS + "=1;" + Tc_ENGINEERING + "=1"
 	attack_verb = list("pinches", "nips at")
 
 /obj/item/weapon/wirecutters/New()
@@ -212,7 +214,7 @@
 	throwforce = 5.0
 	throw_speed = 1
 	throw_range = 5
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	sharpness = 0.8
 	heat_production = 3800
 
@@ -222,7 +224,7 @@
 	melt_temperature = MELTPOINT_PLASTIC
 
 	//R&D tech level
-	origin_tech = "engineering=1"
+	origin_tech = Tc_ENGINEERING + "=1"
 
 	//Welding tool specific stuff
 	var/welding = 0 	//Whether or not the welding tool is off(0), on(1) or currently welding(2)
@@ -238,7 +240,7 @@
 	. = ..()
 	create_reagents(max_fuel)
 	if(start_fueled)
-		reagents.add_reagent("fuel", max_fuel)
+		reagents.add_reagent(FUEL, max_fuel)
 
 /obj/item/weapon/weldingtool/examine(mob/user)
 	..()
@@ -265,12 +267,11 @@
 		F.weldtool = src
 		if (user.client)
 			user.client.screen -= src
-		if (user.r_hand == src)
-			user.u_equip(src,0)
-		else
-			user.u_equip(src,0)
+
+		user.u_equip(src,0)
+
 		src.master = F
-		src.layer = initial(src.layer)
+		reset_plane_and_layer()
 		user.u_equip(src,0)
 		if (user.client)
 			user.client.screen -= src
@@ -279,7 +280,6 @@
 		return
 
 	..()
-	return
 
 
 /obj/item/weapon/weldingtool/process()
@@ -316,14 +316,15 @@
 	var/turf/location = src.loc
 	if(istype(location, /mob/))
 		var/mob/M = location
-		if(M.l_hand == src || M.r_hand == src)
+		if(M.is_holding_item(src))
 			location = get_turf(M)
 	if (istype(location, /turf))
 		location.hotspot_expose(700, 5,surfaces=istype(loc,/turf))
 
 
 /obj/item/weapon/weldingtool/afterattack(obj/O as obj, mob/user as mob, proximity)
-	if(!proximity) return
+	if(!proximity)
+		return
 	if (istype(O, /obj/structure/reagent_dispensers/fueltank) && get_dist(src,O) <= 1 && !src.welding)
 		O.reagents.trans_to(src, max_fuel)
 		to_chat(user, "<span class='notice'>Welder refueled</span>")
@@ -344,16 +345,14 @@
 			if(isliving(O))
 				var/mob/living/L = O
 				L.IgniteMob()
-	return
 
 
 /obj/item/weapon/weldingtool/attack_self(mob/user as mob)
 	toggle()
-	return
 
 //Returns the amount of fuel in the welder
 /obj/item/weapon/weldingtool/proc/get_fuel()
-	return reagents.get_reagent_amount("fuel")
+	return reagents.get_reagent_amount(FUEL)
 
 
 //Removes fuel from the welding tool. If a mob is passed, it will perform an eyecheck on the mob. This should probably be renamed to use()
@@ -361,7 +360,7 @@
 	if(!welding || !check_fuel())
 		return 0
 	if(get_fuel() >= amount)
-		reagents.remove_reagent("fuel", amount)
+		reagents.remove_reagent(FUEL, amount)
 		check_fuel()
 		if(M)
 			eyecheck(M)
@@ -420,7 +419,8 @@
 
 //Toggles the welder off and on
 /obj/item/weapon/weldingtool/proc/toggle(var/message = 0)
-	if(!status)	return
+	if(!status)
+		return
 	src.welding = !( src.welding )
 	if (src.welding)
 		if (remove_fuel(1))
@@ -446,23 +446,27 @@
 //Decides whether or not to damage a player's eyes based on what they're wearing as protection
 //Note: This should probably be moved to mob
 /obj/item/weapon/weldingtool/proc/eyecheck(mob/user as mob)
-	if(!iscarbon(user))	return 1
+	if(!iscarbon(user))
+		return 1
 	var/safety = user:eyecheck()
 	if(istype(user, /mob/living/carbon/human))
 		var/mob/living/carbon/human/H = user
 		var/datum/organ/internal/eyes/E = H.internal_organs_by_name["eyes"]
 		if(!E)
 			return
+		if(E.welding_proof)
+			user.simple_message("<span class='notice'>Your eyelenses darken to accommodate for the welder's glow.</span>")
+			return
 		if(safety < 2)
 			switch(safety)
 				if(1)
-					usr.simple_message("<span class='warning'>Your eyes sting a little.</span>",\
+					user.simple_message("<span class='warning'>Your eyes sting a little.</span>",\
 						"<span class='warning'>You shed a tear.</span>")
 					E.damage += rand(1, 2)
 					if(E.damage > 12)
 						user.eye_blurry += rand(3,6)
 				if(0)
-					usr.simple_message("<span class='warning'>Your eyes burn.</span>",\
+					user.simple_message("<span class='warning'>Your eyes burn.</span>",\
 						"<span class='warning'>Some tears fall down from your eyes.</span>")
 					E.damage += rand(2, 4)
 					if(E.damage > 10)
@@ -471,7 +475,7 @@
 					var/obj/item/clothing/to_blame = H.head //blame the hat
 					if(!to_blame || (istype(to_blame) && H.glasses && H.glasses.eyeprot < to_blame.eyeprot)) //if we don't have a hat, the issue is the glasses. Otherwise, if the glasses are worse, blame the glasses
 						to_blame = H.glasses
-					usr.simple_message("<span class='warning'>Your [to_blame] intensifies the welder's glow. Your eyes itch and burn severely.</span>",\
+					user.simple_message("<span class='warning'>Your [to_blame] intensifies the welder's glow. Your eyes itch and burn severely.</span>",\
 						"<span class='warning'>Somebody's cutting onions.</span>")
 					user.eye_blurry += rand(12,20)
 					E.damage += rand(12, 16)
@@ -488,7 +492,6 @@
 				user.disabilities |= NEARSIGHTED
 				spawn(100)
 					user.disabilities &= ~NEARSIGHTED
-	return
 
 /obj/item/weapon/weldingtool/empty
 	start_fueled = 0
@@ -497,7 +500,7 @@
 	name = "Industrial Welding Tool"
 	max_fuel = 40
 	starting_materials = list(MAT_IRON = 70, MAT_GLASS = 60)
-	origin_tech = "engineering=2"
+	origin_tech = Tc_ENGINEERING + "=2"
 
 /obj/item/weapon/weldingtool/largetank/empty
 	start_fueled = 0
@@ -505,9 +508,9 @@
 /obj/item/weapon/weldingtool/hugetank
 	name = "Upgraded Welding Tool"
 	max_fuel = 80
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	starting_materials = list(MAT_IRON = 70, MAT_GLASS = 120)
-	origin_tech = "engineering=3"
+	origin_tech = Tc_ENGINEERING + "=3"
 
 /obj/item/weapon/weldingtool/hugetank/empty
 	start_fueled = 0
@@ -515,9 +518,9 @@
 /obj/item/weapon/weldingtool/experimental
 	name = "Experimental Welding Tool"
 	max_fuel = 40
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	starting_materials = list(MAT_IRON = 70, MAT_GLASS = 120)
-	origin_tech = "engineering=4;plasmatech=3"
+	origin_tech = Tc_ENGINEERING + "=4;" + Tc_PLASMATECH + "=3"
 	icon_state = "ewelder"
 	var/last_gen = 0
 
@@ -546,11 +549,11 @@
 	force = 5.0
 	throwforce = 7.0
 	item_state = "crowbar"
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	starting_materials = list(MAT_IRON = 50)
 	w_type = RECYK_METAL
 	melt_temperature = MELTPOINT_STEEL
-	origin_tech = "engineering=1"
+	origin_tech = Tc_ENGINEERING + "=1"
 	attack_verb = list("attacks", "bashes", "batters", "bludgeons", "whacks")
 
 	suicide_act(mob/user)
@@ -574,7 +577,8 @@
 			if(do_surgery(M, user, src))
 				return
 		var/datum/organ/external/S = M:organs_by_name[user.zone_sel.selecting]
-		if (!S) return
+		if (!S)
+			return
 		if(!(S.status & ORGAN_ROBOT) || user.a_intent != I_HELP)
 			return ..()
 		if(S.brute_dam)
@@ -599,9 +603,9 @@
 	icon_state = "kit"
 	flags = FPRINT
 	siemens_coefficient = 1
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	w_type = RECYK_MISC
-	origin_tech = "combat=2"
+	origin_tech = Tc_COMBAT + "=2"
 	var/open = 0
 
 	New()
@@ -632,11 +636,11 @@
 	throwforce = 5.0
 	throw_speed = 1
 	throw_range = 5
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	starting_materials = list(MAT_IRON = 70, MAT_GLASS = 30)
 	w_type = RECYK_MISC
 	melt_temperature = MELTPOINT_STEEL
-	origin_tech = "engineering=1"
+	origin_tech = Tc_ENGINEERING + "=1"
 	var/max_fuel = 20 	//The max amount of acid stored
 
 /obj/item/weapon/solder/New()
@@ -646,7 +650,7 @@
 
 /obj/item/weapon/solder/update_icon()
 	..()
-	switch(reagents.get_reagent_amount("sacid"))
+	switch(reagents.get_reagent_amount(SACID))
 		if(16 to INFINITY)
 			icon_state = "solder-20"
 		if(11 to 15)
@@ -660,7 +664,7 @@
 
 /obj/item/weapon/solder/examine(mob/user)
 	..()
-	to_chat(user, "It contains [reagents.get_reagent_amount("sacid")]/[src.max_fuel] units of fuel!")
+	to_chat(user, "It contains [reagents.get_reagent_amount(SACID)]/[src.max_fuel] units of fuel!")
 
 /obj/item/weapon/solder/attackby(obj/item/W as obj, mob/user as mob)
 	if(istype(W,/obj/item/weapon/reagent_containers/glass/))
@@ -669,7 +673,7 @@
 			user.simple_message("<span class='warning'>The mixture is rejected by the tool.</span>",
 				"<span class='warning'>The tool isn't THAT thirsty.</span>")
 			return
-		if(!G.reagents.has_reagent("sacid", 1))
+		if(!G.reagents.has_reagent(SACID, 1))
 			user.simple_message("<span class='warning'>The tool is not compatible with that.</span>",
 				"<span class='warning'>The tool won't drink that.</span>")
 			return
@@ -682,20 +686,25 @@
 			var/transfer_amount = min(G.amount_per_transfer_from_this,space)
 			user.simple_message("<span class='info'>You transfer [transfer_amount] units to the [src].</span>",
 				"<span class='info'>The tool gulps down your drink!</span>")
-			G.reagents.trans_id_to(src,"sacid",transfer_amount)
+			G.reagents.trans_id_to(src,SACID,transfer_amount)
 			update_icon()
 	else
 		return ..()
 
 /obj/item/weapon/solder/proc/remove_fuel(var/amount, mob/user as mob)
-	if(reagents.get_reagent_amount("sacid") >= amount)
-		reagents.remove_reagent("sacid", amount)
+	if(reagents.get_reagent_amount(SACID) >= amount)
+		reagents.remove_reagent(SACID, amount)
 		update_icon()
 		return 1
 	else
 		user.simple_message("<span class='warn'>The tool does not have enough acid!</span>",
 			"<span class='warn'>The tool is too thirsty!</span>")
 		return 0
+
+/obj/item/weapon/solder/pre_fueled/New()
+	. = ..()
+	reagents.add_reagent(SACID, 50)
+	update_icon()
 
 /*
 * Fuel Can
@@ -718,7 +727,7 @@
 	slotzero = reagents
 	slotone = new/datum/reagents(volume)
 	slotone.my_atom = src
-	reagents.add_reagent("fuel", 50)
+	reagents.add_reagent(FUEL, 50)
 
 /obj/item/weapon/reagent_containers/glass/fuelcan/attack_self(mob/user as mob)
 	if(!slot)

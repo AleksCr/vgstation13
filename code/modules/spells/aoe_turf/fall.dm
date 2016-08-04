@@ -40,10 +40,11 @@
 	buildimage()
 
 /spell/aoe_turf/fall/proc/buildimage()
-	aoe_underlay = image(icon = 'icons/effects/640x640.dmi', icon_state = "fall", layer = 2.1)
+	aoe_underlay = image(icon = 'icons/effects/640x640.dmi', icon_state = "fall", layer = DECAL_LAYER)
+	aoe_underlay.plane = ABOVE_TURF_PLANE
 	aoe_underlay.transform /= 50
-	aoe_underlay.pixel_x = -304
-	aoe_underlay.pixel_y = -304
+	aoe_underlay.pixel_x = -304 * PIXEL_MULTIPLIER
+	aoe_underlay.pixel_y = -304 * PIXEL_MULTIPLIER
 	aoe_underlay.mouse_opacity = 0
 /proc/CircleCoords(var/c_x, var/c_y, var/r)
 	. = list()
@@ -66,7 +67,8 @@
 		return
 	var/list/targets = choose_targets(user)
 	if(targets && targets.len)
-		if(prob(the_world_chance)) invocation = "ZA WARUDO"
+		if(prob(the_world_chance))
+			invocation = "ZA WARUDO"
 		invocation(user, targets)
 		take_charge(user, skipcharge)
 
@@ -110,7 +112,8 @@
 			if(isliving(everything))
 //				to_chat(world, "[everything] is living")
 				var/mob/living/L = everything
-				if(L == holder) continue
+				if(L == holder)
+					continue
 //				to_chat(world, "[everything] is not holder")
 //				to_chat(world, "paralyzing [everything]")
 				affected += L
@@ -174,7 +177,8 @@
 		returnToPool(S)
 		oureffects -= S
 	for(var/atom/everything in affected)
-		if(!istype(everything)) continue
+		if(!istype(everything))
+			continue
 		everything.appearance = everything.tempoverlay
 		everything.tempoverlay = null
 		everything.ignoreinvert = initial(everything.ignoreinvert)
@@ -195,12 +199,13 @@
 	else if(T && T_mob && (T.z == T_mob.z) && (get_dist(T,T_mob) <= 15))// &&!(T in view(T_mob)))
 		var/matrix/original
 		if(!fallimage)
-			fallimage = image(icon = 'icons/effects/640x640.dmi', icon_state = "fall", layer = 2.1)
+			fallimage = image(icon = 'icons/effects/640x640.dmi', icon_state = "fall", layer = DECAL_LAYER)
+			fallimage.plane = ABOVE_TURF_PLANE
 			original = fallimage.transform
 			fallimage.transform /= 50
 			fallimage.mouse_opacity = 0
-		var/new_x = 32 * (T.x - T_mob.x) - 304
-		var/new_y = 32 * (T.y - T_mob.y) - 304
+		var/new_x = WORLD_ICON_SIZE * (T.x - T_mob.x) - (9.5*WORLD_ICON_SIZE)
+		var/new_y = WORLD_ICON_SIZE * (T.y - T_mob.y) - (9.4*WORLD_ICON_SIZE)
 		fallimage.pixel_x = new_x
 		fallimage.pixel_y = new_y
 		fallimage.loc = T_mob
@@ -210,7 +215,8 @@
 
 /proc/invertcolor(atom/A)
 //	to_chat(world, "invert color start")
-	if(A.ignoreinvert) return
+	if(A.ignoreinvert)
+		return
 	A.tempoverlay = A.appearance
 	A.color=	  list(-1,0,0,
 						0,-1,0,

@@ -1,4 +1,4 @@
-//This file was auto-corrected by findeclaration.exe on 25.5.2012 20:42:32
+
 
 var/cultwords = list()
 var/global/runedec = 0
@@ -28,7 +28,8 @@ var/global/list/rune_list = list() // HOLY FUCK WHY ARE WE LOOPING THROUGH THE W
 	icon_state = "1"
 	var/visibility = 0
 	unacidable = 1
-	layer = TURF_LAYER
+	layer = RUNE_LAYER
+	plane = ABOVE_TURF_PLANE
 
 	var/dead=0 // For cascade and whatnot.
 
@@ -124,6 +125,7 @@ var/global/list/rune_list = list() // HOLY FUCK WHY ARE WE LOOPING THROUGH THE W
 		attack_hand(M)
 
 /obj/effect/rune/attack_hand(mob/living/user as mob)
+	user.delayNextAttack(5)
 	if(!iscultist(user))
 		to_chat(user, "You can't mouth the arcane scratchings without fumbling over them.")
 		return
@@ -196,8 +198,8 @@ var/global/list/rune_list = list() // HOLY FUCK WHY ARE WE LOOPING THROUGH THE W
 		V.show_message("<span class='warning'>The markings pulse with a small burst of light, then fall dark.</span>", 1, "<span class='warning'>You hear a faint fizzle.</span>", 2)
 	return
 
-/obj/effect/rune/proc/check_icon()
-	icon = get_uristrune_cult(word1, word2, word3)
+/obj/effect/rune/proc/check_icon(var/mob/M = null)
+	get_uristrune_cult(word1, word2, word3, M)
 
 /obj/item/weapon/tome
 	name = "arcane tome"
@@ -206,7 +208,7 @@ var/global/list/rune_list = list() // HOLY FUCK WHY ARE WE LOOPING THROUGH THE W
 	icon_state ="tome"
 	throw_speed = 1
 	throw_range = 5
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	flags = FPRINT
 	var/notedat = ""
 	var/tomedat = ""
@@ -374,7 +376,7 @@ var/global/list/rune_list = list() // HOLY FUCK WHY ARE WE LOOPING THROUGH THE W
 			M.invisibility = 0
 			user.visible_message(
 				"<span class='warning'>[user] drags the ghost to our plane of reality!</span>",
-				"<span class='warning'>You drag the ghost to our plan of reality!</span>"
+				"<span class='warning'>You drag the ghost to our plane of reality!</span>"
 			)
 		return
 	if(!istype(M))
@@ -480,7 +482,7 @@ var/global/list/rune_list = list() // HOLY FUCK WHY ARE WE LOOPING THROUGH THE W
 			R.word1 = w1
 			R.word2 = w2
 			R.word3 = w3
-			R.check_icon()
+			R.check_icon(H)
 			R.blood_DNA = list()
 			R.blood_DNA[H.dna.unique_enzymes] = H.dna.b_type
 		return
@@ -513,7 +515,7 @@ var/global/list/rune_list = list() // HOLY FUCK WHY ARE WE LOOPING THROUGH THE W
 	return
 
 /obj/item/weapon/tome/imbued //admin tome, spawns working runes without waiting
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	var/cultistsonly = 1
 	attack_self(mob/user as mob)
 		if(src.cultistsonly && !iscultist(usr))

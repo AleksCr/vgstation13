@@ -1,5 +1,17 @@
 #define MAX_DESIGNS 10
 
+#define SCANMODE_NONE		0
+#define SCANMODE_MEDICAL	1
+#define SCANMODE_FORENSIC	2
+#define SCANMODE_REAGENT	3
+#define SCANMODE_HALOGEN	4
+#define SCANMODE_ATMOS		5
+#define SCANMODE_DEVICE		6
+
+#define PDA_MINIMAP_WIDTH	256
+#define PDA_MINIMAP_OFFSET_X	8
+#define PDA_MINIMAP_OFFSET_Y	233
+
 //The advanced pea-green monochrome lcd of tomorrow.
 
 var/global/list/obj/item/device/pda/PDAs = list()
@@ -11,7 +23,7 @@ var/global/list/obj/item/device/pda/PDAs = list()
 	icon = 'icons/obj/pda.dmi'
 	icon_state = "pda"
 	item_state = "electronic"
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	flags = FPRINT
 	slot_flags = SLOT_ID | SLOT_BELT
 
@@ -22,7 +34,7 @@ var/global/list/obj/item/device/pda/PDAs = list()
 	var/mode = 0 //Controls what menu the PDA will display. 0 is hub; the rest are either built in or based on cartridge.
 
 	//Secondary variables
-	var/scanmode = 0 //1 is medical scanner, 2 is forensics, 3 is reagent scanner, 4 is halogen counter, 5 is gas scanner, 6 is device analyser -- keep this list updated if you add one
+	var/scanmode = SCANMODE_NONE //used for various PDA scanning functions
 	var/fon = 0 //Is the flashlight function on?
 	var/f_lum = 2 //Luminosity for the flashlight function
 	var/silent = 0 //To beep or not to beep, that is the question
@@ -591,6 +603,9 @@ var/global/list/obj/item/device/pda/PDAs = list()
 /obj/item/device/pda/GetID()
 	return id
 
+/obj/item/device/pda/get_owner_name_from_ID()
+	return owner
+
 /obj/item/device/pda/MouseDrop(obj/over_object as obj, src_location, over_location)
 	var/mob/M = usr
 	if((!istype(over_object, /obj/screen)) && can_use(M))
@@ -674,7 +689,7 @@ var/global/list/obj/item/device/pda/PDAs = list()
 					if (cartridge.access_mechanic)
 						dat += {"<h4>Mechanic Functions</h4>
 							<ul>
-							<li><a href='byond://?src=\ref[src];choice=Device Analyser'><img src=pda_scanner.png> [scanmode == 6 ? "Disable" : "Enable" ] Device Analyser</a></li>
+							<li><a href='byond://?src=\ref[src];choice=Device Analyser'><img src=pda_scanner.png> [scanmode == SCANMODE_DEVICE ? "Disable" : "Enable" ] Device Analyser</a></li>
 							</ul>"}
 
 					if (cartridge.access_medical)
@@ -682,7 +697,7 @@ var/global/list/obj/item/device/pda/PDAs = list()
 						dat += {"<h4>Medical Functions</h4>
 							<ul>
 							<li><a href='byond://?src=\ref[src];choice=44'><img src=pda_medical.png> Medical Records</a></li>
-							<li><a href='byond://?src=\ref[src];choice=Medical Scan'><img src=pda_scanner.png> [scanmode == 1 ? "Disable" : "Enable"] Medical Scanner</a></li>
+							<li><a href='byond://?src=\ref[src];choice=Medical Scan'><img src=pda_scanner.png> [scanmode == SCANMODE_MEDICAL ? "Disable" : "Enable"] Medical Scanner</a></li>
 							</ul>"}
 					if (cartridge.access_security)
 
@@ -693,7 +708,8 @@ var/global/list/obj/item/device/pda/PDAs = list()
 
 						dat += {"<li><a href='byond://?src=\ref[src];choice=46'><img src=pda_cuffs.png> Security Bot Access</a></li>
 							</ul>"}
-					else	dat += "</ul>"
+					else
+						dat += "</ul>"
 					if(cartridge.access_quartermaster)
 
 						dat += {"<h4>Quartermaster Functions:</h4>
@@ -711,11 +727,11 @@ var/global/list/obj/item/device/pda/PDAs = list()
 					if (istype(cartridge.radio, /obj/item/radio/integrated/signal))
 						dat += "<li><a href='byond://?src=\ref[src];choice=40'><img src=pda_signaler.png> Signaler System</a></li>"
 					if (cartridge.access_reagent_scanner)
-						dat += "<li><a href='byond://?src=\ref[src];choice=Reagent Scan'><img src=pda_reagent.png> [scanmode == 3 ? "Disable" : "Enable"] Reagent Scanner</a></li>"
+						dat += "<li><a href='byond://?src=\ref[src];choice=Reagent Scan'><img src=pda_reagent.png> [scanmode == SCANMODE_REAGENT ? "Disable" : "Enable"] Reagent Scanner</a></li>"
 					if (cartridge.access_engine)
-						dat += "<li><a href='byond://?src=\ref[src];choice=Halogen Counter'><img src=pda_reagent.png> [scanmode == 4 ? "Disable" : "Enable"] Halogen Counter</a></li>"
+						dat += "<li><a href='byond://?src=\ref[src];choice=Halogen Counter'><img src=pda_reagent.png> [scanmode == SCANMODE_HALOGEN ? "Disable" : "Enable"] Halogen Counter</a></li>"
 					if (cartridge.access_atmos)
-						dat += "<li><a href='byond://?src=\ref[src];choice=Gas Scan'><img src=pda_reagent.png> [scanmode == 5 ? "Disable" : "Enable"] Gas Scanner</a></li>"
+						dat += "<li><a href='byond://?src=\ref[src];choice=Gas Scan'><img src=pda_reagent.png> [scanmode == SCANMODE_ATMOS ? "Disable" : "Enable"] Gas Scanner</a></li>"
 					if (cartridge.access_remote_door)
 						dat += "<li><a href='byond://?src=\ref[src];choice=Toggle Door'><img src=pda_rdoor.png> Toggle Remote Door</a></li>"
 
@@ -757,8 +773,10 @@ var/global/list/obj/item/device/pda/PDAs = list()
 
 				if (!toff)
 					for (var/obj/item/device/pda/P in sortNames(get_viewable_pdas()))
-						if (P == src)	continue
-						if(P.hidden) continue
+						if (P == src)
+							continue
+						if(P.hidden)
+							continue
 						dat += "<li><a href='byond://?src=\ref[src];choice=Message;target=\ref[P]'>[P]</a>"
 						if (id && !istype(P,/obj/item/device/pda/ai))
 							dat += " (<a href='byond://?src=\ref[src];choice=transferFunds;target=\ref[P]'><img src=pda_money.png>*Send Money*</a>)"
@@ -957,9 +975,9 @@ var/global/list/obj/item/device/pda/PDAs = list()
 						<img src="pda_minimap_[map.nameShort].png" style="position: relative; top: 0; left: 0;"/>
 						"}
 						if(T.z == map.zMainStation)
-							dat += {"<img src="pda_minimap_loc.gif" style="position: absolute; top: [(T.y * -1) + 247]px; left: [T.x-8]px;"/>"}
+							dat += {"<img src="pda_minimap_loc.gif" style="position: absolute; top: [(T.y * -1) + PDA_MINIMAP_OFFSET_Y + PDA_MINIMAP_WIDTH/2]px; left: [T.x + PDA_MINIMAP_OFFSET_X - PDA_MINIMAP_WIDTH/2]px;"/>"}
 						for(var/datum/minimap_marker/mkr in app.markers)
-							dat += {"<img src="pda_minimap_mkr.gif" style="position: absolute; top: [((mkr.y+WORLD_Y_OFFSET[map.zMainStation]) * -1) + 247]px; left: [mkr.x+WORLD_X_OFFSET[map.zMainStation]-8]px;"/>"}
+							dat += {"<img src="pda_minimap_mkr.gif" style="position: absolute; top: [((mkr.y+WORLD_Y_OFFSET[map.zMainStation]) * -1) + PDA_MINIMAP_OFFSET_Y + PDA_MINIMAP_WIDTH/2]px; left: [mkr.x+WORLD_X_OFFSET[map.zMainStation] + PDA_MINIMAP_OFFSET_X - PDA_MINIMAP_WIDTH/2]px;"/>"}
 						dat += {"</div>"}
 
 					else
@@ -968,9 +986,9 @@ var/global/list/obj/item/device/pda/PDAs = list()
 						<img src="pda_minimap_bg_notfound.png" style="position: relative; top: 0; left: 0;"/>
 						"}
 						if(T.z == map.zMainStation)
-							dat += {"<img src="pda_minimap_loc.gif" style="position: absolute; top: [(T.y * -1) + 247]px; left: [T.x-8]px;"/>"}
+							dat += {"<img src="pda_minimap_loc.gif" style="position: absolute; top: [(T.y * -1) + PDA_MINIMAP_OFFSET_Y + PDA_MINIMAP_WIDTH/2]px; left: [T.x + PDA_MINIMAP_OFFSET_X - PDA_MINIMAP_WIDTH/2]px;"/>"}
 						for(var/datum/minimap_marker/mkr in app.markers)
-							dat += {"<img src="pda_minimap_mkr.gif" style="position: absolute; top: [((mkr.y+WORLD_Y_OFFSET[map.zMainStation]) * -1) + 247]px; left: [mkr.x+WORLD_X_OFFSET[map.zMainStation]-8]px;"/>"}
+							dat += {"<img src="pda_minimap_mkr.gif" style="position: absolute; top: [((mkr.y+WORLD_Y_OFFSET[map.zMainStation]) * -1) + PDA_MINIMAP_OFFSET_Y + PDA_MINIMAP_WIDTH/2]px; left: [mkr.x+WORLD_X_OFFSET[map.zMainStation] + PDA_MINIMAP_OFFSET_X - PDA_MINIMAP_WIDTH/2]px;"/>"}
 						dat += {"</div>"}
 
 /*
@@ -1344,7 +1362,7 @@ var/global/list/obj/item/device/pda/PDAs = list()
 					if(ismob(T))
 						T = T.loc
 					cartridge.loc = T
-					scanmode = 0
+					scanmode = SCANMODE_NONE
 					if (cartridge.radio)
 						cartridge.radio.hostpda = null
 					cartridge = null
@@ -1430,14 +1448,14 @@ var/global/list/obj/item/device/pda/PDAs = list()
 					if("x")
 						var/new_x = input("Please input desired X coordinate.", "Station Map App", app.markx) as num
 						var/x_validate=new_x+WORLD_X_OFFSET[map.zMainStation]
-						if(x_validate < 1 || x_validate > 255)
+						if(x_validate < (world.maxx/2 - PDA_MINIMAP_WIDTH/2) || x_validate > (world.maxx/2 + PDA_MINIMAP_WIDTH/2))
 							to_chat(usr, "<span class='caution'>Error: Invalid X coordinate.</span>")
 						else
 							app.markx = new_x
 					if("y")
 						var/new_y = input("Please input desired Y coordinate.", "Station Map App", app.marky) as num
 						var/y_validate=new_y+WORLD_Y_OFFSET[map.zMainStation]
-						if(y_validate < 1 || y_validate > 255)
+						if(y_validate < (world.maxy/2 - PDA_MINIMAP_WIDTH/2) || y_validate > (world.maxy/2 + PDA_MINIMAP_WIDTH/2))
 							to_chat(usr, "<span class='caution'>Error: Invalid Y coordinate.</span>")
 						else
 							app.marky = new_y
@@ -1643,37 +1661,38 @@ var/global/list/obj/item/device/pda/PDAs = list()
 					fon = 1
 					set_light(f_lum)
 			if("Medical Scan")
-				if(scanmode == 1)
-					scanmode = 0
+				if(scanmode == SCANMODE_MEDICAL)
+					scanmode = SCANMODE_NONE
 				else if((!isnull(cartridge)) && (cartridge.access_medical))
-					scanmode = 1
+					scanmode = SCANMODE_MEDICAL
 			if("Reagent Scan")
-				if(scanmode == 3)
-					scanmode = 0
+				if(scanmode == SCANMODE_REAGENT)
+					scanmode = SCANMODE_NONE
 				else if((!isnull(cartridge)) && (cartridge.access_reagent_scanner))
-					scanmode = 3
+					scanmode = SCANMODE_REAGENT
 			if("Halogen Counter")
-				if(scanmode == 4)
-					scanmode = 0
+				if(scanmode == SCANMODE_HALOGEN)
+					scanmode = SCANMODE_NONE
 				else if((!isnull(cartridge)) && (cartridge.access_engine))
-					scanmode = 4
+					scanmode = SCANMODE_HALOGEN
 			if("Honk")
 				if ( !(last_honk && world.time < last_honk + 20) )
 					playsound(loc, 'sound/items/bikehorn.ogg', 50, 1)
 					last_honk = world.time
 			if("Gas Scan")
-				if(scanmode == 5)
-					scanmode = 0
+				if(scanmode == SCANMODE_ATMOS)
+					scanmode = SCANMODE_NONE
 				else if((!isnull(cartridge)) && (cartridge.access_atmos))
-					scanmode = 5
+					scanmode = SCANMODE_ATMOS
 			if("Device Analyser")
-				if(scanmode == 6)
-					scanmode = 0
+				if(scanmode == SCANMODE_DEVICE)
+					scanmode = SCANMODE_NONE
 				else if((!isnull(cartridge)) && (cartridge.access_mechanic))
 					if(!dev_analys)
 						dev_analys = new(src) //let's create that device analyser
+						dev_analys.cant_drop = 1
 						dev_analys.max_designs = 5
-					scanmode = 6
+					scanmode = SCANMODE_DEVICE
 
 //MESSENGER/NOTE FUNCTIONS===================================
 
@@ -1882,13 +1901,14 @@ var/global/list/obj/item/device/pda/PDAs = list()
 		playsound(U, 'sound/machines/twobeep.ogg', 50, 1)
 
 	for (var/mob/O in hearers(3, U))
-		if(!silent) O.show_message(text("[bicon(src)] *[src.ttone]*"))
+		if(!silent)
+			O.show_message(text("[bicon(src)] *[src.ttone]*"))
 
 	var/mob/living/L = null
 	if(src.loc && isliving(src.loc))
 		L = src.loc
 	else
-		L = get(src, /mob/living/silicon)
+		L = get_holder_of_type(src, /mob/living/silicon)
 
 	if(L)
 		to_chat(L, "[bicon(src)] <b>Money transfer from [creditor_name] ([arbitrary_sum]$) </b>[id ? "" : "Insert your ID in the PDA to receive the funds."]")
@@ -2013,14 +2033,15 @@ var/global/list/obj/item/device/pda/PDAs = list()
 		if (!P.silent)
 			playsound(P.loc, 'sound/machines/twobeep.ogg', 50, 1)
 		for (var/mob/O in hearers(3, P.loc))
-			if(!P.silent) O.show_message(text("[bicon(P)] *[P.ttone]*"))
+			if(!P.silent)
+				O.show_message(text("[bicon(P)] *[P.ttone]*"))
 		//Search for holder of the PDA.
 		var/mob/living/L = null
 		if(P.loc && isliving(P.loc))
 			L = P.loc
 		//Maybe they are a pAI!
 		else
-			L = get(P, /mob/living/silicon)
+			L = get_holder_of_type(P, /mob/living/silicon)
 
 		if(L)
 			L.show_message("[bicon(P)] <b>Message from [src.owner] ([ownjob]), </b>\"[t]\" (<a href='byond://?src=\ref[P];choice=Message;skiprefresh=1;target=\ref[src]'>Reply</a>)", 2)
@@ -2176,10 +2197,10 @@ obj/item/device/pda/AltClick()
 	if(istype(C))
 		switch(scanmode)
 
-			if(1)
+			if(SCANMODE_MEDICAL)
 				healthanalyze(C,user,0)
 
-			if(2)
+			if(SCANMODE_FORENSIC)
 				if (!istype(C:dna, /datum/dna))
 					to_chat(user, "<span class='notice'>No fingerprints found on [C]</span>")
 				else if(!istype(C, /mob/living/carbon/monkey))
@@ -2198,7 +2219,7 @@ obj/item/device/pda/AltClick()
 						for(var/blood in C:blood_DNA)
 							to_chat(user, "<span class='notice'>Blood type: [C:blood_DNA[blood]]\nDNA: [blood]</span>")
 
-			if(4)
+			if(SCANMODE_HALOGEN)
 				for (var/mob/O in viewers(C, null))
 					O.show_message("<span class='warning'>[user] has analyzed [C]'s radiation levels!</span>", 1)
 
@@ -2209,8 +2230,9 @@ obj/item/device/pda/AltClick()
 					user.show_message("<span class='notice'>No radiation detected.</span>")
 
 /obj/item/device/pda/afterattack(atom/A as mob|obj|turf|area, mob/user as mob)
-	if(scanmode == 5)
+	if(scanmode == SCANMODE_ATMOS)
 		if(atmos_analys)
+			atmos_analys.cant_drop = 1
 			if(A.Adjacent(user))
 				if(!A.attackby(atmos_analys, user))
 					atmos_analys.afterattack(A, user, 1)
@@ -2222,7 +2244,7 @@ obj/item/device/pda/AltClick()
 
 /obj/item/device/pda/preattack(atom/A as mob|obj|turf|area, mob/user as mob)
 	switch(scanmode)
-		if(3)
+		if(SCANMODE_REAGENT)
 			if(!A.Adjacent(user))
 				return
 			if(!isnull(A.reagents))
@@ -2237,13 +2259,14 @@ obj/item/device/pda/AltClick()
 				to_chat(user, "<span class='notice'>No significant chemical agents found in [A].</span>")
 			. = 1
 
-		if (6)
+		if (SCANMODE_DEVICE)
 			if(dev_analys) //let's use this instead. Much neater
 				if(A.Adjacent(user))
 					return dev_analys.preattack(A, user, 1)
 
 /obj/item/device/pda/proc/explode() //This needs tuning.
-	if(!src.detonate) return
+	if(!src.detonate)
+		return
 	var/turf/T = get_turf(src.loc)
 
 	if (ismob(loc))
@@ -2270,7 +2293,8 @@ obj/item/device/pda/AltClick()
 	var/loop_count = 0
 	while(null in PDAs)
 		PDAs.Remove(null)
-		if(loop_count > 10) break
+		if(loop_count > 10)
+			break
 		loop_count++
 	PDAs -= src
 	..()
@@ -2348,6 +2372,9 @@ obj/item/device/pda/AltClick()
 	. = list()
 	// Returns a list of PDAs which can be viewed from another PDA/message monitor.
 	for(var/obj/item/device/pda/P in PDAs)
-		if(!P.owner || P.toff || P.hidden) continue
+		if(!P.owner || P.toff || P.hidden)
+			continue
 		. += P
 	return .
+
+#undef PDA_MINIMAP_WIDTH

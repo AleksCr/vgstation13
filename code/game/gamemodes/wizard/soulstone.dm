@@ -5,10 +5,10 @@
 	item_state = "shard-soulstone"
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/shards.dmi', "right_hand" = 'icons/mob/in-hand/right/shards.dmi')
 	desc = "A fragment of the legendary treasure known simply as the 'Soul Stone'. The shard still flickers with a fraction of the full artefacts power."
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	flags = FPRINT
 	slot_flags = SLOT_BELT
-	origin_tech = "bluespace=4;materials=4"
+	origin_tech = Tc_BLUESPACE + "=4;" + Tc_MATERIALS + "=4"
 
 /obj/item/device/soulstone/Destroy()
 	eject_shade()
@@ -73,8 +73,7 @@
 				eject_shade(U)
 				src.icon_state = "soulstone"
 				src.item_state = "shard-soulstone"
-				U.update_inv_l_hand()
-				U.update_inv_r_hand()
+				U.update_inv_hands()
 				src.name = "Soul Stone Shard"
 
 	attack_self(U)
@@ -243,7 +242,7 @@
 
 		body.invisibility = 101
 
-		var/datum/organ/external/head_organ = body.get_organ("head")
+		var/datum/organ/external/head_organ = body.get_organ(LIMB_HEAD)
 		if(head_organ.status & ORGAN_DESTROYED)
 			new /obj/effect/decal/remains/human/noskull(T)
 			anim(target = T, a_icon = 'icons/mob/mob.dmi', flick_anim = "dust-h2-nohead", sleeptime = 26)
@@ -285,8 +284,7 @@
 	//Changing the soulstone's icon and description
 	icon_state = "soulstone2"
 	item_state = "shard-soulstone2"
-	user.update_inv_l_hand()
-	user.update_inv_r_hand()
+	user.update_inv_hands()
 	name = "Soul Stone: [true_name]"
 	to_chat(shadeMob, "Your soul has been captured! You are now bound to [user.name]'s will, help them suceed in their goals at all costs.")
 	to_chat(user, "<span class='notice'>[true_name]'s soul has been ripped from their body and stored within the soul stone.</span>")
@@ -310,17 +308,9 @@
 	if(add_target && add_target.loc)
 		T2 = get_turf(add_target)
 
-	spawn()
-		for(var/i = 0;i < 10;i++)
-			var/obj/effect/tracker/soul/Tr = getFromPool(/obj/effect/tracker/soul, T1)
-			Tr.target = user
-			Tr.icon_state = pick("soul1","soul2","soul3")
-			if(T2)
-				var/obj/effect/tracker/soul/Tr2 = getFromPool(/obj/effect/tracker/soul, T2)
-				Tr2.target = user
-				Tr2.icon_state = pick("soul1","soul2","soul3")
-			sleep(1)
-
+	make_tracker_effects(T1, user)
+	if(T2)
+		make_tracker_effects(T2, user)
 
 	//Cleaning up the corpse
 	qdel(target)
@@ -361,8 +351,7 @@
 					T.health = T.maxHealth
 					C.icon_state = "soulstone2"
 					C.item_state = "shard-soulstone2"
-					U.update_inv_l_hand()
-					U.update_inv_r_hand()
+					U.update_inv_hands()
 					C.name = "Soul Stone: [T.real_name]"
 					to_chat(T, "Your soul has been recaptured by the soul stone, its arcane energies are reknitting your ethereal form")
 					to_chat(U, "<span class='notice'><b>Capture successful!</b>: </span>[T.name]'s has been recaptured and stored within the soul stone.")

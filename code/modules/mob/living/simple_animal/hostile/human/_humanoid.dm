@@ -5,7 +5,7 @@
 	response_help = "pokes"
 	response_disarm = "shoves"
 	response_harm = "hits"
-	speed = -1
+	speed = 2
 	stop_automated_movement_when_pulled = 0
 	maxHealth = 100
 	health = 100
@@ -37,6 +37,7 @@
 
 	for(var/I in visible_items)
 		var/image/new_img = image(I, icon_state = visible_items[I], layer = MOB_LAYER)
+		new_img.plane = MOB_PLANE
 		overlays.Add(new_img)
 
 /mob/living/simple_animal/hostile/humanoid/Die()

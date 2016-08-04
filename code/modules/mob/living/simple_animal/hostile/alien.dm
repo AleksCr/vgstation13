@@ -7,11 +7,11 @@ var/list/nest_locations = list()
 	icon_state = "alienh_running"
 	icon_living = "alienh_running"
 	icon_dead = "alienh_dead"
-	icon_gib = "syndicate_gib"
+	icon_gib = "gibbed-a"
 	response_help = "pokes the"
 	response_disarm = "shoves the"
 	response_harm = "hits the"
-	speed = -1
+	speed = 2
 	meat_type = /obj/item/weapon/reagent_containers/food/snacks/meat/xenomeat
 	species_type = /mob/living/simple_animal/hostile/alien
 	maxHealth = 100
@@ -121,7 +121,11 @@ var/list/nest_locations = list()
 					D.attackby(CB,src)
 					qdel(CB)
 
-/mob/living/simple_animal/hostile/alien/CanAttack(var/atom/the_target)//they don't kill mindless monkeys so they can drag them to nests with a higher chance of a successful impregnation.
+/mob/living/simple_animal/hostile/alien/CanAttack(var/atom/the_target)
+	if(isalien(the_target))
+		return 0
+
+	//they don't harm mindless monkeys so they can drag them to nests with a higher chance of a successful impregnation.
 	if(istype(the_target,/mob/living/carbon/monkey))
 		var/mob/living/carbon/monkey/M = the_target
 		if(!M.client)
@@ -198,7 +202,7 @@ var/list/nest_locations = list()
 				if(last_loc && (last_loc == loc))
 					DestroySurroundings()
 				last_loc = loc
-				Goto(dragging,move_to_delay,1)
+				Goto(dragging, speed, 1)
 		else//if another alien is dragging them, just leave them alone
 			dragging = null
 			walk(src, 0)
@@ -225,7 +229,7 @@ var/list/nest_locations = list()
 			if(last_loc && (last_loc == loc))
 				DestroySurroundings()
 			last_loc = loc
-			Goto(dest,move_to_delay,0)
+			Goto(dest, speed, 0)
 
 
 /mob/living/simple_animal/hostile/alien/proc/CanOpenDoor(var/obj/machinery/door/D)
@@ -280,7 +284,7 @@ var/list/nest_locations = list()
 	melee_damage_lower = 15
 	melee_damage_upper = 15
 	ranged = 1
-	move_to_delay = 3
+	speed = 3
 	projectiletype = /obj/item/projectile/neurotox
 	projectilesound = 'sound/weapons/pierce.ogg'
 	rapid = 1
@@ -333,10 +337,10 @@ var/list/nest_locations = list()
 	icon_state = "queen_s"
 	icon_living = "queen_s"
 	icon_dead = "queen_dead"
-	move_to_delay = 4
+	speed = 4
 	maxHealth = 400
 	health = 400
-	pixel_x = -16
+	pixel_x = -16 * PIXEL_MULTIPLIER
 
 /obj/item/projectile/neurotox
 	damage = 30
@@ -347,23 +351,8 @@ var/list/nest_locations = list()
 	visible_message("[src] lets out a waning guttural screech, green blood bubbling from its maw...")
 	playsound(src, 'sound/voice/hiss6.ogg', 100, 1)
 
-/mob/living/simple_animal/hostile/alien/gib()
-	death(1)
-	monkeyizing = 1
-	canmove = 0
-	icon = null
-	invisibility = 101
-
-	anim(target = src, a_icon = 'icons/mob/mob.dmi', flick_anim = "gibbed-a", sleeptime = 15)
+/mob/living/simple_animal/hostile/alien/gibs_type()
 	xgibs(loc, viruses)
-	dead_mob_list -= src
-
-	qdel(src)
-
-/mob/living/simple_animal/hostile/alien/CanAttack(var/atom/the_target)
-	if(isalien(the_target))
-		return 0
-	return ..(the_target)
 
 /mob/living/simple_animal/hostile/alien/adjustBruteLoss(amount,var/damage_type) // Weak to Fire
 	if(damage_type == BURN)

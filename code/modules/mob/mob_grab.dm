@@ -12,10 +12,11 @@
 	var/allow_upgrade = 1
 	var/last_upgrade = 0
 
-	layer = 21
+	layer = HUD_ABOVE_ITEM_LAYER
+	plane = HUD_PLANE
 	abstract = 1
 	item_state = "nothing"
-	w_class = 5.0
+	w_class = W_CLASS_HUGE
 
 
 /obj/item/weapon/grab/New(atom/loc, mob/victim)
@@ -33,8 +34,10 @@
 	hud.master = src
 
 /obj/item/weapon/grab/preattack()
-	if(!assailant || !affecting) return 1 //Cancel attack
-	if(!assailant.Adjacent(affecting)) return 1 //Cancel attack is assailant isn't near affected mob
+	if(!assailant || !affecting)
+		return 1 //Cancel attack
+	if(!assailant.Adjacent(affecting))
+		return 1 //Cancel attack is assailant isn't near affected mob
 
 	return ..()
 
@@ -51,14 +54,12 @@
 //This makes sure that the grab screen object is displayed in the correct hand.
 /obj/item/weapon/grab/proc/synch()
 	if(affecting)
-		if(assailant.r_hand == src)
-			hud.screen_loc = ui_rhand
-		else
-			hud.screen_loc = ui_lhand
+		hud.screen_loc = assailant.get_held_item_ui_location(assailant.is_holding_item(src))
 
 
 /obj/item/weapon/grab/process()
-	if(!confirm()) return
+	if(!confirm())
+		return
 
 	if(!assailant)
 		affecting = null
@@ -74,17 +75,17 @@
 
 	if(state <= GRAB_AGGRESSIVE)
 		allow_upgrade = 1
-		if((assailant.l_hand && assailant.l_hand != src && istype(assailant.l_hand, /obj/item/weapon/grab)))
-			var/obj/item/weapon/grab/G = assailant.l_hand
+
+		for(var/obj/item/weapon/grab/G in assailant.held_items)
+			if(G == src)
+				continue
 			if(G.affecting != affecting)
 				allow_upgrade = 0
-		if((assailant.r_hand && assailant.r_hand != src && istype(assailant.r_hand, /obj/item/weapon/grab)))
-			var/obj/item/weapon/grab/G = assailant.r_hand
-			if(G.affecting != affecting)
-				allow_upgrade = 0
+
 		if(state == GRAB_AGGRESSIVE)
 			for(var/obj/item/weapon/grab/G in affecting.grabbed_by)
-				if(G == src) continue
+				if(G == src)
+					continue
 				if(G.state == GRAB_AGGRESSIVE)
 					allow_upgrade = 0
 		if(allow_upgrade)
@@ -232,9 +233,11 @@
 			user.visible_message("<span class='danger'>[user] is attempting to devour [affecting]!</span>", \
 				drugged_message="<span class='danger'>[user] is attempting to kiss [affecting]! Ew!</span>")
 			if(istype(user, /mob/living/carbon/alien/humanoid/hunter))
-				if(!do_mob(user, affecting)) return
+				if(!do_mob(user, affecting))
+					return
 			else
-				if(!do_mob(user, affecting, 100)) return
+				if(!do_mob(user, affecting, 100))
+					return
 			user.visible_message("<span class='danger'>[user] devours [affecting]!</span>", \
 				drugged_message="<span class='danger'>[affecting] vanishes in disgust.</span>")
 			affecting.loc = user

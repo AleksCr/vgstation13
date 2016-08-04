@@ -5,7 +5,8 @@
 
 // The following procs are used to grab players for mobs produced by a seed (mostly for dionaea).
 /datum/seed/proc/handle_living_product(var/mob/living/host)
-	if(!host || !istype(host)) return
+	if(!host || !istype(host))
+		return
 
 	if(!product_requires_player)
 		return
@@ -40,7 +41,7 @@
 			continue
 
 		currently_querying |= O
-		to_chat(O, "<span class='recruit'>Someone is harvesting [display_name]. You have been added to the list of potential ghosts. (<a href='?src=\ref[O];jump=\ref[host]'>Teleport</a> | <a href='?src=\ref[src];signup=\ref[O]'>retract</a>)</span>")
+		to_chat(O, "<span class='recruit'>Someone is harvesting [display_name]. You have been added to the list of potential ghosts. (<a href='?src=\ref[O];jump=\ref[host]'>Teleport</a> | <a href='?src=\ref[src];signup=\ref[O]'>Retract</a>)</span>")
 
 	for(var/mob/dead/observer/O in dead_mob_list - active_candidates)
 		if(!check_observer(O))
@@ -70,17 +71,20 @@
 /datum/seed/proc/transfer_personality(var/client/player,var/mob/living/host)
 
 	//Something is wrong, abort.
-	if(!player || !host) return
+	if(!player || !host)
+		return
 
 	//Host already has a controller, pike off slowpoke.
-	if(host.client && host.ckey) return
+	if(host.client && host.ckey)
+		return
 
 	//Transfer them over.
 	host.ckey = player.ckey
 	if(player.mob && player.mob.mind)
 		player.mob.mind.transfer_to(host)
 
-	if(host.dna) host.dna.real_name = host.real_name
+	if(host.dna)
+		host.dna.real_name = host.real_name
 
 	// Update mode specific HUD icons.
 	callHook("harvest_podman", list(host))

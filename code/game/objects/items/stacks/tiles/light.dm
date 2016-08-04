@@ -19,7 +19,7 @@ var/global/list/lightfloor_colors = list(
 	singular_name = "light floor tile"
 	desc = "A floor tile made out of glass. Use a multitool on it to change its color."
 	icon_state = "light_tile_broken"
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	force = 3.0
 	throwforce = 5.0
 	throw_speed = 5
@@ -65,7 +65,8 @@ var/global/list/lightfloor_colors = list(
 		var/list/choice_list = list(LIGHTFLOOR_OPTION_CUSTOM) + lightfloor_colors
 
 		var/choice = input(user,"Select a colour to set [src] to.","[src]") in choice_list
-		if(!Adjacent(user)) return
+		if(!Adjacent(user))
+			return
 
 		var/new_color
 		if(choice == LIGHTFLOOR_OPTION_CUSTOM)

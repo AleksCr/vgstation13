@@ -44,7 +44,6 @@
 		new /obj/item/weapon/wrench(), \
 		new /obj/item/weapon/solder(),\
 		new /obj/item/device/analyzer(), \
-		new /obj/item/device/t_scanner(), \
 		new /obj/item/weapon/pickaxe/shovel/spade(), \
 		new /obj/item/device/silicate_sprayer/empty(), \
 		),
@@ -152,7 +151,8 @@
 		return 1
 
 /obj/machinery/r_n_d/fabricator/mechanic_fab/autolathe/update_hacked()
-	if(screen == 51) screen = 11 //take the autolathe away from the contraband menu, since otherwise it can still print contraband until another category is selected
+	if(screen == 51)
+		screen = 11 //take the autolathe away from the contraband menu, since otherwise it can still print contraband until another category is selected
 	/*if(hacked)
 		part_sets["Items"] |= part_sets["Hidden Items"]
 	else

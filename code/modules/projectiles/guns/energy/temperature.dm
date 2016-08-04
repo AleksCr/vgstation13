@@ -4,13 +4,13 @@
 	icon_state = "tempgun_4"
 	item_state = "tempgun_4"
 	slot_flags = SLOT_BACK
-	w_class = 4.0
+	w_class = W_CLASS_LARGE
 	fire_sound = 'sound/weapons/pulse3.ogg'
 	desc = "A gun that changes the body temperature of its targets."
 	var/temperature = 300
 	var/target_temperature = 300
 	charge_cost = 90
-	origin_tech = "combat=3;materials=4;powerstorage=3;magnets=2"
+	origin_tech = Tc_COMBAT + "=3;" + Tc_MATERIALS + "=4;" + Tc_POWERSTORAGE + "=3;" + Tc_MAGNETS + "=2"
 
 	projectile_type = "/obj/item/projectile/temp"
 	cell_type = "/obj/item/weapon/cell/temperaturegun"
@@ -81,9 +81,12 @@
 			charge_cost = 300
 			powercost = "High"
 	switch(powercost)
-		if("High")		powercostcolor = "orange"
-		if("Medium")	powercostcolor = "green"
-		else			powercostcolor = "blue"
+		if("High")
+			powercostcolor = "orange"
+		if("Medium")
+			powercostcolor = "green"
+		else
+			powercostcolor = "blue"
 	if(target_temperature != temperature)
 		var/difference = abs(target_temperature - temperature)
 		if(difference >= (10 + 40*emagged)) //so emagged temp guns adjust their temperature much more quickly
@@ -157,23 +160,32 @@
 /obj/item/weapon/gun/energy/temperature/proc/update_charge()
 	var/charge = power_supply.charge
 	switch(charge)
-		if(900 to INFINITY)		overlays += "900"
-		if(800 to 900)			overlays += "800"
-		if(700 to 800)			overlays += "700"
-		if(600 to 700)			overlays += "600"
-		if(500 to 600)			overlays += "500"
-		if(400 to 500)			overlays += "400"
-		if(300 to 400)			overlays += "300"
-		if(200 to 300)			overlays += "200"
-		if(100 to 200)			overlays += "100"
-		if(-INFINITY to 100)	overlays += "0"
+		if(900 to INFINITY)
+			overlays += image(icon = icon, icon_state = "900")
+		if(800 to 900)
+			overlays += image(icon = icon, icon_state = "800")
+		if(700 to 800)
+			overlays += image(icon = icon, icon_state = "700")
+		if(600 to 700)
+			overlays += image(icon = icon, icon_state = "600")
+		if(500 to 600)
+			overlays += image(icon = icon, icon_state = "500")
+		if(400 to 500)
+			overlays += image(icon = icon, icon_state = "400")
+		if(300 to 400)
+			overlays += image(icon = icon, icon_state = "300")
+		if(200 to 300)
+			overlays += image(icon = icon, icon_state = "200")
+		if(100 to 200)
+			overlays += image(icon = icon, icon_state = "100")
+		if(-INFINITY to 100)
+			overlays += image(icon = icon, icon_state = "0")
 
 /obj/item/weapon/gun/energy/temperature/proc/update_user()
 	if (istype(loc,/mob/living/carbon))
 		var/mob/living/carbon/M = loc
 		M.update_inv_back()
-		M.update_inv_l_hand()
-		M.update_inv_r_hand()
+		M.update_inv_hands()
 
 /obj/item/weapon/gun/energy/temperature/update_icon()
 	overlays = 0

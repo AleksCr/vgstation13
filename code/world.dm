@@ -1,9 +1,12 @@
+#define WORLD_ICON_SIZE 32
+#define PIXEL_MULTIPLIER WORLD_ICON_SIZE/32
 /world
 	mob = /mob/new_player
 	turf = /turf/space
 	view = "15x15"
 	cache_lifespan = 0	//stops player uploaded stuff from being kept in the rsc past the current session
 	//loop_checks = 0
+	icon_size = WORLD_ICON_SIZE
 #define RECOMMENDED_VERSION 510
 
 
@@ -32,8 +35,11 @@ var/savefile/panicfile
 	// logs
 	var/date_string = time2text(world.realtime, "YYYY/MM-Month/DD-Day")
 
-	investigations["hrefs"] = new /datum/log_controller("hrefs", filename="data/logs/[date_string] hrefs.htm", persist=TRUE)
-	investigations["atmos"] = new /datum/log_controller("atmos", filename="data/logs/[date_string] atmos.htm", persist=TRUE)
+	investigations[I_HREFS] = new /datum/log_controller(I_HREFS, filename="data/logs/[date_string] hrefs.htm", persist=TRUE)
+	investigations[I_ATMOS] = new /datum/log_controller(I_ATMOS, filename="data/logs/[date_string] atmos.htm", persist=TRUE)
+	investigations[I_CHEMS] = new /datum/log_controller(I_CHEMS, filename="data/logs/[date_string] chemistry.htm", persist=TRUE)
+	investigations[I_WIRES] = new /datum/log_controller(I_WIRES, filename="data/logs/[date_string] wires.htm", persist=TRUE)
+	investigations[I_GHOST] = new /datum/log_controller(I_GHOST, filename="data/logs/[date_string] poltergeist.htm", persist=TRUE)
 
 	diary = file("data/logs/[date_string].log")
 	panicfile = new/savefile("data/logs/profiling/proclogs/[date_string].sav")
@@ -93,7 +99,6 @@ var/savefile/panicfile
 
 	src.update_status()
 
-	makepowernets()
 	paperwork_setup()
 
 	//sun = new /datum/sun()
@@ -117,12 +122,14 @@ var/savefile/panicfile
 	plmaster.icon = 'icons/effects/tile_effects.dmi'
 	plmaster.icon_state = "plasma"
 	plmaster.layer = FLY_LAYER
+	plmaster.plane = EFFECTS_PLANE
 	plmaster.mouse_opacity = 0
 
 	slmaster = new /obj/effect/overlay()
 	slmaster.icon = 'icons/effects/tile_effects.dmi'
 	slmaster.icon_state = "sleeping_agent"
 	slmaster.layer = FLY_LAYER
+	slmaster.plane = EFFECTS_PLANE
 	slmaster.mouse_opacity = 0
 
 	src.update_status()
@@ -224,7 +231,8 @@ var/savefile/panicfile
 			n++
 		s["players"] = n
 
-		if(revdata)	s["revision"] = revdata.revision
+		if(revdata)
+			s["revision"] = revdata.revision
 		s["admins"] = admins
 
 		return list2params(s)
@@ -263,9 +271,26 @@ var/savefile/panicfile
 	processScheduler.stop()
 	paperwork_stop()
 
-	spawn(0)
-		world << sound(pick('sound/AI/newroundsexy.ogg', 'sound/misc/apcdestroyed.ogg', 'sound/misc/bangindonk.ogg', 'sound/misc/slugmissioncomplete.ogg')) // random end sounds!! - LastyBatsy
+	spawn()
+		world << sound(pick(
+			'sound/AI/newroundsexy.ogg',
+			'sound/misc/RoundEndSounds/apcdestroyed.ogg',
+			'sound/misc/RoundEndSounds/bangindonk.ogg',
+			'sound/misc/RoundEndSounds/slugmissioncomplete.ogg',
+			'sound/misc/RoundEndSounds/bayojingle.ogg',
+			'sound/misc/RoundEndSounds/gameoveryeah.ogg',
+			'sound/misc/RoundEndSounds/rayman.ogg',
+			'sound/misc/RoundEndSounds/marioworld.ogg',
+			'sound/misc/RoundEndSounds/soniclevelcomplete.ogg',
+			'sound/misc/RoundEndSounds/calamitytrigger.ogg',
+			'sound/misc/RoundEndSounds/duckgame.ogg',
+			'sound/misc/RoundEndSounds/FTLvictory.ogg',
+			'sound/misc/RoundEndSounds/tfvictory.ogg',
+			'sound/misc/RoundEndSounds/megamanX.ogg',
+			'sound/misc/RoundEndSounds/castlevania.ogg',
+			)) // random end sounds!! - LastyBatsy
 
+	sleep(5)//should fix the issue of players not hearing the restart sound.
 
 	for(var/client/C in clients)
 		if(config.server)	//if you set a server location in config.txt, it sends you there instead of trying to reconnect to the same world address. -- NeoFite
@@ -483,7 +508,8 @@ proc/establish_old_db_connection()
 	var/count = 0
 	for(var/Z = 1 to world.maxz)
 		for(var/turf/T in block(locate(1,1,Z), locate(world.maxx, world.maxy, Z)))
-			if(!(count % 50000)) sleep(world.tick_lag)
+			if(!(count % 50000))
+				sleep(world.tick_lag)
 			count++
 			T.initialize()
 			turfs[count] = T

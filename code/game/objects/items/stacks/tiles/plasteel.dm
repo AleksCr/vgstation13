@@ -3,7 +3,7 @@
 	singular_name = "floor tile"
 	desc = "Those could work as a pretty decent throwing weapon."
 	icon_state = "tile"
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	force = 6.0
 	starting_materials = list(MAT_IRON = 937.5)
 	w_type = RECYK_METAL
@@ -19,8 +19,8 @@
 
 /obj/item/stack/tile/plasteel/New(var/loc, var/amount=null)
 	. = ..()
-	pixel_x = rand(1, 14)
-	pixel_y = rand(1, 14)
+	pixel_x = rand(1, 14) * PIXEL_MULTIPLIER
+	pixel_y = rand(1, 14) * PIXEL_MULTIPLIER
 
 /*
 /obj/item/stack/tile/plasteel/attack_self(mob/user as mob)

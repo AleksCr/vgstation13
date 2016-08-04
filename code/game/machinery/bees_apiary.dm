@@ -108,7 +108,7 @@
 					health -= HONEYCOMB_COST
 					var/obj/item/weapon/reagent_containers/food/snacks/honeycomb/H = new(src.loc)
 					if(toxic > 0)
-						H.reagents.add_reagent("toxin", toxic)
+						H.reagents.add_reagent(TOXIN, toxic)
 				if(honey_level >= 3)
 					new/obj/item/queen_bee(src.loc)
 				to_chat(user, "<span class='notice'>You successfully harvest the honeycombs. The empty apiary can be relocated.</span>")
@@ -128,7 +128,8 @@
 		angry_swarm(user)
 
 /obj/machinery/apiary/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
-	if(air_group || (height==0)) return 1
+	if(air_group || (height==0))
+		return 1
 
 	if(istype(mover) && mover.checkpass(PASSTABLE))
 		return 1
@@ -234,11 +235,13 @@
 				if(prob(10))
 					if(!isnull(seed_types[H.seed.name]))
 						H.seed = H.seed.diverge(-1)
-					if(H.seed) H.seed.lifespan = max(initial(H.seed.lifespan) * 1.5, H.seed.lifespan + 1)
+					if(H.seed)
+						H.seed.lifespan = max(initial(H.seed.lifespan) * 1.5, H.seed.lifespan + 1)
 				if(prob(10))
 					if(!isnull(seed_types[H.seed.name]))
 						H.seed = H.seed.diverge(-1)
-					if(H.seed) H.seed.endurance = max(initial(H.seed.endurance) * 1.5, H.seed.endurance + 1)
+					if(H.seed)
+						H.seed.endurance = max(initial(H.seed.endurance) * 1.5, H.seed.endurance + 1)
 				if(H.toxins && prob(10))
 					H.toxins = min(0, H.toxins - 1)
 					toxic++

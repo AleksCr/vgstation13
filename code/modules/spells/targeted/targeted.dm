@@ -30,6 +30,7 @@ Targeted spells have two useful flags: INCLUDEUSER and SELECTABLE. These are exp
 	var/mind_affecting = 0 //Determines if it can be blocked by PSY_RESIST or tinfoil hat
 
 	var/list/compatible_mobs = list()
+	var/believed_name
 
 
 /spell/targeted/choose_targets(mob/user = usr)
@@ -46,7 +47,14 @@ Targeted spells have two useful flags: INCLUDEUSER and SELECTABLE. These are exp
 				targets += target
 
 	else if(max_targets == 1) //single target can be picked
-		if((range == 0 || range == -1) && spell_flags & INCLUDEUSER)
+		if(spell_flags & TALKED_BEFORE)
+			if(!user || !user.mind || !user.mind.heard_before.len)
+				return
+			var/target_name = input(user, "Choose the target, from those whose voices you've heard before.", "Targeting") in user.mind.heard_before
+			var/mob/temp_target = user.mind.heard_before[target_name]
+			believed_name = target_name
+			targets += temp_target
+		else if((range == 0 || range == -1) && spell_flags & INCLUDEUSER)
 			targets += user
 		else
 			var/list/possible_targets = list()
@@ -60,7 +68,8 @@ Targeted spells have two useful flags: INCLUDEUSER and SELECTABLE. These are exp
 				if(!(spell_flags & INCLUDEUSER) && M == user)
 					continue
 				if(compatible_mobs && compatible_mobs.len)
-					if(!is_type_in_list(M, compatible_mobs)) continue
+					if(!is_type_in_list(M, compatible_mobs))
+						continue
 				if(compatible_mobs && compatible_mobs.len && !is_type_in_list(M, compatible_mobs))
 					continue
 				if(mind_affecting)
@@ -155,7 +164,8 @@ Targeted spells have two useful flags: INCLUDEUSER and SELECTABLE. These are exp
 	target.stuttering += amt_stuttering
 
 /spell/targeted/proc/tinfoil_check(mob/living/carbon/human/user)
-	if(!istype(user)) return 0
+	if(!istype(user))
+		return 0
 
 	if(user.head && istype(user.head,/obj/item/clothing/head/tinfoil))
 		return 1

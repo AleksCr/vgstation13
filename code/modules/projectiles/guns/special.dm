@@ -5,11 +5,11 @@
 	icon_state = "portalgun0"
 	item_state = "portalgun0"
 	slot_flags = SLOT_BELT
-	origin_tech = "materials=7;bluespace=6;magnets=5"
+	origin_tech = Tc_MATERIALS + "=7;" + Tc_BLUESPACE + "=6;" + Tc_MAGNETS + "=5"
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/guns_experimental.dmi', "right_hand" = 'icons/mob/in-hand/right/guns_experimental.dmi')
 	recoil = 0
 	flags = FPRINT
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	fire_delay = 0
 	fire_sound = 'sound/weapons/portalgun_blue.ogg'
 	var/setting = 0	//0 = Blue, 1 = Red.
@@ -34,7 +34,8 @@
 	..()
 
 /obj/item/weapon/gun/portalgun/process_chambered()
-	if(in_chamber) return 1
+	if(in_chamber)
+		return 1
 	in_chamber = new/obj/item/projectile/portalgun(src)
 	var/obj/item/projectile/portalgun/P = in_chamber
 	P.icon_state = "portalgun[setting]"
@@ -58,7 +59,7 @@
 	icon_state = "portalgun[setting]"
 	item_state = "portalgun[setting]"
 
-/obj/item/weapon/gun/portalgun/proc/open_portal(var/proj_setting,var/turf/T,var/atom/A = null)
+/obj/item/weapon/gun/portalgun/proc/open_portal(var/proj_setting,var/turf/T,var/atom/A = null,var/mob/firer)
 	if(!T)
 		return
 
@@ -71,7 +72,7 @@
 				blue_portal = null
 			blue_portal = new_portal
 			blue_portal.creator = src
-
+			blue_portal.owner = firer
 		if(1)
 			if(red_portal)
 				qdel(red_portal)
@@ -79,6 +80,7 @@
 			red_portal = new_portal
 			red_portal.icon_state = "portal1"
 			red_portal.creator = src
+			red_portal.owner = firer
 
 	sync_portals()
 

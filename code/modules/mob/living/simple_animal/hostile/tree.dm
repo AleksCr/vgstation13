@@ -13,11 +13,11 @@
 	response_help = "brushes"
 	response_disarm = "pushes"
 	response_harm = "hits"
-	speed = -1
+	speed = 2
 	maxHealth = 250
 	health = 250
 
-	pixel_x = -16
+	pixel_x = -16 * PIXEL_MULTIPLIER
 
 	harm_intent_damage = 5
 	melee_damage_lower = 8
@@ -54,6 +54,7 @@
 /mob/living/simple_animal/hostile/tree/Die()
 	..()
 	visible_message("<span class='warning'><b>[src]</b> is hacked into pieces!</span>")
+	playsound(loc, 'sound/effects/woodcutting.ogg', 100, 1)
 	new /obj/item/stack/sheet/wood(loc)
 	qdel(src)
 

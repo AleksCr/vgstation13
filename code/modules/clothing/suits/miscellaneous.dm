@@ -15,7 +15,7 @@
 	icon_state = "bluetag"
 	item_state = "bluetag"
 	blood_overlay_type = "armor"
-	origin_tech = "materials=1;magnets=2"
+	origin_tech = Tc_MATERIALS + "=1;" + Tc_MAGNETS + "=2"
 	body_parts_covered = FULL_TORSO
 	allowed = list (/obj/item/weapon/gun/energy/laser/bluetag)
 	siemens_coefficient = 3.0
@@ -26,7 +26,7 @@
 	icon_state = "redtag"
 	item_state = "redtag"
 	blood_overlay_type = "armor"
-	origin_tech = "materials=1;magnets=2"
+	origin_tech = Tc_MATERIALS + "=1;" + Tc_MAGNETS + "=2"
 	body_parts_covered = FULL_TORSO
 	allowed = list (/obj/item/weapon/gun/energy/laser/redtag)
 	siemens_coefficient = 3.0
@@ -39,7 +39,7 @@
 	desc = "Yarr."
 	icon_state = "pirate"
 	flags = FPRINT
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED)
 	body_parts_covered = ARMS|LEGS|FULL_TORSO|IGNORE_INV
 
 /obj/item/clothing/suit/hgpirate
@@ -47,7 +47,7 @@
 	desc = "Yarr."
 	icon_state = "hgpirate"
 	flags = FPRINT
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED)
 	body_parts_covered = ARMS|LEGS|FULL_TORSO|IGNORE_INV
 
 
@@ -113,7 +113,7 @@
 	icon_state = "syndicate"
 	item_state = "space_suit_syndicate"
 	desc = "A plastic replica of the syndicate space suit, you'll look just like a real murderous syndicate agent in this! This is a toy, it is not made for use in space!"
-	w_class = 3
+	w_class = W_CLASS_MEDIUM
 	flags = FPRINT
 	allowed = list(/obj/item/device/flashlight,/obj/item/weapon/tank/emergency_oxygen,/obj/item/weapon/tank/emergency_nitrogen,/obj/item/toy)
 	body_parts_covered = ARMS|LEGS|FULL_TORSO|FEET|HANDS
@@ -175,7 +175,7 @@
 	desc = "A suit that completely restrains the wearer."
 	icon_state = "straight_jacket"
 	item_state = "straight_jacket"
-	origin_tech = "biotech=2"
+	origin_tech = Tc_BIOTECH + "=2"
 	body_parts_covered = ARMS|LEGS|FULL_TORSO|FEET|HANDS
 
 /obj/item/clothing/suit/ianshirt
@@ -324,7 +324,7 @@
 	name = "Simon's Jacket"
 	desc = "Now you too can pierce the heavens"
 	icon_state = "simonjacket"
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED)
 	body_parts_covered = ARMS|LEGS|FULL_TORSO|IGNORE_INV
 
 /obj/item/clothing/suit/kaminacape
@@ -332,14 +332,6 @@
 	desc = "Don't believe in yourself, dumbass. Believe in me. Believe in the Kamina who believes in you."
 	icon_state = "kaminacape"
 	body_parts_covered = 0
-
-/obj/item/clothing/suit/storage/bandolier
-	name = "bandolier"
-	desc = "A bandolier designed to hold up to eight shotgun shells."
-	icon_state = "bandolier"
-	storage_slots = 8
-	max_combined_w_class = 20
-	can_only_hold = list("/obj/item/ammo_casing/shotgun")
 
 /obj/item/clothing/suit/officercoat
 	name = "Officer's Coat"
@@ -420,11 +412,11 @@
 		return ..()
 	if((src == H.wear_suit) && H.flying)
 		H.flying = 0
-		animate(H, pixel_y = pixel_y + 10 , time = 1, loop = 1)
+		animate(H, pixel_y = pixel_y + 10 * PIXEL_MULTIPLIER, time = 1, loop = 1)
 		animate(H, pixel_y = pixel_y, time = 10, loop = 1, easing = SINE_EASING)
 		animate(H)
 		if(H.lying)//aka. if they have just been stunned
-			H.pixel_y -= 6
+			H.pixel_y -= 6 * PIXEL_MULTIPLIER
 	..()
 
 /obj/item/clothing/suit/clownpiece/flying/equipped(var/mob/user, var/slot)
@@ -432,16 +424,16 @@
 	if(!istype(H)) return
 	if((slot == slot_wear_suit) && !user.flying)
 		user.flying = 1
-		animate(user, pixel_y = pixel_y + 10 , time = 10, loop = 1, easing = SINE_EASING)
+		animate(user, pixel_y = pixel_y + 10 * PIXEL_MULTIPLIER, time = 10, loop = 1, easing = SINE_EASING)
 
 /obj/item/clothing/suit/clownpiece/flying/dropped(mob/user as mob)
 	if(user.flying)
 		user.flying = 0
-		animate(user, pixel_y = pixel_y + 10 , time = 1, loop = 1)
+		animate(user, pixel_y = pixel_y + 10 * PIXEL_MULTIPLIER, time = 1, loop = 1)
 		animate(user, pixel_y = pixel_y, time = 10, loop = 1, easing = SINE_EASING)
 		animate(user)
 		if(user.lying)//aka. if they have just been stunned
-			user.pixel_y -= 6
+			user.pixel_y -= 6 * PIXEL_MULTIPLIER
 	..()
 
 
@@ -465,7 +457,9 @@
 	icon_state = "cjumper-green"
 
 /obj/item/clothing/suit/spaceblanket
-	w_class = 2
+	plane = ABOVE_OBJ_PLANE
+	layer = BLANKIES_LAYER
+	w_class = W_CLASS_SMALL
 	icon_state = "shittyuglyawfulBADblanket"
 	name = "space blanket"
 	body_parts_covered = ARMS|LEGS|FULL_TORSO|FEET|HANDS

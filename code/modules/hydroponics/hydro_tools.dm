@@ -22,7 +22,8 @@
 	var/tmp/last_print = 0 //When was the last printing, works as a cooldown to prevent paperspam
 
 /obj/item/device/analyzer/plant_analyzer/afterattack(obj/target, mob/user, flag)
-	if(!flag) return
+	if(!flag)
+		return
 
 	var/datum/seed/grown_seed
 	var/datum/reagents/grown_reagents
@@ -220,7 +221,8 @@
 	set category = "Object"
 	set src in usr
 
-	if (!usr || usr.isUnconscious() || usr.restrained() || !Adjacent(usr)) return
+	if (!usr || usr.isUnconscious() || usr.restrained() || !Adjacent(usr))
+		return
 	print_report(usr)
 
 /obj/item/device/analyzer/plant_analyzer/Topic(href, href_list)
@@ -259,7 +261,7 @@
 	flags = FPRINT | NOBLUDGEON
 	slot_flags = SLOT_BELT
 	throwforce = 4
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	throw_speed = 2
 	throw_range = 10
 	var/toxicity = 4
@@ -312,7 +314,7 @@
 	siemens_coefficient = 1
 	force = 5.0
 	throwforce = 7.0
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	attack_verb = list("slashes", "slices", "cuts", "claws")
 
 
@@ -364,7 +366,7 @@
 	icon_state = "bottle16"
 	flags = FPRINT | OPENCONTAINER
 	possible_transfer_amounts = null
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 
 	var/fertilizer //Reagent contained, if any.
 
@@ -375,8 +377,8 @@
 /obj/item/weapon/reagent_containers/glass/fertilizer/New()
 	..()
 
-	src.pixel_x = rand(-5.0, 5)
-	src.pixel_y = rand(-5.0, 5)
+	src.pixel_x = rand(-5, 5) * PIXEL_MULTIPLIER
+	src.pixel_y = rand(-5, 5) * PIXEL_MULTIPLIER
 
 	if(fertilizer)
 		reagents.add_reagent(fertilizer,10)
@@ -384,17 +386,17 @@
 /obj/item/weapon/reagent_containers/glass/fertilizer/ez
 	name = "bottle of E-Z-Nutrient"
 	icon_state = "bottle16"
-	fertilizer = "eznutrient"
+	fertilizer = EZNUTRIENT
 
 /obj/item/weapon/reagent_containers/glass/fertilizer/l4z
 	name = "bottle of Left 4 Zed"
 	icon_state = "bottle18"
-	fertilizer = "left4zed"
+	fertilizer = LEFT4ZED
 
 /obj/item/weapon/reagent_containers/glass/fertilizer/rh
 	name = "bottle of Robust Harvest"
 	icon_state = "bottle15"
-	fertilizer = "robustharvest"
+	fertilizer = ROBUSTHARVEST
 
 //Hatchets and things to kill kudzu
 /obj/item/weapon/hatchet
@@ -405,12 +407,12 @@
 	flags = FPRINT
 	siemens_coefficient = 1
 	force = 12.0
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	throwforce = 15.0
 	throw_speed = 4
 	throw_range = 4
 	sharpness = 1.2
-	origin_tech = "materials=2;combat=1"
+	origin_tech = Tc_MATERIALS + "=2;" + Tc_COMBAT + "=1"
 	attack_verb = list("chops", "tears", "cuts")
 
 /obj/item/weapon/hatchet/attack(mob/living/carbon/M as mob, mob/living/carbon/user as mob)
@@ -434,14 +436,15 @@
 	throw_speed = 1
 	throw_range = 3
 	sharpness = 1.0
-	w_class = 4.0
+	w_class = W_CLASS_LARGE
 	flags = FPRINT
 	slot_flags = SLOT_BACK
-	origin_tech = "materials=2;combat=2"
+	origin_tech = Tc_MATERIALS + "=2;" + Tc_COMBAT + "=2"
 	attack_verb = list("chops", "slices", "cuts", "reaps")
 
 /obj/item/weapon/scythe/afterattack(atom/A, mob/user as mob, proximity)
-	if(!proximity) return
+	if(!proximity)
+		return
 	if(istype(A, /obj/effect/plantsegment) || istype(A, /turf/simulated/floor))
 		for(var/obj/effect/plantsegment/B in range(user,1))
 			B.take_damage(src)
@@ -468,7 +471,7 @@
 	icon_state = "claypot-item"
 	item_state = "claypot"
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/misc_tools.dmi', "right_hand" = 'icons/mob/in-hand/right/misc_tools.dmi')
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	force = 5.0
 	throwforce = 20.0
 	throw_speed = 1

@@ -37,6 +37,9 @@
 	var/tDomeY = 0
 	var/tDomeZ = 0
 
+	//List for traitor items which are not in the map
+	var/list/unavailable_items
+
 	//nanoui stuff
 	var/map_dir = ""
 
@@ -106,6 +109,8 @@
 	if(!level.movementJammed)
 		accessable_z_levels += list("[z_to_use]" = level.movementChance)
 
+	level.z = z_to_use
+
 var/global/list/accessable_z_levels = list()
 
 //This list contains the z-level numbers which can be accessed via space travel and the percentile chances to get there.
@@ -122,6 +127,7 @@ var/global/list/accessable_z_levels = list()
 	var/movementJammed = 0 //Prevents you from accessing the zlevel by drifting
 	var/movementChance = ZLEVEL_BASE_CHANCE
 	var/base_turf //Our base turf, what shows under the station when destroyed. Defaults to space because it's fukken Space Station 13
+	var/z //Number of the z-level (the z coordinate)
 
 ////////////////////////////////
 
@@ -187,7 +193,8 @@ proc/change_base_turf(var/choice,var/new_base_path,var/update_old_base = 0)
 		var/count = 0
 		for(var/turf/T in turfs)
 			count++
-			if(!(count % 50000)) sleep(world.tick_lag)
+			if(!(count % 50000))
+				sleep(world.tick_lag)
 			if(T.type == get_base_turf(choice) && T.z == choice)
 				T.ChangeTurf(new_base_path)
 	var/datum/zLevel/L = map.zLevels[choice]

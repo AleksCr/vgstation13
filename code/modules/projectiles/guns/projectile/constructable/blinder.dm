@@ -4,11 +4,11 @@
 	desc = "A polaroid camera. The film chamber is filled with wire for some reason."
 	icon_state = "polaroid"
 	item_state = "polaroid"
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	flags = FPRINT
 	siemens_coefficient = 1
 	slot_flags = SLOT_BELT
-	origin_tech = "materials=1;engineering=1"
+	origin_tech = Tc_MATERIALS + "=1;" + Tc_ENGINEERING + "=1"
 	starting_materials = list(MAT_IRON = 2000)
 	w_type = RECYK_ELECTRONIC
 	var/cell = null

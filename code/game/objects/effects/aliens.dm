@@ -155,7 +155,8 @@
 	..()
 
 /obj/effect/alien/resin/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
-	if(air_group) return 0
+	if(air_group)
+		return 0
 	if(istype(mover) && mover.checkpass(PASSGLASS))
 		return !opacity
 	return !density
@@ -174,7 +175,8 @@
 
 	anchored = 1
 	density = 0
-	layer = 2
+	plane = ABOVE_TURF_PLANE
+	layer = WEED_LAYER
 	var/health = 14
 	var/obj/effect/alien/weeds/node/linked_node = null
 	var/obj/machinery/door/jammin = null
@@ -192,7 +194,6 @@
 	icon_state = "weednode"
 	name = "purple sac"
 	desc = "Weird purple octopus-like thing."
-	layer = 3
 	luminosity = NODERANGE
 	var/node_range = NODERANGE
 	var/list/obj/effect/alien/weeds/connected_weeds
@@ -229,7 +230,8 @@
 	if(linked_node)
 		linked_node.connected_weeds.Add(src)
 
-	if(icon_state == "weeds")icon_state = pick("weeds", "weeds1", "weeds2")
+	if(icon_state == "weeds")
+		icon_state = pick("weeds", "weeds1", "weeds2")
 	spawn(rand(100, 250))
 		if(src)
 			Life()
@@ -360,7 +362,8 @@
 	density = 0
 	opacity = 0
 	anchored = 1
-
+	layer = ABOVE_DOOR_LAYER
+	
 	var/atom/target
 	var/ticks = 0
 	var/target_strength = 0

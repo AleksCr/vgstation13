@@ -95,14 +95,25 @@ var/global/datum/interactive_map/crewmonitor/crewmonitor = new
 	src.jobs = jobs
 
 /datum/interactive_map/crewmonitor/show(mob/mob, z, datum/html_interface/currui = null)
-	if (!z) z = mob.z
-	if (z == CENTCOMM_Z) return
+	if (!z)
+		z = mob.z
+	if (z == CENTCOMM_Z)
+		return
+	sendResources(mob.client)
 
 	if (z > 0 && src.interfaces)
 		var/datum/html_interface/hi
 
 		if (!src.interfaces["[z]"])
-			src.interfaces["[z]"] = new/datum/html_interface/nanotrasen(src, "Crew Monitoring", 900, 800, "[MAPHEADER] <link rel=\"stylesheet\" type=\"text/css\" href=\"crewmonitor.css\" /></script><script type=\"text/javascript\">var z = [z]; var tile_size = [world.icon_size]; var maxx = [world.maxx]; var maxy = [world.maxy];</script><script type=\"text/javascript\" src=\"crewmonitor.js\"></script>")
+			src.interfaces["[z]"] = new/datum/html_interface/nanotrasen(src, "Crew Monitoring", 900, 800, "[MAPHEADER] \
+			<link rel=\"stylesheet\" type=\"text/css\" href=\"crewmonitor.css\" /></script>\
+			<script type=\"text/javascript\">\
+			var mapname = \"[map.nameShort]\"; \
+			var z = [z]; \
+			var tile_size = [WORLD_ICON_SIZE]; \
+			var maxx = [world.maxx]; \
+			var maxy = [world.maxy];</script>\
+			<script type=\"text/javascript\" src=\"crewmonitor.js\"></script>")
 
 			hi = src.interfaces["[z]"]
 
@@ -144,7 +155,8 @@ var/global/datum/interactive_map/crewmonitor/crewmonitor = new
 			var/life_status
 
 			for(var/mob/living/carbon/human/H in mob_list)
-				if(H.iscorpse) continue
+				if(H.iscorpse)
+					continue
 				// Check if their z-level is correct and if they are wearing a uniform.
 				// Accept H.z==0 as well in case the mob is inside an object.
 				if ((H.z == 0 || H.z == z) && istype(H.w_uniform, /obj/item/clothing/under))
@@ -155,7 +167,8 @@ var/global/datum/interactive_map/crewmonitor/crewmonitor = new
 						pos = H.z == 0 || U.sensor_mode == 3 ? get_turf(H) : null
 
 						// Special case: If the mob is inside an object confirm the z-level on turf level.
-						if (H.z == 0 && (!pos || pos.z != z)) continue
+						if (H.z == 0 && (!pos || pos.z != z))
+							continue
 
 						I = H.wear_id ? H.wear_id.GetID() : null
 
@@ -168,8 +181,10 @@ var/global/datum/interactive_map/crewmonitor/crewmonitor = new
 							assignment = ""
 							ijob = 80
 
-						if (U.sensor_mode >= 1) life_status = (!H.stat ? "true" : "false")
-						else                    life_status = null
+						if (U.sensor_mode >= 1)
+							life_status = (!H.stat ? "true" : "false")
+						else
+							life_status = null
 
 						if (U.sensor_mode >= 2)
 							dam1 = round(H.getOxyLoss(),1)
@@ -183,7 +198,8 @@ var/global/datum/interactive_map/crewmonitor/crewmonitor = new
 							dam4 = null
 
 						if (U.sensor_mode >= 3)
-							if (!pos) pos = get_turf(H)
+							if (!pos)
+								pos = get_turf(H)
 							var/area/player_area = get_area(H)
 
 							area = format_text(player_area.name)
@@ -228,12 +244,14 @@ var/global/datum/interactive_map/crewmonitor/crewmonitor = new
 	var/z = ""
 
 	for (z in src.interfaces)
-		if (src.interfaces[z] == hi) break
+		if (src.interfaces[z] == hi)
+			break
 */
 	return ( ..() /*&& hclient.client.mob.z == text2num(z)*/ && hclient.client.mob.html_mob_check(/obj/machinery/computer/crew))
 
 /datum/interactive_map/crewmonitor/Topic(href, href_list[], datum/html_interface_client/hclient)
-	if(..()) return // Our parent handled it the topic call
+	if(..())
+		return // Our parent handled it the topic call
 	if (istype(hclient))
 		if (hclient && hclient.client && hclient.client.mob && isAI(hclient.client.mob))
 			var/mob/living/silicon/ai/AI = hclient.client.mob
@@ -249,8 +267,10 @@ var/global/datum/interactive_map/crewmonitor/crewmonitor = new
 
 					var/obj/machinery/camera/C = locate(/obj/machinery/camera) in range(5, tile)
 
-					if (!C) C = locate(/obj/machinery/camera) in range(10, tile)
-					if (!C) C = locate(/obj/machinery/camera) in range(15, tile)
+					if (!C)
+						C = locate(/obj/machinery/camera) in range(10, tile)
+					if (!C)
+						C = locate(/obj/machinery/camera) in range(15, tile)
 
 					if (C)
 						var/turf/current_loc = AI.eyeobj.loc

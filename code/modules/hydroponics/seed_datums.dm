@@ -99,7 +99,7 @@ var/global/list/gene_tag_masks = list()   // Gene obfuscation for delicious tria
 
 	chems = list()
 	if(prob(80))
-		chems["nutriment"] = list(rand(1,5),rand(5,10))
+		chems[NUTRIMENT] = list(rand(1,5),rand(5,10))
 
 	var/additional_chems = rand(0,5)
 	for(var/x=1;x<=additional_chems;x++)
@@ -179,52 +179,52 @@ var/global/list/gene_tag_masks = list()   // Gene obfuscation for delicious tria
 /datum/seed/proc/add_random_chemical(var/severity = 15)
 	var/list/possible_chems = list(
 		// Important Medicines
-		"rezadone" = 200,
-		"peridaxon" = 200,
+		REZADONE = 200,
+		PERIDAXON = 200,
 		// Items of Botany Importance
-		"cryoxadone" = 100,
-		"radium" = 100,
-		"plasticide" = 100,
+		CRYOXADONE = 100,
+		RADIUM = 100,
+		PLASTICIDE = 100,
 		// Items of Botanist Importance
-		"hyperzine" = 100,
-		"thermite" = 100,
-		"synaptizine" = 100,
-		"leporazine" = 100,
-		"potassium" = 100,
-		"plasma" = 100,
+		HYPERZINE = 100,
+		THERMITE = 100,
+		SYNAPTIZINE = 100,
+		LEPORAZINE = 100,
+		POTASSIUM = 100,
+		PLASMA = 100,
 		// Misc Medicines
-		"bicaridine" = 100,
-		"inaprovaline" = 100,
-		"ryetalyn" = 100,
-		"alkysine" = 100,
-		"dermaline" = 100,
-		"dexalin" = 100,
-		"dexalinp" = 75,
-		"hyronalin" = 100,
-		"blood" = 100,
+		BICARIDINE = 100,
+		INAPROVALINE = 100,
+		RYETALYN = 100,
+		ALKYSINE = 100,
+		DERMALINE = 100,
+		DEXALIN = 100,
+		DEXALINP = 75,
+		HYRONALIN = 100,
+		BLOOD = 100,
 		// Misc Poisons
-		"cryptobiolin" = 100,
-		"mercury" = 100,
-		"impedrezene" = 100,
-		"stoxin" = 100,
-		"cyanide" = 100,
-		"neurotoxin" = 100,
-		"toxin" = 100,
-		"slimejelly" = 75,
+		CRYPTOBIOLIN = 100,
+		MERCURY = 100,
+		IMPEDREZENE = 100,
+		STOXIN = 100,
+		CYANIDE = 100,
+		NEUROTOXIN = 100,
+		TOXIN = 100,
+		SLIMEJELLY = 75,
 		// Fun Things
-		"mutationtoxin" = 50,
-		"amutationtoxin" = 10,
-		"space_drugs" = 100,
-		"methylin" = 100,
-		"carppheromones" = 40,
-		"nothing" = 50,
-		"mindbreaker" = 100,
-		"minttoxin" = 60,
+		MUTATIONTOXIN = 50,
+		AMUTATIONTOXIN = 10,
+		SPACE_DRUGS = 100,
+		METHYLIN = 100,
+		CARPPHEROMONES = 40,
+		NOTHING = 50,
+		MINDBREAKER = 100,
+		MINTTOXIN = 60,
 		// Things of Dubious Use
-		"sugar" = 100,
-		"ethylredoxrazine" = 100,
-		"paroxetine" = 100,
-		"tramadol" = 100,
+		SUGAR = 100,
+		ETHYLREDOXRAZINE = 100,
+		PAROXETINE = 100,
+		TRAMADOL = 100,
 	)
 
 	for(var/rid in chems)
@@ -300,7 +300,8 @@ var/global/list/gene_tag_masks = list()   // Gene obfuscation for delicious tria
 		list("seed-kudzu",              "kudzu",				4),
 		))
 
-	if (change_packet) packet_icon = plant_icons[1]
+	if (change_packet)
+		packet_icon = plant_icons[1]
 	plant_icon = plant_icons[2]
 	growth_stages = plant_icons[3]
 
@@ -309,7 +310,8 @@ var/global/list/gene_tag_masks = list()   // Gene obfuscation for delicious tria
 //Mutates a specific trait/set of traits. Used by the Bioballistic Delivery System.
 /datum/seed/proc/apply_gene(var/datum/plantgene/gene, var/mode)
 
-	if(!gene || !gene.values || immutable > 0) return
+	if(!gene || !gene.values || immutable > 0)
+		return
 
 	switch(gene.genetype)
 		if(GENE_PHYTOCHEMISTRY)
@@ -328,7 +330,8 @@ var/global/list/gene_tag_masks = list()   // Gene obfuscation for delicious tria
 					if(isnull(gene_chem[i]))
 						chems[rid][i] = 0
 						gene_chem[i] = 0
-					if(!chems[rid][i]) continue
+					if(!chems[rid][i])
+						continue
 
 					if(chems[rid][i])
 						chems[rid][i] = max(1,round((gene_chem[i] + chems[rid][i])/2))
@@ -450,7 +453,8 @@ var/global/list/gene_tag_masks = list()   // Gene obfuscation for delicious tria
 
 //Returns a list of the desired trait values.
 /datum/seed/proc/get_gene(var/genetype)
-	if(!genetype) return 0
+	if(!genetype)
+		return 0
 
 	var/datum/plantgene/P = new()
 	P.genetype = genetype
@@ -588,8 +592,9 @@ var/global/list/gene_tag_masks = list()   // Gene obfuscation for delicious tria
 		var/mob/living/carbon/human/H = user
 		if(istype(H))
 			if(!H.check_body_part_coverage(HANDS))
-				for(var/assblast in list("r_hand", "l_hand"))
-					if(stung) continue
+				for(var/assblast in list(LIMB_RIGHT_HAND, LIMB_LEFT_HAND))
+					if(stung)
+						continue
 					var/datum/organ/external/affecting = H.get_organ(assblast)
 					if(affecting && affecting.is_existing() && affecting.is_usable() && affecting.is_organic())
 						stung = 1
@@ -609,15 +614,20 @@ var/global/list/gene_tag_masks = list()   // Gene obfuscation for delicious tria
 								to_chat(H, "<span class='danger'>You are stung by \the [seed_name]!</span>")
 								if(hematophage)
 									if(tray && H.species && !(H.species.flags & NO_BLOOD)) //the indentation gap doesn't stop from getting wider
-										var/drawing = min(15, H.vessel.get_reagent_amount("blood"))
-										H.vessel.remove_reagent("blood", drawing)
-										tray.reagents.add_reagent("blood", drawing)
-	if(ligneous)
+										var/drawing = min(15, H.vessel.get_reagent_amount(BLOOD))
+										H.vessel.remove_reagent(BLOOD, drawing)
+										tray.reagents.add_reagent(BLOOD, drawing)
+	if(ligneous && success)
 		if(istype(user, /mob/living/carbon))
 			var/mob/living/carbon/M = user
-			if((!M.l_hand || !M.l_hand.is_sharp()) && (!M.r_hand || !M.r_hand.is_sharp()))
+			for(var/obj/item/I in M.held_items)
+				if(I.is_sharp())
+					success = 1
+					break
+
+			if(!success)
 				to_chat(M, "<span class='warning'>The stems on this plant are too tough to cut by hand, you'll need something sharp in one of your hands to harvest it.</span>")
-				success = 0
+
 	return success
 
 // Create a seed packet directly from the plant.
@@ -632,7 +642,8 @@ var/global/list/gene_tag_masks = list()   // Gene obfuscation for delicious tria
 // is set to a new datum copied from the original. This datum won't actually
 // be put into the global datum list until the product is harvested, though.
 /datum/seed/proc/diverge(var/modified)
-	if(immutable > 0) return
+	if(immutable > 0)
+		return
 
 	//Set up some basic information.
 	var/datum/seed/new_seed = new /datum/seed()
@@ -642,11 +653,16 @@ var/global/list/gene_tag_masks = list()   // Gene obfuscation for delicious tria
 	new_seed.large = large
 
 	//Copy over everything else.
-	if(products)       new_seed.products = products.Copy()
-	if(mutants)        new_seed.mutants = mutants.Copy()
-	if(chems)          new_seed.chems = chems.Copy()
-	if(consume_gasses) new_seed.consume_gasses = consume_gasses.Copy()
-	if(exude_gasses)   new_seed.exude_gasses = exude_gasses.Copy()
+	if(products)
+		new_seed.products = products.Copy()
+	if(mutants)
+		new_seed.mutants = mutants.Copy()
+	if(chems)
+		new_seed.chems = chems.Copy()
+	if(consume_gasses)
+		new_seed.consume_gasses = consume_gasses.Copy()
+	if(exude_gasses)
+		new_seed.exude_gasses = exude_gasses.Copy()
 
 	if(modified != -1)
 		new_seed.seed_name = "[(roundstart ? "[(modified ? "modified" : "mutant")] " : "")][seed_name]"
@@ -689,6 +705,7 @@ var/global/list/gene_tag_masks = list()   // Gene obfuscation for delicious tria
 	new_seed.biolum =               biolum
 	new_seed.biolum_colour =        biolum_colour
 	new_seed.alter_temp = 			alter_temp
+	new_seed.plant_dmi =			plant_dmi
 
 	ASSERT(istype(new_seed)) //something happened... oh no...
 	return new_seed

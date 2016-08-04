@@ -73,6 +73,7 @@ var/list/medical_positions = list(
 	"Chief Medical Officer",
 	"Medical Doctor",
 	"Geneticist",
+	"Virologist",
 //	"Psychiatrist",
 	"Paramedic",
 	"Chemist"
@@ -136,7 +137,8 @@ var/list/misc_positions = list(
 
 	for(var/A in all_jobs)
 		var/datum/job/job = new A()
-		if(!job)	continue
+		if(!job)
+			continue
 		occupations += job
 
 	return occupations
@@ -146,7 +148,8 @@ var/list/misc_positions = list(
 	var/list/titles = list()
 
 	for(var/datum/job/J in jobs)
-		if(!J)	continue
+		if(!J)
+			continue
 		if(J.title == job)
 			titles = J.alt_titles
 

@@ -6,6 +6,7 @@
  *		Toy gun
  *		Toy crossbow
  *		Toy swords
+ *		Foam armblade
  *      Bomb clock
  *		Crayons
  *		Snap pops
@@ -52,7 +53,7 @@
 			if(O.reagents.total_volume < 1)
 				to_chat(user, "The [O] is empty.")
 			else if(O.reagents.total_volume >= 1)
-				if(O.reagents.has_reagent("pacid", 1))
+				if(O.reagents.has_reagent(PACID, 1))
 					to_chat(user, "The acid chews through the balloon!")
 					O.reagents.reaction(user)
 					qdel(src)
@@ -94,7 +95,7 @@
 	icon = 'icons/obj/weapons.dmi'
 	icon_state = "syndballoon"
 	item_state = "syndballoon"
-	w_class = 4.0
+	w_class = W_CLASS_LARGE
 
 /*
  * Fake telebeacon
@@ -132,7 +133,7 @@
 	flags = FPRINT
 	siemens_coefficient = 1
 	slot_flags = SLOT_BELT
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	starting_materials = list(MAT_IRON = 10, MAT_GLASS = 10)
 	w_type = RECYK_MISC
 	melt_temperature = MELTPOINT_PLASTIC
@@ -186,7 +187,7 @@
 	icon_state = "357-7"
 	flags = FPRINT
 	siemens_coefficient = 1
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	starting_materials = list(MAT_IRON = 10, MAT_GLASS = 10)
 	melt_temperature = MELTPOINT_PLASTIC
 	w_type = RECYK_MISC
@@ -213,7 +214,7 @@
 	icon_state = "crossbow"
 	item_state = "crossbow"
 	flags = FPRINT
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	attack_verb = list("attacks", "strikes", "hits")
 	var/bullets = 5
 
@@ -235,8 +236,10 @@
 
 
 /obj/item/toy/crossbow/afterattack(atom/target as mob|obj|turf|area, mob/user as mob, flag)
-	if(!isturf(target.loc) || target == user) return
-	if(flag) return
+	if(!isturf(target.loc) || target == user)
+		return
+	if(flag)
+		return
 
 	if (locate (/obj/structure/table, src.loc))
 		return
@@ -250,12 +253,15 @@
 
 		for(var/i=0, i<6, i++)
 			if (D)
-				if(D.loc == trg) break
+				if(D.loc == trg)
+					break
 				step_towards(D,trg)
 
 				for(var/mob/living/M in D.loc)
-					if(!istype(M,/mob/living)) continue
-					if(M == user) continue
+					if(!istype(M,/mob/living))
+						continue
+					if(M == user)
+						continue
 					for(var/mob/O in viewers(world.view, D))
 						O.show_message(text("<span class = 'danger'>[] was hit by the foam dart!</span>", M), 1)
 					new /obj/item/toy/ammo/crossbow(M.loc)
@@ -264,7 +270,8 @@
 					return
 
 				for(var/atom/A in D.loc)
-					if(A == user) continue
+					if(A == user)
+						continue
 					if(A.density)
 						new /obj/item/toy/ammo/crossbow(A.loc)
 						qdel(D)
@@ -302,7 +309,8 @@
 		src.bullets--
 	else if (M.lying && src.bullets == 0)
 		for(var/mob/O in viewers(M, null))
-			if (O.client)	O.show_message(text("<span class = 'danger'><B>[] casually lines up a shot with []'s head, pulls the trigger, then realizes they are out of ammo and drops to the floor in search of some!</B></span>", user, M), 1, "<span class = 'danger'>You hear someone fall</span>", 2)
+			if (O.client)
+				O.show_message(text("<span class = 'danger'><B>[] casually lines up a shot with []'s head, pulls the trigger, then realizes they are out of ammo and drops to the floor in search of some!</B></span>", user, M), 1, "<span class = 'danger'>You hear someone fall</span>", 2)
 		user.Weaken(5)
 	return
 
@@ -312,7 +320,7 @@
 	icon = 'icons/obj/toy.dmi'
 	icon_state = "foamdart"
 	flags = FPRINT
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 
 /obj/effect/foam_dart_dummy
 	name = ""
@@ -333,7 +341,7 @@
 	icon_state = "sword0"
 	item_state = "sword0"
 	var/active = 0.0
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	flags = FPRINT
 	attack_verb = list("attacks", "strikes", "hits")
 
@@ -344,13 +352,13 @@
 			playsound(user, 'sound/weapons/saberon.ogg', 50, 1)
 			src.icon_state = "swordblue"
 			src.item_state = "swordblue"
-			src.w_class = 4
+			src.w_class = W_CLASS_LARGE
 		else
 			to_chat(user, "<span class = 'info'>You push the plastic blade back down into the handle.</span>")
 			playsound(user, 'sound/weapons/saberoff.ogg', 50, 1)
 			src.icon_state = "sword0"
 			src.item_state = "sword0"
-			src.w_class = 2
+			src.w_class = W_CLASS_SMALL
 		src.add_fingerprint(user)
 		return
 
@@ -365,8 +373,21 @@
 	slot_flags = SLOT_BELT | SLOT_BACK
 	force = 5
 	throwforce = 5
-	w_class = 3
+	w_class = W_CLASS_MEDIUM
 	attack_verb = list("attacks", "slashes", "stabs", "slices")
+
+/*
+ * Foam armblade
+ */
+/obj/item/toy/foamblade
+	name = "foam armblade"
+	desc = "it says \"Sternside Changs #1 fan\" on it. "
+	icon = 'icons/obj/toy.dmi'
+	icon_state = "foamblade"
+	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/swords_axes.dmi', "right_hand" = 'icons/mob/in-hand/right/swords_axes.dmi')
+	item_state = "armblade"
+	attack_verb = list("pricked", "absorbed", "gored", "stung")
+	w_class = W_CLASS_MEDIUM
 
 /*
  * Clock bomb
@@ -380,11 +401,11 @@
 
 /obj/item/toy/bomb/New()
 	..()
-	overlays += "plasma"
+	overlays += image(icon = icon, icon_state = "plasma")
 	var/icon/J = new(icon, icon_state = "oxygen")
 	J.Shift(WEST, 13)
 	underlays += J
-	overlays += "device"
+	overlays += image(icon = icon, icon_state = "device")
 	rendered = getFlatIcon(src)
 
 /obj/item/toy/bomb/examine(mob/user)
@@ -404,7 +425,7 @@
 	desc = "A colourful crayon. Looks tasty. Mmmm..."
 	icon = 'icons/obj/crayons.dmi'
 	icon_state = "crayonred"
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	attack_verb = list("attacks", "colours", "colors")//teehee
 	var/colour = "#A10808" //RGB
 	var/shadeColour = "#220000" //RGB
@@ -440,7 +461,7 @@
 	throwforce = 30.0
 	throw_speed = 10
 	throw_range = 30
-	w_class = 1
+	w_class = W_CLASS_TINY
 
 
 /obj/item/toy/snappop/virus/throw_impact(atom/hit_atom)
@@ -467,7 +488,7 @@
 	desc = "Wow!"
 	icon = 'icons/obj/toy.dmi'
 	icon_state = "snappop"
-	w_class = 1
+	w_class = W_CLASS_TINY
 
 /obj/item/toy/snappop/throw_impact(atom/hit_atom)
 	..()
@@ -508,7 +529,7 @@
 /obj/item/toy/waterflower/New()
 	. = ..()
 	create_reagents(10)
-	reagents.add_reagent("water", 10)
+	reagents.add_reagent(WATER, 10)
 
 /obj/item/toy/waterflower/attack(mob/living/carbon/human/M as mob, mob/user as mob)
 	return
@@ -568,7 +589,7 @@
 	icon = 'icons/obj/toy.dmi'
 	icon_state = "ripleytoy"
 	var/cooldown = 0
-	w_class = 2
+	w_class = W_CLASS_SMALL
 
 //all credit to skasi for toy mech fun ideas
 /obj/item/toy/prize/attack_self(mob/user as mob)
@@ -649,7 +670,7 @@
 	desc = "The holy grail of all programmers. It seems a bit leaky."
 	icon = 'icons/obj/module.dmi'
 	icon_state = "gooncode"
-	w_class = 1
+	w_class = W_CLASS_TINY
 
 	suicide_act(mob/user)
 		to_chat(viewers(user), "<span class = 'danger'>[user] is using [src.name]! It looks like \he's  trying to re-add poo!</span>")
@@ -671,7 +692,7 @@
 	desc = "A device used to project your voice. Quietly."
 	icon_state = "megaphone"
 	item_state = "radio"
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	flags = FPRINT
 	siemens_coefficient = 1
 
@@ -710,7 +731,7 @@
 	icon = 'icons/obj/toy.dmi'
 	icon_state = "greyshirt"
 	var/cooldown = 0
-	w_class = 2
+	w_class = W_CLASS_SMALL
 
 /obj/item/toy/gasha/greyshirt
 	name = "toy greyshirt"

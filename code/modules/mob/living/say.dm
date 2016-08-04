@@ -96,26 +96,32 @@ var/list/department_radio_keys = list(
 	return default_language
 
 /mob/living/hivecheck()
-	if (isalien(src)) return 1
-	if (!ishuman(src)) return
+	if (isalien(src))
+		return 1
+	if (!ishuman(src))
+		return
 	var/mob/living/carbon/human/H = src
 	if (H.ears)
 		var/obj/item/device/radio/headset/dongle
 		if(istype(H.ears,/obj/item/device/radio/headset))
 			dongle = H.ears
-		if(!istype(dongle)) return
-		if(dongle.translate_hive) return 1
+		if(!istype(dongle))
+			return
+		if(dongle.translate_hive)
+			return 1
 
 
 // /vg/edit: Added forced_by for handling braindamage messages and meme stuff
 /mob/living/say(var/message, bubble_type)
 	say_testing(src, "/mob/living/say(\"[message]\", [bubble_type]")
-	if(timestopped) return //under the effects of time magick
+	if(timestopped)
+		return //under the effects of time magick
 	message = trim(copytext(message, 1, MAX_MESSAGE_LEN))
 	message = capitalize(message)
 
 	say_testing(src, "Say start, message=[message]")
-	if(!message) return
+	if(!message)
+		return
 
 	var/message_mode = get_message_mode(message)
 	if(silent)
@@ -237,7 +243,8 @@ var/list/department_radio_keys = list(
 
 /mob/living/send_speech(var/datum/speech/speech, var/message_range=7, var/bubble_type) // what is bubble type?
 	say_testing(src, "/mob/living/send_speech() start, msg = [speech.message]; message_range = [message_range]; language = [speech.language ? speech.language.name : "None"]; speaker = [speech.speaker];")
-	if(isnull(message_range)) message_range = 7
+	if(isnull(message_range))
+		message_range = 7
 
 	var/list/listeners = get_hearers_in_view(message_range, speech.speaker) | observers
 
@@ -246,7 +253,7 @@ var/list/department_radio_keys = list(
 	for (var/atom/movable/listener in listeners)
 		listener.Hear(speech, rendered)
 
-	send_speech_bubble(speech, bubble_type, listeners)
+	send_speech_bubble(speech.message, bubble_type, listeners)
 
 /mob/living/proc/say_test(var/text)
 	var/ending = copytext(text, length(text))
@@ -333,7 +340,7 @@ var/list/department_radio_keys = list(
 					var/turf/T = get_turf(src)
 					log_say("[key_name(src)] (@[T.x],[T.y],[T.z]) Ancient chat: [html_encode(speech.message)]")
 					for(var/thestone in stones)
-						var/mob/M = find_holder_of_type(thestone,/mob)
+						var/mob/M = get_holder_of_type(thestone,/mob)
 						if(M)
 							handle_render(M,themessage,src)
 					for(var/M in dead_mob_list)
@@ -353,13 +360,15 @@ var/list/department_radio_keys = list(
 	switch(message_mode)
 		if(MODE_R_HAND)
 			say_testing(src, "/mob/living/radio() - MODE_R_HAND")
-			if (r_hand)
-				r_hand.talk_into(speech)
+			var/obj/item/I = get_held_item_by_index(GRASP_RIGHT_HAND)
+			if(I)
+				I.talk_into(speech)
 			return ITALICS | REDUCE_RANGE
 		if(MODE_L_HAND)
 			say_testing(src, "/mob/living/radio() - MODE_L_HAND")
-			if (l_hand)
-				l_hand.talk_into(speech)
+			var/obj/item/I = get_held_item_by_index(GRASP_LEFT_HAND)
+			if(I)
+				I.talk_into(speech)
 			return ITALICS | REDUCE_RANGE
 		if(MODE_INTERCOM)
 			say_testing(src, "/mob/living/radio() - MODE_INTERCOM")
@@ -382,7 +391,8 @@ var/list/department_radio_keys = list(
 		return 1
 
 /mob/living/construct_chat_check(var/setting = 0) //setting: 0 is to speak over general into cultchat, 1 is to speak over channel into cultchat, 2 is to hear cultchat
-	if(!mind) return
+	if(!mind)
+		return
 
 	if(setting == 0) //overridden for constructs
 		return
@@ -404,10 +414,12 @@ var/list/department_radio_keys = list(
 	//speech bubble
 	var/list/speech_bubble_recipients = list()
 	for(var/mob/M in hearers)
+		M.heard(src)
 		if(M.client)
 			speech_bubble_recipients.Add(M.client)
 	spawn(0)
-		var/image/speech_bubble = image('icons/mob/talk.dmi', find_holder(src), "h[bubble_type][say_test(message)]",MOB_LAYER+1)
+		var/image/speech_bubble = image('icons/mob/talk.dmi', get_holder_at_turf_level(src), "h[bubble_type][say_test(message)]",MOB_LAYER+1)
+		speech_bubble.plane = BASE_PLANE
 		speech_bubble.appearance_flags = RESET_COLOR
 		flick_overlay(speech_bubble, speech_bubble_recipients, 30)
 
@@ -415,7 +427,8 @@ var/list/department_radio_keys = list(
 	if(client)
 		client.images += speech_bubble
 		spawn(30)
-			if(client) client.images -= speech_bubble
+			if(client)
+				client.images -= speech_bubble
 
 /obj/effect/speech_bubble
 	var/mob/parent

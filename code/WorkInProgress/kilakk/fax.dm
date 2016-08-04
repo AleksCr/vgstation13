@@ -47,7 +47,8 @@ var/list/alldepartments = list("Central Command")
 /obj/machinery/faxmachine/RefreshParts()
 	var/scancount = 0
 	for(var/obj/item/weapon/stock_parts/SP in component_parts)
-		if(istype(SP, /obj/item/weapon/stock_parts/scanning_module)) scancount += SP.rating-1
+		if(istype(SP, /obj/item/weapon/stock_parts/scanning_module))
+			scancount += SP.rating-1
 	cooldown_time = initial(cooldown_time) - 300*scancount
 
 /obj/machinery/faxmachine/attack_ghost(mob/user as mob)
@@ -138,8 +139,9 @@ var/list/alldepartments = list("Central Command")
 
 	if(href_list["remove"])
 		if(tofax)
-			tofax.loc = usr.loc
-			usr.put_in_hands(tofax)
+			tofax.forceMove(loc)
+			if(Adjacent(usr))
+				usr.put_in_hands(tofax)
 			to_chat(usr, "<span class='notice'>You take the paper out of \the [src].</span>")
 			tofax = null
 

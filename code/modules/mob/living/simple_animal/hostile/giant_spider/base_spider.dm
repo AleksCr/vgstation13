@@ -33,8 +33,7 @@ var/global/list/spider_types = typesof(/mob/living/simple_animal/hostile/giant_s
 	cold_damage_per_tick = 20
 	faction = "spiders"
 	pass_flags = PASSTABLE
-	move_to_delay = 6
-	speed = 3
+	speed = 6
 	attack_sound = 'sound/weapons/spiderlunge.ogg'
 
 	species_type = /mob/living/simple_animal/hostile/giant_spider
@@ -51,7 +50,7 @@ var/global/list/spider_types = typesof(/mob/living/simple_animal/hostile/giant_s
 	var/icon_aggro = null // for swapping to when we get aggressive
 	var/busy = 0
 	var/poison_per_bite = 5
-	var/poison_type = "toxin"
+	var/poison_type = TOXIN
 
 	//Spider aren't affected by atmos.
 	min_oxy = 0
@@ -176,7 +175,8 @@ var/global/list/spider_types = typesof(/mob/living/simple_animal/hostile/giant_s
 				L.reagents.add_reagent(poison_type, poison_per_bite)
 
 /mob/living/simple_animal/hostile/giant_spider/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 	..()
 	if(!stat)
 		if(stance == HOSTILE_STANCE_IDLE)
@@ -186,7 +186,7 @@ var/global/list/spider_types = typesof(/mob/living/simple_animal/hostile/giant_s
 				for(var/turf/T in orange(20, src))
 					move_targets.Add(T)*/
 				stop_automated_movement = 1
-				Goto(pick(orange(20, src)), move_to_delay)
+				Goto(pick(orange(20, src)), speed)
 				spawn(50)
 					stop_automated_movement = 0
 					walk(src,0)

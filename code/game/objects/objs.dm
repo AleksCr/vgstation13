@@ -1,4 +1,4 @@
-var/global/list/reagents_to_log = list("fuel"  =  "welder fuel", "plasma"=  "plasma", "pacid" =  "polytrinic acid", "sacid" =  "sulphuric acid", "amutationtoxin" = "slime mutation toxin")
+var/global/list/reagents_to_log = list(FUEL, PLASMA, PACID, SACID, AMUTATIONTOXIN, MINDBREAKER, SPIRITBREAKER, CYANIDE, IMPEDREZENE)
 /obj
 	var/origin_tech = null	//Used by R&D to determine what research bonuses it grants.
 	var/reliability = 100	//Used by SOME devices to determine how reliable they are.
@@ -26,6 +26,7 @@ var/global/list/reagents_to_log = list("fuel"  =  "welder fuel", "plasma"=  "pla
 
 	var/holomap = FALSE // Whether we should be on the holomap.
 	var/auto_holomap = FALSE // Whether we automatically soft-add ourselves to the holomap in New(), make sure this is false is something does it manually.
+	plane = OBJ_PLANE
 
 /obj/New()
 	..()
@@ -64,6 +65,12 @@ var/global/list/reagents_to_log = list("fuel"  =  "welder fuel", "plasma"=  "pla
 
 /obj/proc/cultify()
 	qdel(src)
+
+/obj/proc/wrenchable()
+	return 0
+
+/obj/proc/can_wrench_shuttle()
+	return 0
 
 /obj/proc/is_sharp()
 	return sharpness
@@ -172,7 +179,8 @@ var/global/list/reagents_to_log = list("fuel"  =  "welder fuel", "plasma"=  "pla
 		if(current_size >= STAGE_FIVE)
 			anchored = 0
 			step_towards(src, S)
-	else step_towards(src, S)
+	else
+		step_towards(src, S)
 
 /obj/proc/multitool_menu(var/mob/user,var/obj/item/device/multitool/P)
 	return "<b>NO MULTITOOL_MENU!</b>"
@@ -299,6 +307,30 @@ a {
 		machine._using += src
 		machine.in_use = 1
 
+/obj/proc/wrenchAnchor(var/mob/user) //proc to wrench an object that can be secured
+	for(var/obj/other in loc) //ensure multiple things aren't anchored in one place
+		if(other.anchored == 1 && other.density == 1 && density && !anchored && !(other.flags & ON_BORDER))
+			to_chat(user, "\The [other] is already anchored in this location.")
+			return -1
+	if(!anchored)
+		if(!istype(src.loc, /turf/simulated/floor)) //Prevent from anchoring shit to shuttles / space
+			if(istype(src.loc, /turf/simulated/shuttle) && !can_wrench_shuttle()) //If on the shuttle and not wrenchable to shuttle
+				to_chat(user, "<span class = 'notice'>You can't secure \the [src] to this!</span>")
+				return -1
+			if(istype(src.loc, /turf/space)) //if on a space tile
+				to_chat(user, "<span class = 'notice'>You can't secure \the [src] to space!</span>")
+				return -1
+	user.visible_message(	"[user] begins to [anchored ? "unbolt" : "bolt"] \the [src] [anchored ? "from" : "to" ] the floor.",
+							"You begin to [anchored ? "unbolt" : "bolt"] \the [src] [anchored ? "from" : "to" ] the floor.")
+	playsound(loc, 'sound/items/Ratchet.ogg', 50, 1)
+	if(do_after(user, src, 30))
+		anchored = !anchored
+		user.visible_message(	"<span class='notice'>[user] [anchored ? "wrench" : "unwrench"]es \the [src] [anchored ? "in place" : "from its fixture"]</span>",
+								"<span class='notice'>[bicon(src)] You [anchored ? "wrench" : "unwrench"] \the [src] [anchored ? "in place" : "from its fixture"].</span>",
+								"<span class='notice'>You hear a ratchet.</span>")
+		return 1
+	return -1
+
 /obj/item/proc/updateSelfDialog()
 	var/mob/M = src.loc
 	if(istype(M) && M.client && M.machine == src)
@@ -320,13 +352,27 @@ a {
 /obj/proc/verb_pickup(mob/living/user)
 	return 0
 
+/obj/proc/can_quick_store(var/obj/item/I) //proc used to check that the current object can store another through quick equip
+	return 0
+
+/obj/proc/quick_store(var/obj/item/I) //proc used to handle quick storing
+	return 0
+
 /**
- * If a mob logouts/logins in side of an object you can use this proc.
+ * Called when a mob inside this obj's contents logs out.
  */
-/obj/proc/on_log()
-	if (isobj(loc))
+/obj/proc/on_logout(var/mob/M)
+	if(isobj(loc))
 		var/obj/location = loc
-		location.on_log()
+		location.on_logout(M)
+
+/**
+ * Called when a mob inside this obj's contents logs in.
+ */
+/obj/proc/on_login(var/mob/M)
+	if(isobj(loc))
+		var/obj/location = loc
+		location.on_login(M)
 
 // Dummy to give items special techlist for the purposes of the Device Analyser, in case you'd ever need them to give them different tech levels depending on special checks.
 /obj/proc/give_tech_list()

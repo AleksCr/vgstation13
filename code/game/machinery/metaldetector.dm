@@ -43,45 +43,19 @@
 	if(!src.allowed(perp)) //cops can do no wrong, unless set to arrest
 
 		if(!wpermit(perp))
-			if(istype(perp.l_hand, /obj/item/weapon/gun) || istype(perp.l_hand, /obj/item/weapon/melee))
-				if(!(perp.l_hand.type in safe_weapons))
+			for(var/obj/item/I in perp.held_items)
+				if(check_for_weapons(I))
 					threatcount += 4
 
-			if(istype(perp.r_hand, /obj/item/weapon/gun) || istype(perp.r_hand, /obj/item/weapon/melee))
-				if(!(perp.r_hand.type in safe_weapons))
-					threatcount += 4
-
-			if(istype(perp.back, /obj/item/weapon/gun) || istype(perp.back, /obj/item/weapon/melee))
-				if(!(perp.back.type in safe_weapons))
+			for(var/obj/item/I in list(perp.back, perp.belt, perp.s_store) + (scanmode ? list(perp.l_store, perp.r_store) : null))
+				if(check_for_weapons(I))
 					threatcount += 2
-
-			if(ishuman(perp))
-				if(istype(perp.belt, /obj/item/weapon/gun) || istype(perp.belt, /obj/item/weapon/melee))
-					if(!(perp.belt.type in safe_weapons))
-						threatcount += 2
-
-				if(istype(perp.s_store, /obj/item/weapon/gun) || istype(perp.s_store, /obj/item/weapon/melee))
-					if(!(perp.s_store.type in safe_weapons))
-						threatcount += 2
-
-			if(scanmode)
-				if(istype(perp.l_store, /obj/item/weapon/gun) || istype(perp.l_store, /obj/item/weapon/melee))
-					if(!(perp.l_store.type in safe_weapons))
-						threatcount += 2
-
-
-				if(istype(perp.r_store, /obj/item/weapon/gun) || istype(perp.r_store, /obj/item/weapon/melee))
-					if(!(perp.r_store.type in safe_weapons))
-						threatcount += 2
-
-
 
 				if (perp.back && istype(perp.back, /obj/item/weapon/storage/backpack))
 					var/obj/item/weapon/storage/backpack/B = perp.back
 					for(var/obj/item/weapon/thing in B.contents)
-						if(istype(thing, /obj/item/weapon/gun) || istype(thing, /obj/item/weapon/melee))
-							if(!(thing.type in safe_weapons))
-								threatcount += 2
+						if(check_for_weapons(I))
+							threatcount += 2
 
 		if(idmode)
 			if(!perp.wear_id)
@@ -151,9 +125,11 @@
 	*/
 
 /obj/machinery/detector/Topic(href, href_list)
-	if(..()) return 1
+	if(..())
+		return 1
 
-	if(usr) usr.set_machine(src)
+	if(usr)
+		usr.set_machine(src)
 
 	switch(href_list["action"])
 		if("idmode")
@@ -194,7 +170,8 @@
 		onclose(user, "detector")
 		return
 
-	else:
+	else
+		:
 
 		src.visible_message("<span class = 'warning'>ACCESS DENIED!</span>")
 
@@ -210,7 +187,8 @@
 	var/maxthreat = 0
 	var/sndstr = ""
 	for (var/mob/O in viewers(src, null))
-		if(isobserver(O)) continue
+		if(isobserver(O))
+			continue
 		if (get_dist(src, O) > src.range)
 			continue
 		var/list/ourretlist = src.assess_perp(O)
@@ -262,7 +240,11 @@
 	playsound(get_turf(src), sndstr, 100, 1)
 
 
-
+/obj/machinery/detector/proc/check_for_weapons(var/obj/item/slot_item) //Unused anywhere, copypasted in secbot.dm
+	if(istype(slot_item, /obj/item/weapon/gun) || istype(slot_item, /obj/item/weapon/melee))
+		if(!(slot_item.type in safe_weapons))
+			return 1
+	return 0
 
 
 /obj/machinery/detector/emp_act(severity)
@@ -286,6 +268,6 @@
 	if(..() == 1)
 		overlays.len = 0
 		if(anchored)
-			src.overlays += "[base_state]-s"
+			src.overlays += image(icon = icon, icon_state = "[base_state]-s")
 
 

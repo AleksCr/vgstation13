@@ -10,7 +10,7 @@
 	announce=0
 	narnar=0
 
-	layer = LIGHTING_LAYER + 2 // ITS SO BRIGHT
+	layer = SUPER_PORTAL_LAYER
 
 	consume_range = 6
 
@@ -31,8 +31,6 @@
 	return
 
 /obj/machinery/singularity/narsie/large/exit/consume(const/atom/A)
-	if(!(A.singuloCanEat()))
-		return 0
 
 	if (istype(A, /mob/living/))
 		var/mob/living/L = A
@@ -61,8 +59,6 @@
 				continue
 
 			if (dist > consume_range && canPull(AM))
-				if(!(AM.singuloCanEat()))
-					continue
 
 				if (101 == AM.invisibility)
 					continue

@@ -1,7 +1,7 @@
 /obj/item/clothing/suit/storage
 	var/list/can_only_hold = new/list() //List of objects which this item can store (if set, it can't store anything else)
 	var/list/cant_hold = new/list() //List of objects which this item can't store (in effect only if can_only_hold isn't set)
-	var/fits_max_w_class = 2 //Max size of objects that this object can store (in effect only if can_only_hold isn't set)
+	var/fits_max_w_class = W_CLASS_SMALL //Max size of objects that this object can store (in effect only if can_only_hold isn't set)
 	var/max_combined_w_class = 4 //The sum of the w_classes of all the items in this storage item.
 	var/storage_slots = 2 //The number of storage slots in this container.
 	var/obj/screen/storage/boxes = null
@@ -56,10 +56,10 @@
 /obj/item/clothing/suit/storage/proc/orient_objs(tx, ty, mx, my)
 	var/cx = tx
 	var/cy = ty
-	src.boxes.screen_loc = text("[tx]:,[ty] to [mx],[my]")
+	src.boxes.screen_loc = text("[tx],[ty] to [mx],[my]")
 	for(var/obj/O in src.contents)
 		O.screen_loc = text("[cx],[cy]")
-		O.layer = 20
+		O.hud_layerise()
 		cx++
 		if (cx > mx)
 			cx = tx
@@ -71,15 +71,15 @@
 /obj/item/clothing/suit/storage/proc/standard_orient_objs(var/rows,var/cols)
 	var/cx = 4
 	var/cy = 2+rows
-	src.boxes.screen_loc = text("4:16,2:16 to [4+cols]:16,[2+rows]:16")
+	src.boxes.screen_loc = text("4:[WORLD_ICON_SIZE/2],2:[WORLD_ICON_SIZE/2] to [4+cols]:[WORLD_ICON_SIZE/2],[2+rows]:[WORLD_ICON_SIZE/2]")
 	for(var/obj/O in src.contents)
-		O.screen_loc = text("[cx]:16,[cy]:16")
-		O.layer = 20
+		O.screen_loc = text("[cx]:[WORLD_ICON_SIZE/2],[cy]:[WORLD_ICON_SIZE/2]")
+		O.hud_layerise()
 		cx++
 		if (cx > (4+cols))
 			cx = 4
 			cy--
-	src.closer.screen_loc = text("[4+cols+1]:16,2:16")
+	src.closer.screen_loc = text("[4+cols+1]:[WORLD_ICON_SIZE/2],2:[WORLD_ICON_SIZE/2]")
 	return
 
 //This proc determins the size of the inventory to be displayed. Please touch it only if you know what you're doing.
@@ -160,24 +160,18 @@
 /obj/item/clothing/suit/storage/MouseDrop(atom/over_object)
 	if(ishuman(usr))
 		var/mob/living/carbon/human/M = usr
-		if (!( istype(over_object, /obj/screen) ))
+		if (!( istype(over_object, /obj/screen/inventory) ))
 			return ..()
 		playsound(get_turf(src), "rustle", 50, 1, -5)
-		if (M.wear_suit == src && !M.incapacitated())
-			if (over_object.name == "r_hand")
-				M.u_equip(src,0)
-				M.put_in_r_hand(src)
-			//	if (!( M.r_hand ))
-			//		M.u_equip(src)
-			//		M.r_hand = src
-			else if (over_object.name == "l_hand")
-				M.u_equip(src,0)
-				M.put_in_l_hand(src)
-				//	if (!( M.l_hand ))
-				//		M.u_equip(src)
-				//		M.l_hand = src
-			M.update_inv_wear_suit()
-			src.add_fingerprint(usr)
+		if (M.wear_suit == src && !M.incapacitated() && Adjacent(M))
+			var/obj/screen/inventory/OI = over_object
+
+			if(OI.hand_index && M.put_in_hand_check(src, OI.hand_index))
+				M.u_equip(src, 0)
+				M.put_in_hand(OI.hand_index, src)
+				M.update_inv_wear_suit()
+				src.add_fingerprint(usr)
+
 			return
 		if( (over_object == usr && in_range(src, usr) || usr.contents.Find(src)) && usr.s_active)
 			usr.s_active.close(usr)
@@ -210,11 +204,11 @@
 	boxes.master = src
 	boxes.icon_state = "block"
 	boxes.screen_loc = "7,7 to 10,8"
-	boxes.layer = 19
+	boxes.layer = HUD_BASE_LAYER
 	closer = getFromPool(/obj/screen/close)
 	closer.master = src
 	closer.icon_state = "x"
-	closer.layer = 20
+	closer.layer = HUD_ITEM_LAYER
 	orient2hud()
 
 /obj/item/clothing/suit/emp_act(severity)

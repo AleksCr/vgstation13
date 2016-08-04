@@ -5,9 +5,7 @@
 	icon_state = "grey baby slime"
 	pass_flags = PASSTABLE
 	speak_emote = list("hums")
-
-	layer = 5
-
+	layer = SLIME_LAYER
 	maxHealth = 150
 	health = 150
 	gender = NEUTER
@@ -104,17 +102,25 @@
 /mob/living/carbon/slime/movement_delay()
 	var/tally = 0
 
+	var/turf/T = loc
+	if(istype(T))
+		tally = T.adjust_slowdown(src, tally)
+
+		if(tally == -1)
+			return tally
+
 	var/health_deficiency = (100 - health)
-	if(health_deficiency >= 45) tally += (health_deficiency / 25)
+	if(health_deficiency >= 45)
+		tally += (health_deficiency / 25)
 
 	if (bodytemperature < 183.222)
 		tally += (283.222 - bodytemperature) / 10 * 1.75
 
 	if(reagents)
-		if(reagents.has_reagent("hyperzine")) // hyperzine slows slimes down
+		if(reagents.has_reagent(HYPERZINE)) // hyperzine slows slimes down
 			tally *= 2 // moves twice as slow
 
-		if(reagents.has_reagent("frostoil")) // frostoil also makes them move VEEERRYYYYY slow
+		if(reagents.has_reagent(FROSTOIL)) // frostoil also makes them move VEEERRYYYYY slow
 			tally *= 5
 
 	if(health <= 0) // if damaged, the slime moves twice as slow
@@ -135,12 +141,18 @@
 		if(!client && powerlevel > 0)
 			var/probab = 10
 			switch(powerlevel)
-				if(1 to 2) probab = 20
-				if(3 to 4) probab = 30
-				if(5 to 6) probab = 40
-				if(7 to 8) probab = 60
-				if(9) 	   probab = 70
-				if(10) 	   probab = 95
+				if(1 to 2)
+					probab = 20
+				if(3 to 4)
+					probab = 30
+				if(5 to 6)
+					probab = 40
+				if(7 to 8)
+					probab = 60
+				if(9)
+					probab = 70
+				if(10)
+					probab = 95
 			if(prob(probab))
 
 
@@ -262,11 +274,13 @@
 
 
 /mob/living/carbon/slime/blob_act()
-	..()
 	if(flags & INVULNERABLE)
 		return
-	if (stat == 2)
+	if (stat == DEAD)
 		return
+	..()
+
+	playsound(loc, 'sound/effects/blobattack.ogg',50,1)
 	var/shielded = 0
 
 	var/damage = null
@@ -298,13 +312,15 @@
 		to_chat(M, "You cannot attack people before the game has started.")
 		return
 
-	if(Victim) return // can't attack while eating!
+	if(Victim)
+		return // can't attack while eating!
 
 	if (health > -100)
 
 		for(var/mob/O in viewers(src, null))
 			if ((O.client && !( O.blinded )))
 				O.show_message(text("<span class='danger'>The [M.name] has glomped []!</span>", src), 1)
+		add_logs(M, src, "glomped on", 0)
 
 		var/damage = rand(1, 3)
 		attacked += 5
@@ -337,7 +353,8 @@
 		updatehealth()
 
 /mob/living/carbon/slime/attack_paw(mob/living/carbon/monkey/M as mob)
-	if(!(istype(M, /mob/living/carbon/monkey)))	return//Fix for aliens receiving double messages when attacking other aliens.
+	if(!(istype(M, /mob/living/carbon/monkey)))
+		return//Fix for aliens receiving double messages when attacking other aliens.
 
 	if (!ticker)
 		to_chat(M, "You cannot attack people before the game has started.")
@@ -608,7 +625,8 @@
 
 
 /mob/living/carbon/slime/restrained()
-	if(timestopped) return 1 //under effects of time magick
+	if(timestopped)
+		return 1 //under effects of time magick
 	return 0
 
 
@@ -726,11 +744,11 @@ mob/living/carbon/slime/var/temperature_resistance = T0C+75
 	icon_state = "grey slime extract"
 	flags = FPRINT
 	force = 1.0
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throwforce = 1.0
 	throw_speed = 3
 	throw_range = 6
-	origin_tech = "biotech=4"
+	origin_tech = Tc_BIOTECH + "=4"
 	var/Uses = 1 // uses before it goes inert
 	var/enhanced = 0 //has it been enhanced before?
 	var/primarytype = /mob/living/carbon/slime
@@ -923,7 +941,7 @@ mob/living/carbon/slime/var/temperature_resistance = T0C+75
 		if(M.stat)
 			to_chat(user, "<span class='warning'>The slime is dead!</span>")
 			return..()
-		var/mob/living/simple_animal/adultslime/pet = new /mob/living/simple_animal/adultslime(M.loc)
+		var/mob/living/simple_animal/slime/adult/pet = new /mob/living/simple_animal/slime/adult(M.loc)
 		pet.icon_state = "[M.colour] adult slime"
 		pet.icon_living = "[M.colour] adult slime"
 		pet.icon_dead = "[M.colour] baby slime dead"
@@ -944,7 +962,6 @@ mob/living/carbon/slime/var/temperature_resistance = T0C+75
 		pet.name = newname
 		pet.real_name = newname
 		qdel (src)
-
 
 /obj/item/weapon/slimesteroid
 	name = "slime steroid"
@@ -1063,7 +1080,7 @@ mob/living/carbon/slime/var/temperature_resistance = T0C+75
 	desc = "a golem's thick outer shell"
 	icon_state = "golem"
 	item_state = "golem"
-	w_class = 4//bulky item
+	w_class = W_CLASS_LARGE//bulky item
 	gas_transfer_coefficient = 0.90
 	permeability_coefficient = 0.50
 	body_parts_covered = UPPER_TORSO|LOWER_TORSO|LEGS|FEET|ARMS|HANDS|HEAD
@@ -1124,7 +1141,8 @@ mob/living/carbon/slime/var/temperature_resistance = T0C+75
 	icon = 'icons/obj/rune.dmi'
 	icon_state = "golem"
 	unacidable = 1
-	layer = TURF_LAYER
+	plane = ABOVE_TURF_PLANE
+	layer = RUNE_LAYER
 	var/list/mob/dead/observer/ghosts[0]
 
 	New()
@@ -1171,7 +1189,8 @@ mob/living/carbon/slime/var/temperature_resistance = T0C+75
 			volunteer(O)
 
 	attack_ghost(var/mob/dead/observer/O)
-		if(!O) return
+		if(!O)
+			return
 		volunteer(O)
 
 	proc/check_observer(var/mob/dead/observer/O)
@@ -1235,11 +1254,11 @@ mob/living/carbon/slime/var/temperature_resistance = T0C+75
 	icon_state = "slime extract"
 	flags = 0
 	force = 1.0
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throwforce = 1.0
 	throw_speed = 3
 	throw_range = 6
-	origin_tech = "biotech=4"
+	origin_tech = Tc_BIOTECH + "=4"
 	var/POWERFLAG = 0 // sshhhhhhh
 	var/Flush = 30
 	var/Uses = 5 // uses before it goes inert
@@ -1276,13 +1295,13 @@ mob/living/carbon/slime/var/temperature_resistance = T0C+75
 	icon = 'icons/mob/mob.dmi'
 	icon_state = "slime egg-growing"
 	bitesize = 12
-	origin_tech = "biotech=4"
+	origin_tech = Tc_BIOTECH + "=4"
 	var/grown = 0
 
 /obj/item/weapon/reagent_containers/food/snacks/egg/slime/New()
 	..()
-	reagents.add_reagent("nutriment", 4)
-	reagents.add_reagent("slimejelly", 1)
+	reagents.add_reagent(NUTRIMENT, 4)
+	reagents.add_reagent(SLIMEJELLY, 1)
 	spawn(rand(1200,1500))//the egg takes a while to "ripen"
 		Grow()
 

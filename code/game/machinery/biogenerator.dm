@@ -26,9 +26,9 @@
 	category="Food"
 
 /datum/biogen_recipe/food/milk
-	id="milk"
-	name="milk"
-	reagent="milk"
+	id=MILK
+	name=MILK
+	reagent=MILK
 	cost=20
 	amount_per_unit=10
 	other_amounts=list(5)
@@ -53,7 +53,7 @@
 /datum/biogen_recipe/nutrient/ez
 	id="ez"
 	name="E-Z-Nutrient"
-	reagent="eznutrient"
+	reagent=EZNUTRIENT
 	cost=10
 	amount_per_unit=10
 	other_amounts=list(5)
@@ -61,7 +61,7 @@
 /datum/biogen_recipe/nutrient/l4z
 	id="l4z"
 	name="Left 4 Zed"
-	reagent="left4zed"
+	reagent=LEFT4ZED
 	cost=20
 	amount_per_unit=10
 	other_amounts=list(5)
@@ -69,7 +69,7 @@
 /datum/biogen_recipe/nutrient/rh
 	id="rh"
 	name="Robust Harvest"
-	reagent="robustharvest"
+	reagent=ROBUSTHARVEST
 	cost=25
 	amount_per_unit=10
 	other_amounts=list(5)
@@ -107,7 +107,7 @@
 	id="moneybag"
 	name="Money Bag"
 	result=/obj/item/weapon/storage/bag/money
-	
+
 /datum/biogen_recipe/leather/plants
 	cost=350
 	id="plants"
@@ -137,6 +137,18 @@
 	id="briefcase"
 	name="Leather Briefcase"
 	result=/obj/item/weapon/storage/briefcase/biogen
+
+/datum/biogen_recipe/leather/knifeholster
+	cost=250
+	id="knifeholster"
+	name="Boot Knife Holster"
+	result=/obj/item/clothing/accessory/holster/knife/boot
+
+/datum/biogen_recipe/leather/handgunholster
+	cost=350
+	id="handgunholster"
+	name="Handgun Holster"
+	result=/obj/item/clothing/accessory/holster/handgun/biogenerator
 
 /datum/biogen_recipe/paper
 	category="Paper"
@@ -293,7 +305,8 @@
 
 	for(var/biotype in typesof(/datum/biogen_recipe))
 		var/datum/biogen_recipe/recipe = new biotype
-		if(recipe.id=="") continue
+		if(recipe.id=="")
+			continue
 		if(!(recipe.category in recipe_categories))
 			recipe_categories[recipe.category]=list()
 		recipe_categories[recipe.category] += recipe.id
@@ -303,8 +316,10 @@
 	var/manipcount = 0
 	var/lasercount = 0
 	for(var/obj/item/weapon/stock_parts/SP in component_parts)
-		if(istype(SP, /obj/item/weapon/stock_parts/manipulator)) manipcount += SP.rating
-		if(istype(SP, /obj/item/weapon/stock_parts/micro_laser)) lasercount += SP.rating
+		if(istype(SP, /obj/item/weapon/stock_parts/manipulator))
+			manipcount += SP.rating
+		if(istype(SP, /obj/item/weapon/stock_parts/micro_laser))
+			lasercount += SP.rating
 	speed_coefficient = 2/manipcount
 	biomass_coefficient = 3*lasercount
 
@@ -365,9 +380,9 @@
 		return
 	if(..())
 		if(panel_open)
-			overlays += "biogen-open"
+			overlays += image(icon = icon, icon_state = "biogen-open")
 		else
-			overlays -= "biogen-open"
+			overlays -= image(icon = icon, icon_state = "biogen-open")
 		update_icon()
 		return 1
 	return
@@ -427,9 +442,10 @@
 	var/S = 0
 	for(var/obj/item/weapon/reagent_containers/food/snacks/grown/I in contents)
 		S += 5
-		if(I.reagents.get_reagent_amount("nutriment") < 0.1)
+		if(I.reagents.get_reagent_amount(NUTRIMENT) < 0.1)
 			points += 1
-		else points += I.reagents.get_reagent_amount("nutriment")*biomass_coefficient
+		else
+			points += I.reagents.get_reagent_amount(NUTRIMENT)*biomass_coefficient
 		qdel(I)
 	if(S)
 		processing = 1
@@ -480,7 +496,8 @@
 
 /obj/machinery/biogenerator/Topic(href, href_list)
 
-	if(..()) return 1
+	if(..())
+		return 1
 
 	usr.set_machine(src)
 

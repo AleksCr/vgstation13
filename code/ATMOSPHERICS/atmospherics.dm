@@ -37,7 +37,8 @@ Pipelines + Other Objects -> Pipe network
 	var/obj/machinery/atmospherics/mirror //not actually an object reference, but a type. The reflection of the current pipe
 	var/default_colour = null
 	var/image/pipe_image
-
+	plane = ABOVE_TURF_PLANE
+	layer = PIPE_LAYER
 	var/piping_layer = PIPING_LAYER_DEFAULT //used in multi-pipe-on-tile - pipes only connect if they're on the same pipe layer
 
 	internal_gravity = 1 // Ventcrawlers can move in pipes without gravity since they have traction.
@@ -62,7 +63,10 @@ Pipelines + Other Objects -> Pipe network
 	centre_overlay = null
 	..()
 
-
+/obj/machinery/atmospherics/ex_act(severity)
+	for(var/atom/movable/A in src) //ventcrawling is serious business
+		A.ex_act(severity)
+	..()
 
 /obj/machinery/atmospherics/update_icon(var/adjacent_procd,node_list)
 	if(!can_be_coloured && color)
@@ -83,7 +87,8 @@ Pipelines + Other Objects -> Pipe network
 	alpha = invisibility ? 128 : 255
 	if (!update_icon_ready)
 		update_icon_ready = 1
-	else underlays.Cut()
+	else
+		underlays.Cut()
 	var/list/missing_nodes = list()
 	for(var/direction in cardinal)
 		if(direction & initialize_directions)
@@ -106,7 +111,8 @@ Pipelines + Other Objects -> Pipe network
 				nodecon.color = default_colour
 			else if(connected_node.default_colour && connected_node.default_colour != "#B4B4B4")
 				nodecon.color = connected_node.default_colour
-			else nodecon.color = "#B4B4B4"
+			else
+				nodecon.color = "#B4B4B4"
 			underlays += nodecon
 		if (!adjacent_procd && connected_node.update_icon_ready && !(istype(connected_node,/obj/machinery/atmospherics/pipe/simple)))
 			connected_node.update_icon(1)
@@ -114,7 +120,8 @@ Pipelines + Other Objects -> Pipe network
 		var/image/nodeex = node_ex["[missing_dir]"]
 		if(!color)
 			nodeex.color = default_colour ? default_colour : "#B4B4B4"
-		else nodeex.color = null
+		else
+			nodeex.color = null
 		underlays += nodeex
 
 
@@ -163,7 +170,8 @@ Pipelines + Other Objects -> Pipe network
 				else
 					error("UNKNOWN RESPONSE FROM [src.type]/getNodeType([node_id]): [node_type]")
 					return
-			if(!found) continue
+			if(!found)
+				continue
 			var/node_var="node[node_id]"
 			if(!(node_var in vars))
 				testing("[node_var] not in vars.")
@@ -176,7 +184,8 @@ Pipelines + Other Objects -> Pipe network
 // Re-enabled for debugging.
 /obj/machinery/atmospherics/process()
 
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 	. = build_network()
 	//testing("[src] called parent process to build_network()")
 
@@ -239,7 +248,8 @@ Pipelines + Other Objects -> Pipe network
 		if(istype(W, /obj/item/weapon/wrench/socket) && istype(src, /obj/machinery/atmospherics/pipe))
 			to_chat(user, "<span class='warning'>You begin to open the pressure release valve on the pipe...</span>")
 			if(do_after(user, src, 50))
-				if(!loc) return
+				if(!loc)
+					return
 				playsound(get_turf(src), 'sound/machines/hiss.ogg', 50, 1)
 				user.visible_message("[user] vents \the [src].",
 									"You have vented \the [src].",
@@ -257,6 +267,7 @@ Pipelines + Other Objects -> Pipe network
 			"<span class='notice'>You have unfastened \the [src].</span>", \
 			"You hear a ratchet.")
 		getFromPool(/obj/item/pipe, loc, null, null, src)
+		investigation_log(I_ATMOS,"was removed by [user]/([user.ckey]) at [formatJumpTo(loc)].")
 		//P.New(loc, make_from=src) //new /obj/item/pipe(loc, make_from=src)
 		qdel(src)
 	return 1
@@ -297,4 +308,7 @@ Pipelines + Other Objects -> Pipe network
 		user.canmove = 1
 
 /obj/machinery/atmospherics/proc/can_crawl_through()
+	return 1
+
+/obj/machinery/atmospherics/is_airtight() //Technically, smoke would be able to pop up from a vent, but enabling ventcrawling mobs to do that still doesn't sound like a good idea
 	return 1

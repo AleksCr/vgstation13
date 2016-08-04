@@ -1,6 +1,6 @@
 #define SPECIAL -1
 #define NON_CONTAGIOUS 0
-#define BLOOD 1
+#define BLOODBORNE 1
 #define CONTACT_FEET 2
 #define CONTACT_HANDS 3
 #define CONTACT_GENERAL 4
@@ -78,7 +78,8 @@ var/list/diseases = typesof(/datum/disease) - /datum/disease
 	return
 
 /datum/disease/proc/has_cure()//check if affected_mob has required reagents.
-	if((!cure_id && !cure_list) || !curable) return 0
+	if((!cure_id && !cure_list) || !curable)
+		return 0
 	var/result = 1
 	if(!cure_list || cure_list == cure_id) //if no cure_list or cure list is the same as cure_id, just check _id
 		if(istype(cure_id, /list)) //if cure_id is a list, check inside of it
@@ -121,7 +122,7 @@ var/list/diseases = typesof(/datum/disease) - /datum/disease
 	if(force_spread)
 		how_spread = force_spread
 
-	if(how_spread == SPECIAL || how_spread == NON_CONTAGIOUS || how_spread == BLOOD)//does not spread
+	if(how_spread == SPECIAL || how_spread == NON_CONTAGIOUS || how_spread == BLOODBORNE)//does not spread
 		return
 
 	if(stage < contagious_period) //the disease is not contagious at this stage
@@ -134,7 +135,7 @@ var/list/diseases = typesof(/datum/disease) - /datum/disease
 			return
 	if(affected_mob.reagents != null)
 		if(affected_mob)
-			if(affected_mob.reagents.has_reagent("spaceacillin"))
+			if(affected_mob.reagents.has_reagent(SPACEACILLIN))
 				return // Don't spread if we have spaceacillin in our system.
 
 	var/check_range = airborne_range//defaults to airborne - range 2

@@ -72,9 +72,9 @@
 	icon_state = state_base
 	if(playing)
 		if(emagged)
-			overlays += "[state_base]-emagged"
+			overlays += image(icon = icon, icon_state = "[state_base]-emagged")
 		else
-			overlays += "[state_base]-running"
+			overlays += image(icon = icon, icon_state = "[state_base]-running")
 
 /obj/machinery/media/tapedeck/proc/check_reload()
 	return world.time > last_reload + JUKEBOX_RELOAD_COOLDOWN
@@ -97,7 +97,8 @@
 	//	t += " | <a href=\"?src=\ref[src];screen=[JUKEBOX_SCREEN_SETTINGS]\">Settings</a>"
 	t += "</div>"
 	switch(screen)
-		if(JUKEBOX_SCREEN_MAIN)     t += ScreenMain(user)
+		if(JUKEBOX_SCREEN_MAIN)
+			t += ScreenMain(user)
 		//if(JUKEBOX_SCREEN_SETTINGS) t += ScreenSettings(user)
 
 	user.set_machine(src)
@@ -221,7 +222,8 @@
 		to_chat(usr, "<span class='warning'>You can't push buttons when your fingers go right through them, dummy.</span>")
 		return
 
-	if(..()) return 1
+	if(..())
+		return 1
 
 	if (href_list["power"])
 		playing=!playing
@@ -280,7 +282,7 @@
 	return attack_hand(usr)
 
 /obj/machinery/media/jukebox/process()
-	if(!playlist)
+	if(!playlist && config.media_base_url)
 		var/url="[config.media_base_url]/index.php?playlist=[playlist_id]"
 		testing("[src] - Updating playlist from [url]...")
 		var/response = world.Export(url)

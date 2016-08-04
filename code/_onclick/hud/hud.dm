@@ -19,11 +19,8 @@ var/global/obj/screen/clicker/catcher = new()
 	var/hotkey_ui_hidden = 0	//This is to hide the buttons that can be used via hotkeys. (hotkeybuttons list of buttons)
 
 	var/obj/screen/lingchemdisplay
-	var/obj/screen/blobpwrdisplay
-	var/obj/screen/blobhealthdisplay
 	var/obj/screen/vampire_blood_display // /vg/
-	var/obj/screen/r_hand_hud_object
-	var/obj/screen/l_hand_hud_object
+	var/list/obj/screen/hand_hud_objects = list()
 	var/obj/screen/action_intent
 	var/obj/screen/move_intent
 
@@ -45,11 +42,8 @@ var/global/obj/screen/clicker/catcher = new()
 	disarm_intent = null
 	help_intent = null
 	lingchemdisplay = null
-	blobpwrdisplay = null
-	blobhealthdisplay = null
 	vampire_blood_display = null
-	r_hand_hud_object = null
-	l_hand_hud_object = null
+	hand_hud_objects = null
 	action_intent = null
 	move_intent = null
 	adding = null
@@ -66,23 +60,39 @@ var/global/obj/screen/clicker/catcher = new()
 	if(ishuman(mymob))
 		var/mob/living/carbon/human/H = mymob
 		if(inventory_shown && hud_shown)
-			if(H.shoes)		H.shoes.screen_loc = ui_shoes
-			if(H.gloves)	H.gloves.screen_loc = ui_gloves
-			if(H.ears)		H.ears.screen_loc = ui_ears
-			if(H.glasses)	H.glasses.screen_loc = ui_glasses
-			if(H.w_uniform)	H.w_uniform.screen_loc = ui_iclothing
-			if(H.wear_suit)	H.wear_suit.screen_loc = ui_oclothing
-			if(H.wear_mask)	H.wear_mask.screen_loc = ui_mask
-			if(H.head)		H.head.screen_loc = ui_head
+			if(H.shoes)
+				H.shoes.screen_loc = ui_shoes
+			if(H.gloves)
+				H.gloves.screen_loc = ui_gloves
+			if(H.ears)
+				H.ears.screen_loc = ui_ears
+			if(H.glasses)
+				H.glasses.screen_loc = ui_glasses
+			if(H.w_uniform)
+				H.w_uniform.screen_loc = ui_iclothing
+			if(H.wear_suit)
+				H.wear_suit.screen_loc = ui_oclothing
+			if(H.wear_mask)
+				H.wear_mask.screen_loc = ui_mask
+			if(H.head)
+				H.head.screen_loc = ui_head
 		else
-			if(H.shoes)		H.shoes.screen_loc = null
-			if(H.gloves)	H.gloves.screen_loc = null
-			if(H.ears)		H.ears.screen_loc = null
-			if(H.glasses)	H.glasses.screen_loc = null
-			if(H.w_uniform)	H.w_uniform.screen_loc = null
-			if(H.wear_suit)	H.wear_suit.screen_loc = null
-			if(H.wear_mask)	H.wear_mask.screen_loc = null
-			if(H.head)		H.head.screen_loc = null
+			if(H.shoes)
+				H.shoes.screen_loc = null
+			if(H.gloves)
+				H.gloves.screen_loc = null
+			if(H.ears)
+				H.ears.screen_loc = null
+			if(H.glasses)
+				H.glasses.screen_loc = null
+			if(H.w_uniform)
+				H.w_uniform.screen_loc = null
+			if(H.wear_suit)
+				H.wear_suit.screen_loc = null
+			if(H.wear_mask)
+				H.wear_mask.screen_loc = null
+			if(H.head)
+				H.head.screen_loc = null
 
 
 /datum/hud/proc/persistant_inventory_update()
@@ -92,20 +102,78 @@ var/global/obj/screen/clicker/catcher = new()
 	if(ishuman(mymob))
 		var/mob/living/carbon/human/H = mymob
 		if(hud_shown)
-			if(H.s_store)	H.s_store.screen_loc = ui_sstore1
-			if(H.wear_id)	H.wear_id.screen_loc = ui_id
-			if(H.belt)		H.belt.screen_loc = ui_belt
-			if(H.back)		H.back.screen_loc = ui_back
-			if(H.l_store)	H.l_store.screen_loc = ui_storage1
-			if(H.r_store)	H.r_store.screen_loc = ui_storage2
+			if(H.s_store)
+				H.s_store.screen_loc = ui_sstore1
+			if(H.wear_id)
+				H.wear_id.screen_loc = ui_id
+			if(H.belt)
+				H.belt.screen_loc = ui_belt
+			if(H.back)
+				H.back.screen_loc = ui_back
+			if(H.l_store)
+				H.l_store.screen_loc = ui_storage1
+			if(H.r_store)
+				H.r_store.screen_loc = ui_storage2
 		else
-			if(H.s_store)	H.s_store.screen_loc = null
-			if(H.wear_id)	H.wear_id.screen_loc = null
-			if(H.belt)		H.belt.screen_loc = null
-			if(H.back)		H.back.screen_loc = null
-			if(H.l_store)	H.l_store.screen_loc = null
-			if(H.r_store)	H.r_store.screen_loc = null
+			if(H.s_store)
+				H.s_store.screen_loc = null
+			if(H.wear_id)
+				H.wear_id.screen_loc = null
+			if(H.belt)
+				H.belt.screen_loc = null
+			if(H.back)
+				H.back.screen_loc = null
+			if(H.l_store)
+				H.l_store.screen_loc = null
+			if(H.r_store)
+				H.r_store.screen_loc = null
 
+/datum/hud/proc/init_hand_icons(var/new_icon, var/new_color, var/new_alpha)
+	for(var/i = 1 to mymob.held_items.len) //Hands
+		var/obj/screen/inventory/inv_box = getFromPool(/obj/screen/inventory)
+		inv_box.name = "[mymob.get_index_limb_name(i)]"
+
+		if(mymob.get_direction_by_index(i) == "right_hand")
+			inv_box.dir = WEST
+		else
+			inv_box.dir = EAST
+
+		inv_box.icon = new_icon ? new_icon : 'icons/mob/screen1_White.dmi'
+		inv_box.icon_state = "hand_inactive"
+		if(mymob && mymob.active_hand == i)
+			inv_box.icon_state = "hand_active"
+		inv_box.screen_loc = mymob.get_held_item_ui_location(i)
+		inv_box.slot_id = null
+		inv_box.hand_index = i
+		inv_box.layer = HUD_BASE_LAYER
+		inv_box.color = new_color ? new_color : inv_box.color
+		inv_box.alpha = new_alpha ? new_alpha : inv_box.alpha
+		src.hand_hud_objects += inv_box
+		src.adding += inv_box
+
+/datum/hud/proc/update_hand_icons()
+	var/obj/screen/inventory/example = locate(/obj/screen/inventory) in hand_hud_objects
+
+	var/new_icon = 'icons/mob/screen1_White.dmi'
+	var/new_color = null
+	var/new_alpha = 255
+
+	if(example)
+		new_icon = example.icon
+		new_color = example.color
+		new_alpha = example.alpha
+
+	for(var/obj/screen/inventory/IN in hand_hud_objects)
+		if(mymob.client)
+			adding -= IN
+			mymob.client.screen -= IN
+
+		returnToPool(IN)
+
+	if(mymob.client)
+		adding = list()
+		init_hand_icons(new_icon, new_color, new_alpha)
+		mymob.client.screen += adding
 
 /datum/hud/proc/instantiate()
 	if(!ismob(mymob))
@@ -146,25 +214,27 @@ var/global/obj/screen/clicker/catcher = new()
 		robot_hud()
 	else if(isobserver(mymob))
 		ghost_hud()
-	else if(isovermind(mymob))
-		blob_hud()
 	else if(isshade(mymob))
 		shade_hud()
+	else if(isborer(mymob))
+		borer_hud()
 	else if(isconstruct(mymob))
 		construct_hud()
 	else if(isobserver(mymob))
 		ghost_hud()
+
 	if(isliving(mymob))
 		var/obj/screen/using
 		using = getFromPool(/obj/screen)
 		using.dir = SOUTHWEST
 		using.icon = 'icons/mob/screen1.dmi'
 		using.icon_state = "block"
-		using.layer = 19
+		using.layer = HUD_BASE_LAYER
 		src.adding += using
 		mymob:schematics_background = using
 
 	reload_fullscreen()
+	update_parallax_existence()
 
 //Triggered when F12 is pressed (Unless someone changed something in the DMF)
 /mob/verb/button_pressed_F12()
@@ -173,7 +243,8 @@ var/global/obj/screen/clicker/catcher = new()
 
 	if(hud_used && client)
 		if(ishuman(src))
-			if(!src.client) return
+			if(!src.client)
+				return
 
 			if(hud_used.hud_shown)
 				hud_used.hud_shown = 0
@@ -188,8 +259,7 @@ var/global/obj/screen/clicker/catcher = new()
 
 				//Due to some poor coding some things need special treatment:
 				//These ones are a part of 'adding', 'other' or 'hotkeybuttons' but we want them to stay
-				src.client.screen += src.hud_used.l_hand_hud_object	//we want the hands to be visible
-				src.client.screen += src.hud_used.r_hand_hud_object	//we want the hands to be visible
+				src.client.screen += src.hud_used.hand_hud_objects
 				src.client.screen += src.hud_used.action_intent		//we want the intent swticher visible
 				src.hud_used.action_intent.screen_loc = ui_acti_alt	//move this to the alternative position, where zone_select usually is.
 
@@ -218,7 +288,8 @@ var/global/obj/screen/clicker/catcher = new()
 		to_chat(usr, "<span class='warning'>This mob type does not use a HUD.</span>")
 
 /datum/hud/proc/toggle_show_schematics_display(var/list/override = null,clear = 0, var/obj/item/device/rcd/R)
-	if(!isliving(mymob)) return
+	if(!isliving(mymob))
+		return
 
 	var/mob/living/L = mymob
 
@@ -226,21 +297,18 @@ var/global/obj/screen/clicker/catcher = new()
 	update_schematics_display(override, clear, R)
 
 /datum/hud/proc/update_schematics_display(var/list/override = null, clear,var/obj/item/device/rcd/R)
-	if(!isliving(mymob)) return
+	if(!isliving(mymob))
+		return
 
 	var/mob/living/L = mymob
 
 	if(L.shown_schematics_background && !clear)
+
 		if(!istype(R))
-			switch(L.hand)
-				if(1)
-					R = L.l_hand
-					if(!istype(R))
-						return
-				else
-					R = L.r_hand
-					if(!istype(R))
-						return
+			R = L.get_active_hand()
+			if(!istype(R))
+				return
+
 		if((!R.schematics || !R.schematics.len) && !override)
 			to_chat(usr, "<span class='danger'>This [R] has no schematics to choose from.</span>")
 			return
@@ -255,7 +323,7 @@ var/global/obj/screen/clicker/catcher = new()
 			R.closer.master = R
 			R.closer.transform *= 0.8
 		var/display_rows = round((override.len) / 8) +1 //+1 because round() returns floor of number
-		L.schematics_background.screen_loc = "CENTER-4:16,SOUTH+1:7 to CENTER+3:16,SOUTH+[display_rows]:7"
+		L.schematics_background.screen_loc = "CENTER-4:[WORLD_ICON_SIZE/2],SOUTH+1:[7*PIXEL_MULTIPLIER] to CENTER+3:[WORLD_ICON_SIZE/2],SOUTH+[display_rows]:[7*PIXEL_MULTIPLIER]"
 		L.client.screen += L.schematics_background
 
 		var/x = -4	//Start at CENTER-4,SOUTH+1
@@ -273,16 +341,16 @@ var/global/obj/screen/clicker/catcher = new()
 			//Module is not currently active
 			L.client.screen += A
 			if(x < 0)
-				A.screen_loc = "CENTER[x]:16,SOUTH+[y]:7"
+				A.screen_loc = "CENTER[x]:[WORLD_ICON_SIZE/2],SOUTH+[y]:[7*PIXEL_MULTIPLIER]"
 			else
-				A.screen_loc = "CENTER+[x]:16,SOUTH+[y]:7"
-			A.layer = 20
+				A.screen_loc = "CENTER+[x]:[WORLD_ICON_SIZE/2],SOUTH+[y]:[7*PIXEL_MULTIPLIER]"
+			A.layer = HUD_ITEM_LAYER
 
 			x++
 			if(x == 4)
 				x = -4
 				y++
-		R.closer.screen_loc = "CENTER[x < 0 ? "" : "+"][x]:16,SOUTH+[y]:7"
+		R.closer.screen_loc = "CENTER[x < 0 ? "" : "+"][x]:[WORLD_ICON_SIZE/2],SOUTH+[y]:[7*PIXEL_MULTIPLIER]"
 		L.client.screen += R.closer
 
 	else

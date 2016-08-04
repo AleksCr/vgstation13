@@ -4,7 +4,8 @@
 	icon = 'icons/obj/items.dmi'
 	amount = 5
 	max_amount = 5
-	w_class = 1
+	restock_amount = 2
+	w_class = W_CLASS_TINY
 	throw_speed = 4
 	throw_range = 10
 	var/heal_brute = 0
@@ -24,7 +25,7 @@
 		var/mob/living/carbon/human/H = M
 		var/datum/organ/external/affecting = H.get_organ(user.zone_sel.selecting)
 
-		if(affecting.display_name == "head")
+		if(affecting.display_name == LIMB_HEAD)
 			if(H.head && istype(H.head,/obj/item/clothing/head/helmet/space))
 				to_chat(user, "<span class='warning'>You can't apply \the [src] through \the [H.head]!</span>")
 				return 1
@@ -58,7 +59,7 @@
 	singular_name = "gauze length"
 	desc = "Some sterile gauze to wrap around bloody stumps."
 	icon_state = "brutepack"
-	origin_tech = "biotech=1"
+	origin_tech = Tc_BIOTECH + "=1"
 
 /obj/item/stack/medical/bruise_pack/bandaid
 	name = "small bandage"
@@ -107,7 +108,7 @@
 	gender = PLURAL
 	singular_name = "ointment"
 	icon_state = "ointment"
-	origin_tech = "biotech=1"
+	origin_tech = Tc_BIOTECH + "=1"
 
 /obj/item/stack/medical/ointment/attack(mob/living/carbon/M as mob, mob/user as mob)
 	if(..())
@@ -155,7 +156,7 @@
 	desc = "An advanced trauma kit for severe injuries."
 	icon_state = "traumakit"
 	heal_brute = 10
-	origin_tech = "biotech=2"
+	origin_tech = Tc_BIOTECH + "=2"
 
 /obj/item/stack/medical/advanced/bruise_pack/attack(mob/living/carbon/M as mob, mob/user as mob)
 	if(..())
@@ -198,7 +199,7 @@
 	desc = "An advanced treatment kit for severe burns."
 	icon_state = "burnkit"
 	heal_burn = 10
-	origin_tech = "biotech=2"
+	origin_tech = Tc_BIOTECH + "=2"
 
 
 /obj/item/stack/medical/advanced/ointment/attack(mob/living/carbon/M as mob, mob/user as mob)
@@ -240,7 +241,7 @@
 		var/mob/living/carbon/human/H = M
 		var/datum/organ/external/affecting = H.get_organ(user.zone_sel.selecting)
 		var/limb = affecting.display_name
-		if(!((affecting.name == "l_arm") || (affecting.name == "r_arm") || (affecting.name == "l_leg") || (affecting.name == "r_leg")))
+		if(!((affecting.name == LIMB_LEFT_ARM) || (affecting.name == LIMB_RIGHT_ARM) || (affecting.name == LIMB_LEFT_LEG) || (affecting.name == LIMB_RIGHT_LEG)))
 			to_chat(user, "<span class='warning'>You can only apply splints on limbs!</span>")
 			return
 		if(affecting.status & ORGAN_SPLINTED)
@@ -251,9 +252,12 @@
 								"<span class='warning'>You start to apply \the [src] to [M]'s [limb].</span>", \
 								"<span class='warning'>You hear something being wrapped.</span>")
 		else
-			if((!user.hand && affecting.name == "r_arm") || (user.hand && affecting.name == "l_arm"))
+			var/datum/organ/external/OE = user.get_active_hand_organ()
+
+			if(affecting.grasp_id == OE.grasp_id)
 				to_chat(user, "<span class='warning'>You can't apply a splint to the arm you're using!</span>")
 				return
+
 			user.visible_message("<span class='warning'>[user] starts to apply \the [src] to their [limb].</span>", \
 								"<span class='warning'>You start to apply \the [src] to your [limb].</span>", \
 								"<span class='warning'>You hear something being wrapped.</span>")

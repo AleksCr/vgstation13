@@ -31,10 +31,12 @@
 
 /obj/item/weapon/gun/energy/taser/cyborg/process() //Every [recharge_time] ticks, recharge a shot for the cyborg
 	charge_tick++
-	if(charge_tick < recharge_time) return 0
+	if(charge_tick < recharge_time)
+		return 0
 	charge_tick = 0
 
-	if(!power_supply) return 0 //sanity
+	if(!power_supply)
+		return 0 //sanity
 	if(isrobot(src.loc))
 		var/mob/living/silicon/robot/R = src.loc
 		if(R && R.cell)
@@ -59,7 +61,7 @@
 	item_state = null
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/guninhands_left.dmi', "right_hand" = 'icons/mob/in-hand/right/guninhands_right.dmi')
 	fire_sound = 'sound/weapons/Gunshot.ogg'
-	origin_tech = "combat=3;materials=3;powerstorage=2"
+	origin_tech = Tc_COMBAT + "=3;" + Tc_MATERIALS + "=3;" + Tc_POWERSTORAGE + "=2"
 	charge_cost = 125
 	projectile_type = "/obj/item/projectile/energy/electrode"
 	cell_type = "/obj/item/weapon/cell"
@@ -70,11 +72,11 @@
 	name = "mini energy-crossbow"
 	desc = "A weapon favored by many of the syndicates stealth specialists."
 	icon_state = "crossbow"
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	item_state = "crossbow"
 	starting_materials = list(MAT_IRON = 2000)
 	w_type = RECYK_ELECTRONIC
-	origin_tech = "combat=2;magnets=2;syndicate=5"
+	origin_tech = Tc_COMBAT + "=2;" + Tc_MAGNETS + "=2;" + Tc_SYNDICATE + "=5"
 	silenced = 1
 	fire_sound = 'sound/weapons/ebow.ogg'
 	projectile_type = "/obj/item/projectile/energy/bolt"
@@ -94,9 +96,11 @@
 
 /obj/item/weapon/gun/energy/crossbow/process()
 	charge_tick++
-	if(charge_tick < 4) return 0
+	if(charge_tick < 4)
+		return 0
 	charge_tick = 0
-	if(!power_supply) return 0
+	if(!power_supply)
+		return 0
 	power_supply.give(100)
 	return 1
 
@@ -108,7 +112,7 @@
 /obj/item/weapon/gun/energy/crossbow/largecrossbow
 	name = "Energy Crossbow"
 	desc = "A weapon favored by syndicate infiltration teams."
-	w_class = 4.0
+	w_class = W_CLASS_LARGE
 	force = 10
 	starting_materials = list(MAT_IRON = 200000)
 	w_type = RECYK_ELECTRONIC

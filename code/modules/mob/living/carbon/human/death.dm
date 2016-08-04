@@ -13,8 +13,12 @@
 			//Override the current limb status and don't cause an explosion
 			E.droplimb(1, 1)
 
+	var/gib_radius = 0
+	if(reagents.has_reagent(LUBE))
+		gib_radius = 6 //Your insides are all lubed, so gibs travel much further
+
 	anim(target = src, a_icon = 'icons/mob/mob.dmi', flick_anim = "gibbed-h", sleeptime = 15)
-	hgibs(loc, viruses, dna, species.flesh_color, species.blood_color)
+	hgibs(loc, viruses, dna, species.flesh_color, species.blood_color, gib_radius)
 	qdel(src)
 
 /mob/living/carbon/human/dust()
@@ -31,7 +35,7 @@
 	else
 		anim(target = src, a_icon = 'icons/mob/mob.dmi', flick_anim = "dust-h", sleeptime = 15)
 
-	var/datum/organ/external/head_organ = get_organ("head")
+	var/datum/organ/external/head_organ = get_organ(LIMB_HEAD)
 	if(head_organ.status & ORGAN_DESTROYED)
 		new /obj/effect/decal/remains/human/noskull(loc)
 	else
@@ -59,7 +63,8 @@
 /mob/living/carbon/human/death(gibbed)
 	if(stat == DEAD)
 		return
-	if(healths)		healths.icon_state = "health7"
+	if(healths)
+		healths.icon_state = "health7"
 	stat = DEAD
 	dizziness = 0
 	remove_jitter()
@@ -76,7 +81,8 @@
 		//Check for last assailant's mutantrace.
 		/*if( LAssailant && ( istype( LAssailant,/mob/living/carbon/human ) ) )
 			var/mob/living/carbon/human/V = LAssailant
-			if (V.dna && (V.dna.mutantrace == "vox"))*/ //Not currently feasible due to terrible LAssailant tracking.
+			if (V.dna && (V.dna.mutantrace == "vox"))
+				*/ //Not currently feasible due to terrible LAssailant tracking.
 //		to_chat(world, "Vox kills: [vox_kills]")
 		vox_kills++ //Bad vox. Shouldn't be killing humans.
 	if(ishuman(LAssailant))
@@ -130,7 +136,7 @@
 	status_flags |= DISFIGURED	//Makes them unknown without fucking up other stuff like admintools
 	update_body(0)
 	update_mutantrace()
-	vessel.remove_reagent("blood",vessel.get_reagent_amount("blood"))
+	vessel.remove_reagent(BLOOD,vessel.get_reagent_amount(BLOOD))
 	return
 
 /mob/living/carbon/human/proc/Drain()

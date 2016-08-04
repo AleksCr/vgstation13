@@ -2,10 +2,10 @@
 	name = "chair"
 	desc = "You sit in this. Either by will or force."
 	icon_state = "chair"
-
 	sheet_amt = 1
-
-	var/overrideghostspin = 0 //Set it to 1 if ghosts should NEVER be able to spin this
+	var/image/buckle_overlay = null // image for overlays when a mob is buckled to the chair
+	var/image/secondary_buckle_overlay = null // for those really complicated chairs
+	var/noghostspin = 0 //Set it to 1 if ghosts should NEVER be able to spin this
 
 	lock_type = /datum/locking_category/chair
 
@@ -13,6 +13,11 @@
 	..()
 	spawn(3)
 		handle_layer()
+
+/obj/structure/bed/chair/can_spook()
+	. = ..()
+	if(.)
+		return !noghostspin
 
 /obj/structure/bed/chair/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	if(istype(W, /obj/item/assembly/shock_kit))
@@ -42,9 +47,9 @@
 
 /obj/structure/bed/chair/proc/handle_layer()
 	if(dir == NORTH)
-		src.layer = FLY_LAYER
+		plane = ABOVE_HUMAN_PLANE
 	else
-		src.layer = OBJ_LAYER
+		plane = OBJ_PLANE
 
 /obj/structure/bed/chair/proc/spin()
 	change_dir(turn(dir, 90))
@@ -57,14 +62,21 @@
 	if(!usr || !isturf(usr.loc))
 		return
 
-	if((!config.ghost_interaction && !blessed) || overrideghostspin)
+	if(!config.ghost_interaction || !can_spook())
 		if(usr.isUnconscious() || usr.restrained())
 			return
+
+	if(isobserver(usr))
+		var/mob/dead/observer/ghost = usr
+		if(ghost.lastchairspin <= world.time - 5) //do not spam this
+			investigation_log(I_GHOST, "|| was rotated by [key_name(ghost)][ghost.locked_to ? ", who was haunting [ghost.locked_to]" : ""]")
+		ghost.lastchairspin = world.time
 
 	spin()
 
 /obj/structure/bed/chair/MouseDrop_T(mob/M as mob, mob/user as mob)
-	if(!istype(M)) return
+	if(!istype(M))
+		return
 	var/mob/living/carbon/human/target = null
 	if(ishuman(M))
 		target = M
@@ -92,11 +104,11 @@
 // Chair types
 /obj/structure/bed/chair/wood
 	autoignition_temperature = AUTOIGNITION_WOOD
-	fire_fuel = 3
+	fire_fuel = 1
 	// TODO:  Special ash subtype that looks like charred chair legs
 
 	sheet_type = /obj/item/stack/sheet/wood
-	sheet_amt = 3
+	sheet_amt = 1
 
 /obj/structure/bed/chair/wood/normal
 	icon_state = "wooden_chair"
@@ -131,13 +143,14 @@
 	desc = "It looks comfy."
 	icon_state = "comfychair_black"
 
-	sheet_amt = 2
 
-	var/image/armrest
+	sheet_amt = 1
+
 
 /obj/structure/bed/chair/comfy/New()
 	..()
-	armrest = image("icons/obj/objects.dmi", "[icon_state]_armrest", MOB_LAYER + 0.1)
+	buckle_overlay = image("icons/obj/objects.dmi", "[icon_state]_armrest", CHAIR_ARMREST_LAYER)
+	buckle_overlay.plane = ABOVE_HUMAN_PLANE
 
 /obj/structure/bed/chair/comfy/lock_atom(var/atom/movable/AM)
 	..()
@@ -150,9 +163,13 @@
 /obj/structure/bed/chair/comfy/update_icon()
 	..()
 	if(locked_atoms.len)
-		overlays += armrest
+		overlays += buckle_overlay
+		if(secondary_buckle_overlay)
+			overlays += secondary_buckle_overlay
 	else
-		overlays -= armrest
+		overlays -= buckle_overlay
+		if(secondary_buckle_overlay)
+			overlays -= secondary_buckle_overlay
 
 /obj/structure/bed/chair/comfy/brown
 	icon_state = "comfychair_brown"
@@ -173,15 +190,14 @@
 
 /obj/structure/bed/chair/office
 	icon_state = "officechair_white"
-	var/image/back
-
-	sheet_amt = 5
+	sheet_amt = 1
 
 	anchored = 0
 
 /obj/structure/bed/chair/office/New()
 	..()
-	back = image("icons/obj/objects.dmi", "[icon_state]-overlay", MOB_LAYER + 0.1)
+	buckle_overlay = image("icons/obj/objects.dmi", "[icon_state]-overlay", CHAIR_ARMREST_LAYER)
+	buckle_overlay.plane = ABOVE_HUMAN_PLANE
 
 /obj/structure/bed/chair/office/lock_atom(var/atom/movable/AM)
 	. = ..()
@@ -194,9 +210,22 @@
 /obj/structure/bed/chair/office/update_icon()
 	..()
 	if(locked_atoms.len)
-		overlays += back
+		overlays += buckle_overlay
 	else
-		overlays -= back
+		overlays -= buckle_overlay
+
+	handle_layer() 				         // part of layer fix
+
+
+/obj/structure/bed/chair/office/handle_layer() // Fixes layer problem when and office chair is buckled and facing north
+	if(dir == NORTH && !locked_atoms.len)
+		layer = CHAIR_ARMREST_LAYER
+		plane = ABOVE_HUMAN_PLANE
+	else
+		layer = OBJ_LAYER
+		plane = OBJ_PLANE
+
+
 
 /obj/structure/bed/chair/office/light
 	icon_state = "officechair_white"
@@ -204,5 +233,143 @@
 /obj/structure/bed/chair/office/dark
 	icon_state = "officechair_dark"
 
+
+
 // Subtype only for seperation purposes.
 /datum/locking_category/chair
+
+
+// Couches, offshoot of /comfy/ so that the armrest code can be used easily
+
+/obj/structure/bed/chair/comfy/couch
+	name = "couch"
+	desc = "Looks really comfy."
+	sheet_amt = 2
+	anchored = 1
+	noghostspin = 1
+	var/image/legs
+	color = null
+
+// layer stuff
+
+/obj/structure/bed/chair/comfy/couch/New()
+
+	legs = image("icons/obj/objects.dmi", "[icon_state]_legs", CHAIR_LEG_LAYER)		// since i dont want the legs colored they are a separate overlay
+	legs.plane = OBJ_PLANE															//
+	legs.appearance_flags = RESET_COLOR												//
+	overlays += legs
+	secondary_buckle_overlay = image("icons/obj/objects.dmi", "[icon_state]_armrest_legs", CHAIR_ARMREST_LAYER)		// since i dont want the legs colored they are a separate overlay
+	secondary_buckle_overlay.plane = ABOVE_HUMAN_PLANE																//
+	secondary_buckle_overlay.appearance_flags = RESET_COLOR
+	..()
+	overlays += buckle_overlay
+
+
+/obj/structure/bed/chair/comfy/couch/turn/handle_layer() // makes sure mobs arent buried under certain chair sprites
+	layer = OBJ_LAYER
+	plane = OBJ_PLANE
+
+
+
+
+
+
+
+
+
+// Grey base couch
+
+
+/obj/structure/bed/chair/comfy/couch/left
+	icon_state = "couch_left"
+
+/obj/structure/bed/chair/comfy/couch/right/
+	icon_state = "couch_right"
+
+/obj/structure/bed/chair/comfy/couch/mid/ // mid refers to a straight couch part
+	icon_state = "couch_mid"
+
+/obj/structure/bed/chair/comfy/couch/turn/inward// and turn is a corner couch part
+	icon_state = "couch_turn_in"
+
+/obj/structure/bed/chair/comfy/couch/turn/outward/
+	icon_state = "couch_turn_out"
+
+
+// #cbcab9 beige
+
+/obj/structure/bed/chair/comfy/couch/left/beige
+	color = "#cbcab9"
+/obj/structure/bed/chair/comfy/couch/right/beige
+	color = "#cbcab9"
+/obj/structure/bed/chair/comfy/couch/mid/beige
+	color = "#cbcab9"
+/obj/structure/bed/chair/comfy/couch/turn/inward/beige
+	color = "#cbcab9"
+/obj/structure/bed/chair/comfy/couch/turn/outward/beige
+	color = "#cbcab9"
+
+// #bab866 lime
+/obj/structure/bed/chair/comfy/couch/left/lime
+	color = "#bab866"
+/obj/structure/bed/chair/comfy/couch/right/lime
+	color = "#bab866"
+/obj/structure/bed/chair/comfy/couch/mid/lime
+	color = "#bab866"
+/obj/structure/bed/chair/comfy/couch/turn/inward/lime
+	color = "#bab866"
+/obj/structure/bed/chair/comfy/couch/turn/outward/lime
+
+
+// #ae774c brown
+
+/obj/structure/bed/chair/comfy/couch/left/brown
+	color = "#ae774c"
+/obj/structure/bed/chair/comfy/couch/right/brown
+	color = "#ae774c"
+/obj/structure/bed/chair/comfy/couch/mid/brown
+	color = "#ae774c"
+/obj/structure/bed/chair/comfy/couch/turn/inward/brown
+	color = "#ae774c"
+/obj/structure/bed/chair/comfy/couch/turn/outward/brown
+	color = "#ae774c"
+
+// #66baba teal
+
+/obj/structure/bed/chair/comfy/couch/left/teal
+	color = "#66baba"
+/obj/structure/bed/chair/comfy/couch/right/teal
+	color = "#66baba"
+/obj/structure/bed/chair/comfy/couch/mid/teal
+	color = "#66baba"
+/obj/structure/bed/chair/comfy/couch/turn/inward/teal
+	color = "#66baba"
+/obj/structure/bed/chair/comfy/couch/turn/outward/teal
+	color = "#66baba"
+
+// #81807c black
+
+/obj/structure/bed/chair/comfy/couch/left/black
+	color = "#81807c"
+/obj/structure/bed/chair/comfy/couch/right/black
+	color = "#81807c"
+/obj/structure/bed/chair/comfy/couch/mid/black
+	color = "#81807c"
+/obj/structure/bed/chair/comfy/couch/turn/inward/black
+	color = "#81807c"
+/obj/structure/bed/chair/comfy/couch/turn/outward/black
+	color = "#81807c"
+
+
+// #c94c4c red
+
+/obj/structure/bed/chair/comfy/couch/left/red
+	color = "#c94c4c"
+/obj/structure/bed/chair/comfy/couch/right/red
+	color = "#c94c4c"
+/obj/structure/bed/chair/comfy/couch/mid/red
+	color = "#c94c4c"
+/obj/structure/bed/chair/comfy/couch/turn/inward/red
+	color = "#c94c4c"
+/obj/structure/bed/chair/comfy/couch/turn/outward/red
+	color = "#c94c4c"

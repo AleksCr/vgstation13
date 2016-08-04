@@ -7,7 +7,7 @@
 	spread_type = SPECIAL
 	curable = 1
 	cure = "Spaceacillin & Glycerol"
-	cure_list = list("spaceacillin", "glycerol")
+	cure_list = list(SPACEACILLIN, GLYCEROL)
 	cure_chance = 50
 	agent = "Rip-LEY Alien Microbes"
 	affected_species = list("Human")
@@ -53,7 +53,8 @@
 			affected_mob.adjustToxLoss(10)
 			affected_mob.updatehealth()
 			if(prob(40))
-				if(gibbed != 0) return 0
+				if(gibbed != 0)
+					return 0
 				gibs(affected_mob)
 				gibbed = 1
 				affected_mob:Alienize()

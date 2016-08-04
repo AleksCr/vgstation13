@@ -36,7 +36,8 @@ By design, d1 is the smallest direction and d2 is the highest
 	icon_state = "0-1"
 	var/d1 = 0								// cable direction 1 (see above)
 	var/d2 = 1								// cable direction 2 (see above)
-	layer = 2.44							// just below unary stuff, which is at 2.45 and above pipes, which are at 2.4
+	plane = ABOVE_TURF_PLANE
+	layer = WIRE_LAYER
 	var/obj/item/device/powersink/attached	// holding this here for qdel
 	var/_color = "red"
 	color = "red"
@@ -47,7 +48,8 @@ By design, d1 is the smallest direction and d2 is the highest
 	var/oldnewavail = 0
 	var/oldload = 0
 
-	holomap = TRUE
+	holomap      = TRUE
+	auto_holomap = TRUE
 
 /obj/structure/cable/yellow
 	_color = "yellow"
@@ -194,7 +196,7 @@ By design, d1 is the smallest direction and d2 is the highest
 
 			message += {"in [my_area.name]. (<A HREF='?_src_=holder;adminplayerobservecoodjump=1;X=[T.x];Y=[T.y];Z=[T.z]'>JMP</A>) (<A HREF='?_src_=vars;Vars=\ref[A]'>VV</A>)"}
 
-			var/mob/M = get(A, /mob)
+			var/mob/M = get_holder_of_type(A, /mob) //Why is this here? The use already IS a mob...
 
 			if(M)
 				message += " - Cut By: [M.real_name] ([M.key]) (<A HREF='?_src_=holder;adminplayeropts=\ref[M]'>PP</A>) (<A HREF='?_src_=holder;adminmoreinfo=\ref[M]'>?</A>)"
@@ -220,7 +222,7 @@ By design, d1 is the smallest direction and d2 is the highest
 
 		shock(user, 5, 0.2)
 	else
-		if(W.is_conductor())
+		if(src.d1 && W.is_conductor()) // d1 determines if this is a cable end
 			shock(user, 50, 0.7)
 
 	src.add_fingerprint(user)

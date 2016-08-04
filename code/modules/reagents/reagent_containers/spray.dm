@@ -1,5 +1,5 @@
 // Reagents to log when sprayed
-var/global/list/logged_sprayed_reagents = list("sacid", "pacid", "lube", "fuel")
+var/global/list/logged_sprayed_reagents = list(SACID, PACID, LUBE, FUEL)
 
 /obj/item/weapon/reagent_containers/spray
 	name = "spray bottle"
@@ -10,7 +10,7 @@ var/global/list/logged_sprayed_reagents = list("sacid", "pacid", "lube", "fuel")
 	flags = OPENCONTAINER|FPRINT
 	slot_flags = SLOT_BELT
 	throwforce = 3
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	throw_speed = 2
 	throw_range = 10
 	amount_per_transfer_from_this = 10
@@ -83,6 +83,8 @@ var/global/list/logged_sprayed_reagents = list("sacid", "pacid", "lube", "fuel")
 	if (log_reagent_list.len > 0)
 		add_gamelogs(user, "sprayed {[english_list(log_reagent_list, and_text = ", ")]} with \the [src]", admin = TRUE, tp_link = TRUE)
 
+	user.investigation_log(I_CHEMS, "sprayed [amount_per_transfer_from_this]u from \a [src] \ref[src] containing [reagents.get_reagent_ids(1)] towards [A] ([A.x], [A.y], [A.z]).")
+
 	// Override for your custom puff behaviour
 	make_puff(A, user)
 
@@ -92,9 +94,9 @@ var/global/list/logged_sprayed_reagents = list("sacid", "pacid", "lube", "fuel")
 
 /obj/item/weapon/reagent_containers/spray/restock()
 	if(name == "Polyacid spray")
-		reagents.add_reagent("pacid", 2)
+		reagents.add_reagent(PACID, 2)
 	else if(name == "Lube spray")
-		reagents.add_reagent("lube", 2)
+		reagents.add_reagent(LUBE, 2)
 
 /obj/item/weapon/reagent_containers/spray/proc/make_puff(var/atom/target, var/mob/user)
 	// Create the chemical puff
@@ -124,7 +126,7 @@ var/global/list/logged_sprayed_reagents = list("sacid", "pacid", "lube", "fuel")
 
 /obj/item/weapon/reagent_containers/spray/cleaner/New()
 	..()
-	reagents.add_reagent("cleaner", 250)
+	reagents.add_reagent(CLEANER, 250)
 
 //pepperspray
 /obj/item/weapon/reagent_containers/spray/pepper
@@ -139,7 +141,7 @@ var/global/list/logged_sprayed_reagents = list("sacid", "pacid", "lube", "fuel")
 
 /obj/item/weapon/reagent_containers/spray/pepper/New()
 	..()
-	reagents.add_reagent("condensedcapsaicin", 40)
+	reagents.add_reagent(CONDENSEDCAPSAICIN, 40)
 
 // Plant-B-Gone
 /obj/item/weapon/reagent_containers/spray/plantbgone // -- Skie
@@ -152,7 +154,7 @@ var/global/list/logged_sprayed_reagents = list("sacid", "pacid", "lube", "fuel")
 
 /obj/item/weapon/reagent_containers/spray/plantbgone/New()
 	..()
-	reagents.add_reagent("plantbgone", 100)
+	reagents.add_reagent(PLANTBGONE, 100)
 
 
 //chemsprayer
@@ -163,9 +165,9 @@ var/global/list/logged_sprayed_reagents = list("sacid", "pacid", "lube", "fuel")
 	icon_state = "chemsprayer"
 	item_state = "chemsprayer"
 	throwforce = 3
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	volume = 600
-	origin_tech = "combat=3;materials=3;engineering=3;syndicate=5"
+	origin_tech = Tc_COMBAT + "=3;" + Tc_MATERIALS + "=3;" + Tc_ENGINEERING + "=3;" + Tc_SYNDICATE + "=5"
 
 	delay_spraying = FALSE
 

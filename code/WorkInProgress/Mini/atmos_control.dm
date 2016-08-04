@@ -7,9 +7,9 @@ var/global/list/atmos_controllers = list()
 	name = "Circuit Design (Central Atmosherics Computer)"
 	desc = "Allows for the construction of circuit boards used to build an Atmos Control Console."
 	id = "atmoscontrol"
-	req_tech = list("programming" = 4)
+	req_tech = list(Tc_PROGRAMMING = 4)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Console Boards"
 	build_path = /obj/item/weapon/circuitboard/atmoscontrol
 
@@ -139,7 +139,8 @@ var/global/list/atmos_controllers = list()
 
 
 /obj/machinery/computer/atmoscontrol/proc/is_in_filter(var/typepath)
-	if(!filter) return 1 // YEP.  TOTALLY.
+	if(!filter)
+		return 1 // YEP.  TOTALLY.
 	return typepath in filter
 
 //a bunch of this is copied from atmos alarms
@@ -147,7 +148,8 @@ var/global/list/atmos_controllers = list()
 	if(..())
 		return 0
 	if(href_list["close"])
-		if(usr.machine == src) usr.unset_machine()
+		if(usr.machine == src)
+			usr.unset_machine()
 		return 1
 	if(href_list["reset"])
 		current = null

@@ -35,12 +35,14 @@
 	uninstall()
 
 /datum/robot_component/proc/take_damage(brute, electronics, sharp)
-	if(installed != 1) return
+	if(installed != 1)
+		return
 
 	brute_damage += brute
 	electronics_damage += electronics
 
-	if(brute_damage + electronics_damage >= max_damage) destroy()
+	if(brute_damage + electronics_damage >= max_damage)
+		destroy()
 
 /datum/robot_component/proc/heal_damage(brute, electronics)
 	if(installed != 1)
@@ -169,12 +171,12 @@
 	siemens_coefficient = 1
 	slot_flags = SLOT_BELT
 	throwforce = 3
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throw_speed = 5
 	throw_range = 10
 	starting_materials = list(MAT_IRON = 200)
 	w_type = RECYK_ELECTRONIC
-	origin_tech = "magnets=3;engineering=3"
+	origin_tech = Tc_MAGNETS + "=3;" + Tc_ENGINEERING + "=3"
 	var/mode = 1;
 
 /obj/item/device/robotanalyzer/attack(mob/living/M as mob, mob/living/user as mob)

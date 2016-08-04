@@ -4,7 +4,6 @@
 	icon = 'icons/obj/aibots.dmi'
 	icon_state = "secbot0"
 	icon_initial = "secbot"
-	layer = 5.0
 	density = 0
 	anchored = 0
 	health = 25
@@ -56,7 +55,7 @@
 	var/turf/nearest_beacon_loc	// the nearest beacon's location
 
 	//List of weapons that secbots will not arrest for, also copypasted in ed209.dm and metaldetector.dm
-	var/safe_weapons = list(
+	var/list/safe_weapons = list(
 		/obj/item/weapon/gun/energy/laser/bluetag,
 		/obj/item/weapon/gun/energy/laser/redtag,
 		/obj/item/weapon/gun/energy/laser/practice,
@@ -157,7 +156,8 @@ Auto Patrol: []"},
 	return
 
 /obj/machinery/bot/secbot/Topic(href, href_list)
-	if(..()) return 1
+	if(..())
+		return 1
 	usr.set_machine(src)
 	src.add_fingerprint(usr)
 	if((href_list["power"]) && (src.allowed(usr)))
@@ -224,12 +224,14 @@ Auto Patrol: []"},
 /obj/machinery/bot/secbot/Emag(mob/user as mob)
 	..()
 	if(open && !locked)
-		if(user) to_chat(user, "<span class='warning'>You short out [src]'s target assessment circuits.</span>")
+		if(user)
+			to_chat(user, "<span class='warning'>You short out [src]'s target assessment circuits.</span>")
 		spawn(0)
 			for(var/mob/O in hearers(src, null))
 				O.show_message("<span class='danger'>[src] buzzes oddly!</span>", 1)
 		src.target = null
-		if(user) src.oldtarget_name = user.name
+		if(user)
+			src.oldtarget_name = user.name
 		src.last_found = world.time
 		src.anchored = 0
 		src.emagged = 2
@@ -610,7 +612,8 @@ Auto Patrol: []"},
 
 	var/datum/radio_frequency/frequency = radio_controller.return_frequency(freq)
 
-	if(!frequency) return
+	if(!frequency)
+		return
 
 	var/datum/signal/signal = getFromPool(/datum/signal)
 	signal.source = src
@@ -703,17 +706,14 @@ Auto Patrol: []"},
 /obj/machinery/bot/secbot/proc/assess_perp(mob/living/carbon/human/perp as mob)
 	var/threatcount = 0 //If threat >= 4 at the end, they get arrested
 
-	if(src.emagged == 2) return 10 //Everyone is a criminal!
+	if(src.emagged == 2)
+		return 10 //Everyone is a criminal!
 
 	if(!src.allowed(perp)) //cops can do no wrong, unless set to arrest.
 
 		if(weaponscheck && !wpermit(perp))
-			if(istype(perp.l_hand, /obj/item/weapon/gun) || istype(perp.l_hand, /obj/item/weapon/melee))
-				if(!(perp.l_hand.type in safe_weapons))
-					threatcount += 4
-
-			if(istype(perp.r_hand, /obj/item/weapon/gun) || istype(perp.r_hand, /obj/item/weapon/melee))
-				if(!(perp.r_hand.type in safe_weapons))
+			for(var/obj/item/I in perp.held_items)
+				if(check_for_weapons(I))
 					threatcount += 4
 
 			if(istype(perp.belt, /obj/item/weapon/gun) || istype(perp.belt, /obj/item/weapon/melee))
@@ -725,24 +725,23 @@ Auto Patrol: []"},
 
 		if(perp.dna && perp.dna.mutantrace && perp.dna.mutantrace != "none")
 			threatcount += 2
-
-		if(!perp.wear_id)
+		var/visible_id = perp.get_visible_id()
+		if(!visible_id)
 			if(idcheck)
 				threatcount += 4
 			else
 				threatcount += 2
 
 		//Agent cards lower threatlevel.
-		if(perp.wear_id && istype(perp.wear_id.GetID(), /obj/item/weapon/card/id/syndicate))
+		if(istype(visible_id, /obj/item/weapon/card/id/syndicate))
 			threatcount -= 2
 
 	if(src.check_records)
 		for (var/datum/data/record/E in data_core.general)
 			var/perpname = perp.name
-			if(perp.wear_id)
-				var/obj/item/weapon/card/id/id = perp.wear_id.GetID()
-				if(id)
-					perpname = id.registered_name
+			var/obj/item/weapon/card/id/id = perp.get_visible_id()
+			if(id)
+				perpname = id.registered_name
 
 			if(E.fields["name"] == perpname)
 				for (var/datum/data/record/R in data_core.security)

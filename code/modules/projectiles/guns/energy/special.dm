@@ -5,8 +5,8 @@
 	item_state = null
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/guninhands_left.dmi', "right_hand" = 'icons/mob/in-hand/right/guninhands_right.dmi')
 	fire_sound = 'sound/weapons/ion.ogg'
-	origin_tech = "combat=2;magnets=4"
-	w_class = 4.0
+	origin_tech = Tc_COMBAT + "=2;" + Tc_MAGNETS + "=4"
+	w_class = W_CLASS_LARGE
 	flags = FPRINT
 	siemens_coefficient = 1
 	slot_flags = SLOT_BACK
@@ -27,11 +27,11 @@
 	item_state = null
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/guninhands_left.dmi', "right_hand" = 'icons/mob/in-hand/right/guninhands_right.dmi')
 	fire_sound = 'sound/weapons/pulse3.ogg'
-	origin_tech = "combat=5;materials=4;powerstorage=3"
+	origin_tech = Tc_COMBAT + "=5;" + Tc_MATERIALS + "=4;" + Tc_POWERSTORAGE + "=3"
 	charge_cost = 100
 	projectile_type = "/obj/item/projectile/energy/declone"
 
-var/available_staff_transforms=list("monkey","robot","slime","xeno","human","furry")
+var/available_staff_transforms=list("monkey","robot","slime","xeno","human","furry","frankenstein")
 #define SOC_CHANGETYPE_COOLDOWN 2 MINUTES
 
 /obj/item/weapon/gun/energy/staff
@@ -44,7 +44,7 @@ var/available_staff_transforms=list("monkey","robot","slime","xeno","human","fur
 	flags = FPRINT
 	siemens_coefficient = 1
 	slot_flags = SLOT_BACK
-	w_class = 4.0
+	w_class = W_CLASS_LARGE
 	charge_cost = 200
 	projectile_type = "/obj/item/projectile/change"
 	origin_tech = null
@@ -65,9 +65,11 @@ var/available_staff_transforms=list("monkey","robot","slime","xeno","human","fur
 
 /obj/item/weapon/gun/energy/staff/process()
 	charge_tick++
-	if(charge_tick < 4) return 0
+	if(charge_tick < 4)
+		return 0
 	charge_tick = 0
-	if(!power_supply) return 0
+	if(!power_supply)
+		return 0
 	power_supply.give(200)
 	return 1
 
@@ -75,7 +77,8 @@ var/available_staff_transforms=list("monkey","robot","slime","xeno","human","fur
 	return
 
 /obj/item/weapon/gun/energy/staff/process_chambered()
-	if(!..()) return 0
+	if(!..())
+		return 0
 	var/obj/item/projectile/change/P=in_chamber
 	if(P && istype(P))
 		P.changetype=changetype
@@ -120,7 +123,7 @@ var/available_staff_transforms=list("monkey","robot","slime","xeno","human","fur
 	throw_speed = 1
 	throw_range = 4
 	throwforce = 10
-	w_class = 1
+	w_class = W_CLASS_TINY
 	charge_cost = 1000
 	var/lifekiller = 0
 	var/power_notice = 0
@@ -216,7 +219,7 @@ var/available_staff_transforms=list("monkey","robot","slime","xeno","human","fur
 	fire_sound = 'sound/effects/stealthoff.ogg'
 	charge_cost = 100
 	projectile_type = "/obj/item/projectile/energy/floramut"
-	origin_tech = "materials=2;biotech=3;powerstorage=3"
+	origin_tech = Tc_MATERIALS + "=2;" + Tc_BIOTECH + "=3;" + Tc_POWERSTORAGE + "=3"
 	mech_flags = null // So it can be scanned by the Device Analyser
 	modifystate = "floramut"
 	var/charge_tick = 0
@@ -235,9 +238,11 @@ var/available_staff_transforms=list("monkey","robot","slime","xeno","human","fur
 
 /obj/item/weapon/gun/energy/floragun/process()
 	charge_tick++
-	if(charge_tick < 4) return 0
+	if(charge_tick < 4)
+		return 0
 	charge_tick = 0
-	if(!power_supply) return 0
+	if(!power_supply)
+		return 0
 	power_supply.give(100)
 	update_icon()
 	return 1
@@ -307,7 +312,7 @@ var/available_staff_transforms=list("monkey","robot","slime","xeno","human","fur
 	desc = "For the love of god, make sure you're aiming this the right way!"
 	icon_state = "riotgun"
 	item_state = "c20r"
-	w_class = 4
+	w_class = W_CLASS_LARGE
 	projectile_type = "/obj/item/projectile/meteor"
 	charge_cost = 100
 	cell_type = "/obj/item/weapon/cell/potato"
@@ -326,9 +331,11 @@ var/available_staff_transforms=list("monkey","robot","slime","xeno","human","fur
 
 /obj/item/weapon/gun/energy/meteorgun/process()
 	charge_tick++
-	if(charge_tick < recharge_time) return 0
+	if(charge_tick < recharge_time)
+		return 0
 	charge_tick = 0
-	if(!power_supply) return 0
+	if(!power_supply)
+		return 0
 	power_supply.give(100)
 
 /obj/item/weapon/gun/energy/meteorgun/update_icon()
@@ -341,7 +348,7 @@ var/available_staff_transforms=list("monkey","robot","slime","xeno","human","fur
 	icon = 'icons/obj/bureaucracy.dmi'
 	icon_state = "pen"
 	item_state = "pen"
-	w_class = 1
+	w_class = W_CLASS_TINY
 
 
 /obj/item/weapon/gun/energy/mindflayer
@@ -422,10 +429,12 @@ obj/item/weapon/gun/energy/staff/focus/attack_self(mob/living/user as mob)
 
 /obj/item/weapon/gun/energy/kinetic_accelerator/cyborg/process() //Every [recharge_time] ticks, recharge a shot for the cyborg
 	charge_tick++
-	if(charge_tick < 3) return 0
+	if(charge_tick < 3)
+		return 0
 	charge_tick = 0
 
-	if(!power_supply) return 0 //sanity
+	if(!power_supply)
+		return 0 //sanity
 	if(isrobot(src.loc))
 		var/mob/living/silicon/robot/R = src.loc
 		if(R && R.cell)
@@ -464,9 +473,11 @@ obj/item/weapon/gun/energy/staff/focus/attack_self(mob/living/user as mob)
 
 /obj/item/weapon/gun/energy/radgun/process()
 	charge_tick++
-	if(charge_tick < 4) return 0
+	if(charge_tick < 4)
+		return 0
 	charge_tick = 0
-	if(!power_supply) return 0
+	if(!power_supply)
+		return 0
 	power_supply.give(100)
 	update_icon()
 	return 1
@@ -477,7 +488,7 @@ obj/item/weapon/gun/energy/staff/focus/attack_self(mob/living/user as mob)
 	icon = 'icons/obj/gun_experimental.dmi'
 	icon_state = "ricochet"
 	item_state = null
-	origin_tech = "materials=3;powerstorage=3;combat=3"
+	origin_tech = Tc_MATERIALS + "=3;" + Tc_POWERSTORAGE + "=3;" + Tc_COMBAT + "=3"
 	slot_flags = SLOT_BELT
 	projectile_type = "/obj/item/projectile/ricochet"
 	charge_cost = 100
@@ -490,7 +501,7 @@ obj/item/weapon/gun/energy/staff/focus/attack_self(mob/living/user as mob)
 	icon = 'icons/obj/gun_experimental.dmi'
 	icon_state = "bison"
 	item_state = null
-	origin_tech = "materials=3;powerstorage=3;combat=3"
+	origin_tech = Tc_MATERIALS + "=3;" + Tc_POWERSTORAGE + "=3;" + Tc_COMBAT + "=3"
 	slot_flags = SLOT_BELT
 	projectile_type = "/obj/item/projectile/beam/bison"
 	charge_cost = 100
@@ -505,7 +516,8 @@ obj/item/weapon/gun/energy/staff/focus/attack_self(mob/living/user as mob)
 	power_supply.charge = 0
 
 /obj/item/weapon/gun/energy/bison/attack_self(mob/user as mob)
-	if(pumping || !power_supply)	return
+	if(pumping || !power_supply)
+		return
 	pumping = 1
 	power_supply.charge = min(power_supply.charge + 200,power_supply.maxcharge)
 	if(power_supply.charge >= power_supply.maxcharge)
@@ -541,7 +553,7 @@ obj/item/weapon/gun/energy/staff/focus/attack_self(mob/living/user as mob)
 	item_state = null
 	slot_flags = SLOT_BELT
 	fire_delay = 1
-	origin_tech = "materials=4;powerstorage=3;combat=3"
+	origin_tech = Tc_MATERIALS + "=4;" + Tc_POWERSTORAGE + "=3;" + Tc_COMBAT + "=3"
 	projectile_type = "/obj/item/projectile/spur/polarstar"
 	charge_cost = 100
 	cell_type = "/obj/item/weapon/cell"
@@ -618,7 +630,7 @@ obj/item/weapon/gun/energy/staff/focus/attack_self(mob/living/user as mob)
 	desc = "A masterpiece crafted by the legendary gunsmith of a far-away planet."
 	icon_state = "spur"
 	item_state = null
-	origin_tech = "materials=5;powerstorage=4;combat=5"
+	origin_tech = Tc_MATERIALS + "=5;" + Tc_POWERSTORAGE + "=4;" + Tc_COMBAT + "=5"
 	fire_delay = 0
 	projectile_type = "/obj/item/projectile/spur"
 	var/charge_tick = 0
@@ -634,9 +646,11 @@ obj/item/weapon/gun/energy/staff/focus/attack_self(mob/living/user as mob)
 
 /obj/item/weapon/gun/energy/polarstar/spur/process()
 	charge_tick++
-	if(charge_tick < 2) return 0
+	if(charge_tick < 2)
+		return 0
 	charge_tick = 0
-	if(!power_supply) return 0
+	if(!power_supply)
+		return 0
 	power_supply.give(100)
 	levelChange()
 	return 1

@@ -15,7 +15,8 @@
 	icon = 'icons/obj/lighting.dmi'
 	icon_state = "tube-construct-stage1"
 	anchored = 1
-	layer = 5
+	plane = LIGHTING_PLANE
+	layer = LIGHTBULB_LAYER
 	var/stage = 1
 	var/fixture_type = "tube"
 	var/sheets_refunded = 2
@@ -83,7 +84,8 @@
 	H.visible_message("<span class='danger'>[H] attempts to kick \the [src].</span>", "<span class='danger'>You attempt to kick \the [src].</span>")
 	to_chat(H, "<span class='danger'>Dumb move! You strain a muscle.</span>")
 
-	H.apply_damage(rand(1,2), BRUTE, pick("r_leg", "l_leg", "r_foot", "l_foot"))
+	H.apply_damage(rand(1,2), BRUTE, pick(LIMB_RIGHT_LEG, LIMB_LEFT_LEG, LIMB_RIGHT_FOOT, LIMB_LEFT_FOOT))
+	return SPECIAL_ATTACK_FAILED
 
 
 /obj/machinery/light_construct/small
@@ -92,7 +94,8 @@
 	icon = 'icons/obj/lighting.dmi'
 	icon_state = "bulb-construct-stage1"
 	anchored = 1
-	layer = 5
+	plane = LIGHTING_PLANE
+	layer = LIGHTBULB_LAYER
 	stage = 1
 	fixture_type = "bulb"
 	sheets_refunded = 1
@@ -107,7 +110,8 @@ var/global/list/obj/machinery/light/alllights = list()
 	icon_state = "ltube1"
 	desc = "A lighting fixture."
 	anchored = 1
-	layer = 5  					// They were appearing under mobs which is a little weird - Ostaf
+	plane = LIGHTING_PLANE
+	layer = LIGHTBULB_LAYER
 	use_power = 2
 	idle_power_usage = 2
 	active_power_usage = 20
@@ -137,8 +141,8 @@ var/global/list/obj/machinery/light/alllights = list()
 	holomap = TRUE
 	auto_holomap = TRUE
 
-/obj/machinery/light/spook()
-	if(..())
+/obj/machinery/light/spook(mob/dead/observer/ghost)
+	if(..(ghost, TRUE))
 		flicker()
 
 // the smaller bulb light fixture
@@ -149,15 +153,15 @@ var/global/list/obj/machinery/light/alllights = list()
 
 /obj/machinery/light/bullet_act(var/obj/item/projectile/Proj)
 	if(istype(Proj ,/obj/item/projectile/beam)||istype(Proj,/obj/item/projectile/bullet)||istype(Proj,/obj/item/projectile/ricochet))
-		if(!istype(Proj ,/obj/item/projectile/beam/lastertag) && !istype(Proj ,/obj/item/projectile/beam/practice) )
+		if(!istype(Proj ,/obj/item/projectile/beam/lasertag) && !istype(Proj ,/obj/item/projectile/beam/practice) )
 			broken()
 
 /obj/machinery/light/kick_act(mob/living/carbon/human/H)
 	H.visible_message("<span class='danger'>[H] attempts to kick \the [src].</span>", "<span class='danger'>You attempt to kick \the [src].</span>")
 	to_chat(H, "<span class='danger'>Dumb move! You strain a muscle.</span>")
 
-	H.apply_damage(rand(1,2), BRUTE, pick("r_leg", "l_leg", "r_foot", "l_foot"))
-
+	H.apply_damage(rand(1,2), BRUTE, pick(LIMB_RIGHT_LEG, LIMB_LEFT_LEG, LIMB_RIGHT_FOOT, LIMB_LEFT_FOOT))
+	return SPECIAL_ATTACK_FAILED
 
 /obj/machinery/light/small
 	icon_state = "lbulb1"
@@ -403,12 +407,14 @@ var/global/list/obj/machinery/light/alllights = list()
 	return areaMaster.lightswitch && areaMaster.power_light
 
 /obj/machinery/light/proc/flicker(var/amount = rand(10, 20))
-	if(flickering) return
+	if(flickering)
+		return
 	flickering = 1
 	spawn(0)
 		if(on && status == LIGHT_OK)
 			for(var/i = 0; i < amount; i++)
-				if(status != LIGHT_OK) break
+				if(status != LIGHT_OK)
+					break
 				on = !on
 				update(0)
 				sleep(rand(5, 15))
@@ -419,9 +425,11 @@ var/global/list/obj/machinery/light/alllights = list()
 		update(0)
 
 /obj/machinery/light/attack_ghost(mob/user)
-	if(blessed) return
+	if(blessed)
+		return
 	src.add_hiddenprint(user)
 	src.flicker(1)
+	investigation_log(I_GHOST, "|| was made to flicker by [key_name(user)][user.locked_to ? ", who was haunting [user.locked_to]" : ""]")
 	return
 
 // ai attack - make lights flicker, because why not
@@ -452,7 +460,8 @@ var/global/list/obj/machinery/light/alllights = list()
 	return
 
 /obj/machinery/light/attack_animal(mob/living/simple_animal/M)
-	if(M.melee_damage_upper == 0)	return
+	if(M.melee_damage_upper == 0)
+		return
 	if(status == LIGHT_EMPTY||status == LIGHT_BROKEN)
 		to_chat(M, "<span class='warning'>That object is useless to you.</span>")
 		return
@@ -468,7 +477,8 @@ var/global/list/obj/machinery/light/alllights = list()
 	if(isobserver(user))
 		return
 
-	if(!Adjacent(user)) return
+	if(!Adjacent(user))
+		return
 
 	add_fingerprint(user)
 
@@ -592,7 +602,7 @@ var/global/list/obj/machinery/light/alllights = list()
 	flags = FPRINT
 	force = 2
 	throwforce = 5
-	w_class = 1
+	w_class = W_CLASS_TINY
 	var/status = 0		// LIGHT_OK, LIGHT_BURNED or LIGHT_BROKEN
 	var/base_state
 	var/switchcount = 0	// number of times switched
@@ -624,7 +634,7 @@ var/global/list/obj/machinery/light/alllights = list()
 	cost = 2
 
 /obj/item/weapon/light/tube/large
-	w_class = 2
+	w_class = W_CLASS_SMALL
 	name = "large light tube"
 	brightness_range = 15
 	brightness_power = 4
@@ -701,7 +711,7 @@ var/global/list/obj/machinery/light/alllights = list()
 
 		to_chat(user, "You inject the solution into the [src].")
 
-		if(S.reagents.has_reagent("plasma", 5))
+		if(S.reagents.has_reagent(PLASMA, 5))
 
 			log_admin("LOG: [user.name] ([user.ckey]) injected a light with plasma, rigging it to explode.")
 			message_admins("LOG: [user.name] ([user.ckey]) injected a light with plasma, rigging it to explode.")

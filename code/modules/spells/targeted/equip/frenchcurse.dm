@@ -7,7 +7,7 @@
 	invocation = "FU'K Y'U D'NY"
 	invocation_type = SpI_SHOUT
 	range = 1
-	spell_flags = 0 //SELECTABLE hinders you here, since the spell has a range of 1 and only works on adjacent guys. Having the TARGETTED flag here makes it easy for your target to run away from you!
+	spell_flags = WAIT_FOR_CLICK //SELECTABLE hinders you here, since the spell has a range of 1 and only works on adjacent guys. Having the TARGETTED flag here makes it easy for your target to run away from you!
 	cooldown_min = 50
 
 	sparks_spread = 1
@@ -27,7 +27,9 @@
 	for(var/mob/living/carbon/human/target in targets)
 		target.flash_eyes(visual = 1)
 		target.miming = 1
-		target.add_spell(new /spell/aoe_turf/conjure/forcewall/mime)//They can't even acid the mime mask off, if they're going to be permanently muted they may as well get the benefits of the mime. Also they can't oathbreak.
+		var/spell = /spell/aoe_turf/conjure/forcewall/mime
+		if(!(locate(spell) in target.spell_list))
+			target.add_spell(new /spell/aoe_turf/conjure/forcewall/mime)//They can't even acid the mime mask off, if they're going to be permanently muted they may as well get the benefits of the mime. Also they can't oathbreak.
 
 /spell/targeted/equip_item/frenchcurse/summon_item(var/newtype)
 	var/obj/item/new_item = new newtype

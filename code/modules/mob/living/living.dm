@@ -69,14 +69,17 @@
 		to_chat(user, "<span class='info'>[butchery]</span>")
 
 /mob/living/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 
 	..()
 	if (flags & INVULNERABLE)
 		bodytemperature = initial(bodytemperature)
-	if (monkeyizing)	return
-	if(!loc)			return	// Fixing a null error that occurs when the mob isn't found in the world -- TLE
-	if(reagents && reagents.has_reagent("bustanut"))
+	if (monkeyizing)
+		return
+	if(!loc)
+		return	// Fixing a null error that occurs when the mob isn't found in the world -- TLE
+	if(reagents && reagents.has_reagent(BUSTANUT))
 		if(!(M_HARDCORE in mutations))
 			mutations.Add(M_HARDCORE)
 			to_chat(src, "<span class='notice'>You feel like you're the best around.  Nothing's going to get you down.</span>")
@@ -90,11 +93,13 @@
 	for(var/toCall in src.callOnLife)
 		if(locate(toCall) && callOnLife[toCall])
 			call(locate(toCall),callOnLife[toCall])()
-		else callOnLife -= toCall
+		else
+			callOnLife -= toCall
 
 	if(mind)
 		if(mind in ticker.mode.implanted)
-			if(implanting) return
+			if(implanting)
+				return
 //			to_chat(world, "[src.name]")
 			var/datum/mind/head = ticker.mode.implanted[mind]
 			//var/list/removal
@@ -208,7 +213,8 @@
 		var/divided_damage = (burn_amount)/(H.organs.len)
 		var/extradam = 0	//added to when organ is at max dam
 		for(var/datum/organ/external/affecting in H.organs)
-			if(!affecting)	continue
+			if(!affecting)
+				continue
 			if(affecting.take_damage(0, divided_damage+extradam))	//TODO: fix the extradam stuff. Or, ebtter yet...rewrite this entire proc ~Carn
 				H.UpdateDamageIcon()
 		H.updatehealth()
@@ -252,69 +258,81 @@
 	return bruteloss
 
 /mob/living/proc/adjustBruteLoss(var/amount)
-	if(status_flags & GODMODE)	return 0	//godmode
-	bruteloss = min(max(bruteloss + amount, 0),(maxHealth*2))
+	if(status_flags & GODMODE)
+		return 0	//godmode
+	bruteloss = min(max(bruteloss + (amount * brute_damage_modifier), 0),(maxHealth*2))
 
 /mob/living/proc/getOxyLoss()
 	return oxyloss
 
 /mob/living/proc/adjustOxyLoss(var/amount)
-	if(status_flags & GODMODE)	return 0	//godmode
-	oxyloss = min(max(oxyloss + amount, 0),(maxHealth*2))
+	if(status_flags & GODMODE)
+		return 0	//godmode
+	oxyloss = min(max(oxyloss + (amount * oxy_damage_modifier), 0),(maxHealth*2))
 
 /mob/living/proc/setOxyLoss(var/amount)
-	if(status_flags & GODMODE)	return 0	//godmode
+	if(status_flags & GODMODE)
+		return 0	//godmode
 	oxyloss = amount
 
 /mob/living/proc/getToxLoss()
 	return toxloss
 
 /mob/living/proc/adjustToxLoss(var/amount)
-	if(status_flags & GODMODE)	return 0	//godmode
-	toxloss = min(max(toxloss + amount, 0),(maxHealth*2))
+	if(status_flags & GODMODE)
+		return 0	//godmode
+	toxloss = min(max(toxloss + (amount * tox_damage_modifier), 0),(maxHealth*2))
 
 /mob/living/proc/setToxLoss(var/amount)
-	if(status_flags & GODMODE)	return 0	//godmode
+	if(status_flags & GODMODE)
+		return 0	//godmode
 	toxloss = amount
 
 /mob/living/proc/getFireLoss()
 	return fireloss
 
 /mob/living/proc/adjustFireLoss(var/amount)
-	if(status_flags & GODMODE)	return 0	//godmode
-	fireloss = min(max(fireloss + amount, 0),(maxHealth*2))
+	if(status_flags & GODMODE)
+		return 0	//godmode
+	fireloss = min(max(fireloss + (amount * burn_damage_modifier), 0),(maxHealth*2))
 
 /mob/living/proc/getCloneLoss()
 	return cloneloss
 
 /mob/living/proc/adjustCloneLoss(var/amount)
-	if(status_flags & GODMODE)	return 0	//godmode
-	cloneloss = min(max(cloneloss + amount, 0),(maxHealth*2))
+	if(status_flags & GODMODE)
+		return 0	//godmode
+	cloneloss = min(max(cloneloss + (amount * clone_damage_modifier), 0),(maxHealth*2))
 
 /mob/living/proc/setCloneLoss(var/amount)
-	if(status_flags & GODMODE)	return 0	//godmode
+	if(status_flags & GODMODE)
+		return 0	//godmode
 	cloneloss = amount
 
 /mob/living/proc/getBrainLoss()
 	return brainloss
 
 /mob/living/proc/adjustBrainLoss(var/amount)
-	if(status_flags & GODMODE)	return 0	//godmode
-	brainloss = min(max(brainloss + amount, 0),(maxHealth*2))
+	if(status_flags & GODMODE)
+		return 0	//godmode
+	brainloss = min(max(brainloss + (amount * brain_damage_modifier), 0),(maxHealth*2))
 
 /mob/living/proc/setBrainLoss(var/amount)
-	if(status_flags & GODMODE)	return 0	//godmode
+	if(status_flags & GODMODE)
+		return 0	//godmode
 	brainloss = amount
 
 /mob/living/proc/getHalLoss()
 	return halloss
 
 /mob/living/proc/adjustHalLoss(var/amount)
-	if(status_flags & GODMODE)	return 0	//godmode
-	halloss = min(max(halloss + amount, 0),(maxHealth*2))
+	if(status_flags & GODMODE)
+		return 0	//godmode
+	halloss = min(max(halloss + (amount * hal_damage_modifier), 0),(maxHealth*2))
 
 /mob/living/proc/setHalLoss(var/amount)
-	if(status_flags & GODMODE)	return 0	//godmode
+	if(status_flags & GODMODE)
+		return 0	//godmode
 	halloss = amount
 
 /mob/living/proc/getMaxHealth()
@@ -397,7 +415,7 @@
 /mob/living/proc/get_organ_target()
 	var/t = src.zone_sel.selecting
 	if ((t in list( "eyes", "mouth" )))
-		t = "head"
+		t = LIMB_HEAD
 	var/datum/organ/external/def_zone = ran_zone(t)
 	return def_zone
 
@@ -410,8 +428,10 @@
 
 // damage ONE external organ, organ gets randomly selected from damaged ones.
 /mob/living/proc/take_organ_damage(var/brute, var/burn)
-	if(status_flags & GODMODE)	return 0	//godmode
-	if(flags & INVULNERABLE)	return 0
+	if(status_flags & GODMODE)
+		return 0	//godmode
+	if(flags & INVULNERABLE)
+		return 0
 	adjustBruteLoss(brute)
 	adjustFireLoss(burn)
 	src.updatehealth()
@@ -424,8 +444,10 @@
 
 // damage MANY external organs, in random order
 /mob/living/proc/take_overall_damage(var/brute, var/burn, var/used_weapon = null)
-	if(status_flags & GODMODE)	return 0	//godmode
-	if(flags & INVULNERABLE)	return 0
+	if(status_flags & GODMODE)
+		return 0	//godmode
+	if(flags & INVULNERABLE)
+		return 0
 	adjustBruteLoss(brute)
 	adjustFireLoss(burn)
 	src.updatehealth()
@@ -461,7 +483,8 @@ Thanks.
 
 /mob/living/proc/rejuvenate(animation = 0)
 	var/turf/T = get_turf(src)
-	if(animation) T.turf_animation('icons/effects/64x64.dmi',"rejuvinate",-16,0,MOB_LAYER+1,'sound/effects/rejuvinate.ogg')
+	if(animation)
+		T.turf_animation('icons/effects/64x64.dmi',"rejuvinate",-16,0,MOB_LAYER+1,'sound/effects/rejuvinate.ogg',anim_plane = EFFECTS_PLANE)
 
 	// shut down various types of badness
 	toxloss = 0
@@ -504,7 +527,7 @@ Thanks.
 		var/mob/living/carbon/human/H = src
 		H.timeofdeath = 0
 		H.vessel.reagent_list = list()
-		H.vessel.add_reagent("blood",560)
+		H.vessel.add_reagent(BLOOD,560)
 		H.shock_stage = 0
 		spawn(1)
 			H.fixblood()
@@ -661,7 +684,7 @@ Thanks.
 		stop_pulling()
 		. = ..()
 
-	if ((s_active && ( find_holder(s_active) != src ) ))
+	if ((s_active && !is_holder_of(src, s_active)))
 		s_active.close(src)
 
 	if(update_slimes)
@@ -967,8 +990,10 @@ Thanks.
 						CM.visible_message("<span class='danger'>[CM] manages to break the handcuffs!</span>",
 										   "<span class='notice'>You successfuly break your handcuffs.</span>")
 						CM.say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!" ))
-						qdel(CM.handcuffed)
-						CM.handcuffed.handcuffs_remove(CM)
+						var/obj/item/weapon/handcuffs/cuffs = CM.handcuffed
+						CM.drop_from_inventory(cuffs)
+						if(!cuffs.gcDestroyed) //If these were not qdel'd already (exploding cuffs, anyone?)
+							qdel(cuffs)
 					else
 						to_chat(CM, "<span class='warning'>Your cuff breaking attempt was interrupted.</span>")
 
@@ -988,8 +1013,7 @@ Thanks.
 						CM.visible_message("<span class='danger'>[CM] manages to remove [HC]!</span>",
 										   "<span class='notice'>You successfuly remove [HC].</span>",
 										   self_drugged_message="<span class='notice'>You successfully regain control of your hands.</span>")
-						CM.handcuffed.loc = usr.loc
-						CM.handcuffed.handcuffs_remove(CM)
+						CM.drop_from_inventory(HC)
 					else
 						CM.simple_message("<span class='warning'>Your uncuffing attempt was interrupted.</span>",
 							"<span class='warning'>Your attempt to regain control of your hands was interrupted. Damn it!</span>")
@@ -1034,6 +1058,9 @@ Thanks.
 	set name = "Rest"
 	set category = "IC"
 
+	if(client.move_delayer.blocked())
+		return
+	delayNextMove(10)
 	resting = !resting
 	update_canmove()
 	to_chat(src, "<span class='notice'>You are now [resting ? "resting" : "getting up"]</span>")
@@ -1165,7 +1192,8 @@ default behaviour is:
 						dense = !A.Cross(src, src.loc)
 					else
 						dense = 1
-				if(dense) break
+				if(dense)
+					break
 			if((tmob.a_intent == I_HELP || tmob.restrained()) && (a_intent == I_HELP || src.restrained()) && tmob.canmove && canmove && !dense && can_move_mob(tmob, 1, 0)) // mutual brohugs all around!
 				var/turf/oldloc = loc
 				forceMove(tmob.loc)
@@ -1190,14 +1218,12 @@ default behaviour is:
 					to_chat(src, "<span class='danger'>You fail to push [tmob]'s fat ass out of the way.</span>")
 					now_pushing = 0
 					return
-			if(tmob.r_hand && istype(tmob.r_hand, /obj/item/weapon/shield/riot))
+
+			for(var/obj/item/weapon/shield/riot/R in tmob.held_items)
 				if(prob(99))
 					now_pushing = 0
 					return
-			if(tmob.l_hand && istype(tmob.l_hand, /obj/item/weapon/shield/riot))
-				if(prob(99))
-					now_pushing = 0
-					return
+
 			if(!(tmob.status_flags & CANPUSH))
 				now_pushing = 0
 				return
@@ -1229,7 +1255,8 @@ default behaviour is:
 	return 1
 
 /mob/living/proc/drop_meat(location)
-	if(!meat_type) return 0
+	if(!meat_type)
+		return 0
 
 	var/obj/item/weapon/reagent_containers/food/snacks/meat/M = new meat_type(location)
 	var/obj/item/weapon/reagent_containers/food/snacks/meat/animal/A = M
@@ -1306,20 +1333,23 @@ default behaviour is:
 		var/list/actions = list()
 		actions += "Butcher"
 		for(var/datum/butchering_product/B in src.butchering_drops)
-			if(B.amount <= 0) continue
+			if(B.amount <= 0)
+				continue
 
 			actions |= capitalize(B.verb_name)
 			actions[capitalize(B.verb_name)] = B
 		actions += "Cancel"
 
 		var/choice = input(user,"What would you like to do with \the [src]?","Butchering") in actions
-		if(!Adjacent(user) || !(usr.get_active_hand() == tool)) return
+		if(!Adjacent(user) || !(usr.get_active_hand() == tool))
+			return
 
 		if(choice == "Cancel")
 			return 0
 		else if(choice != "Butcher")
 			var/datum/butchering_product/our_product = actions[choice]
-			if(!istype(our_product)) return
+			if(!istype(our_product))
+				return
 
 			user.visible_message("<span class='notice'>[user] starts [our_product.verb_gerund] \the [src][tool ? "with \the [tool]" : ""].</span>",\
 				"<span class='info'>You start [our_product.verb_gerund] \the [src].</span>")
@@ -1369,7 +1399,8 @@ default behaviour is:
 	. = strength
 
 /mob/living/proc/scoop_up(mob/M) //M = mob who scoops us up!
-	if(!holder_type) return
+	if(!holder_type)
+		return
 
 	var/obj/item/weapon/holder/D = getFromPool(holder_type, loc, src)
 

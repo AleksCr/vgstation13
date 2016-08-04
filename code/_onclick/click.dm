@@ -34,8 +34,10 @@
 #define MAX_ITEM_DEPTH	3 //how far we can recurse before we can't get an item
 
 /mob/proc/ClickOn( var/atom/A, var/params )
-	if(!click_delayer) click_delayer = new
-	if(timestopped) return 0 //under effects of time magick
+	if(!click_delayer)
+		click_delayer = new
+	if(timestopped)
+		return 0 //under effects of time magick
 
 	if(click_delayer.blocked())
 		return
@@ -83,21 +85,22 @@
 
 	var/obj/item/W = get_active_hand()
 	var/item_attack_delay = 0
-	
+
 	if(W == A)
 		/*next_move = world.time + 6
 		if(W.flags&USEDELAY)
 			next_move += 5*/
 		W.attack_self(src, params)
-		if(hand)
-			update_inv_l_hand(0)
+		update_inv_hand(active_hand)
+
+		return
+
+	if(!isturf(loc) && !is_holder_of(src, A))
+		if(loc == A) //Can attack_hand our holder (a locked closet, for example) from inside, but can't hit it with a tool
+			if(W)
+				return
 		else
-			update_inv_r_hand(0)
-
-		return
-
-	if(!isturf(loc)) // This is going to stop you from telekinesing from inside a closet, but I don't shed many tears for that
-		return
+			return
 
 	// Allows you to click on a box's contents, if that box is on the ground, but no deeper than that
 	if(A.Adjacent(src, MAX_ITEM_DEPTH)) // see adjacent.dm
@@ -115,7 +118,8 @@
 		else
 			if(ismob(A) || istype(W, /obj/item/weapon/grab))
 				delayNextAttack(10)
-			INVOKE_EVENT(on_uattack,list("atom"=A))
+			if(INVOKE_EVENT(on_uattack,list("atom"=A))) //This returns 1 when doing an action intercept
+				return
 			UnarmedAttack(A, 1, params)
 		return
 	else // non-adjacent click
@@ -127,8 +131,9 @@
 		else
 			if(ismob(A))
 				delayNextAttack(10)
+			if(INVOKE_EVENT(on_uattack,list("atom"=A))) //This returns 1 when doing an action intercept
+				return
 			RangedAttack(A, params)
-			INVOKE_EVENT(on_uattack,list("atom"=A))
 	return
 
 // Default behavior: ignore double clicks, consider them normal clicks instead
@@ -161,7 +166,8 @@
 	animals lunging, etc.
 */
 /mob/proc/RangedAttack(var/atom/A, var/params)
-	if(!mutations || !mutations.len) return
+	if(!mutations || !mutations.len)
+		return
 	if((M_LASER in mutations) && a_intent == I_HURT)
 		LaserEyes(A) // moved into a proc below
 	else if(M_TK in mutations)

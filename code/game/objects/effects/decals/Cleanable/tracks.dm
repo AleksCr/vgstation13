@@ -201,7 +201,10 @@ var/global/list/image/fluidtrack_cache=list()
 		var/icon/add = icon('icons/effects/fluidtracks.dmi', state, truedir)
 		add.SwapColor("#FFFFFF",track.basecolor)
 		overlays += add
-
+		if(track.basecolor == "#FF0000"||track.basecolor == "#A10808") // no dirty dumb vox scum allowed
+			plane = NOIR_BLOOD_PLANE
+		else
+			plane = ABOVE_TURF_PLANE
 		track.fresh=0
 		stack[stack_idx]=track
 
@@ -214,10 +217,27 @@ var/global/list/image/fluidtrack_cache=list()
 	coming_state = "human1"
 	going_state  = "human2"
 	amount = 0
+	plane = NOIR_BLOOD_PLANE
 
 /obj/effect/decal/cleanable/blood/tracks/footprints/vox
 	coming_state = "claw1"
 	going_state  = "claw2"
+
+/obj/effect/decal/cleanable/blood/tracks/footprints/magboots
+	coming_state = "magboots1"
+	going_state  = "magboots2"
+
+/obj/effect/decal/cleanable/blood/tracks/footprints/boots
+	coming_state = "boots1"
+	going_state  = "boots2"
+
+/obj/effect/decal/cleanable/blood/tracks/footprints/clown //Fun Fact: This footprint is way longer than the regular one and thus is spaced differently, making it the only evenly-spaced footprint type.
+	coming_state = "clown1"
+	going_state  = "clown2"
+
+/obj/effect/decal/cleanable/blood/tracks/footprints/catbeast
+	coming_state = "catbeast1"
+	going_state  = "catbeast2"
 
 /obj/effect/decal/cleanable/blood/tracks/wheels
 	name = "wet tracks"

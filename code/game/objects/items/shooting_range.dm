@@ -54,6 +54,7 @@
 				stake.density = 1
 				density = 0
 				layer = OBJ_LAYER
+				plane = OBJ_PLANE
 
 				loc = user.loc
 				if(ishuman(user))
@@ -104,7 +105,7 @@
 		bmark.pixel_x = p_x
 		bmark.pixel_y = p_y
 		bmark.icon = 'icons/effects/effects.dmi'
-		bmark.layer = 3.5
+		bmark.layer = ABOVE_OBJ_LAYER
 		bmark.icon_state = "scorch"
 
 		if(decaltype == 1)
@@ -162,7 +163,8 @@
 	var/b2y2 = 0
 
 	New(var/obj/item/target/Target, var/pixel_x = 0, var/pixel_y = 0)
-		if(!Target) return
+		if(!Target)
+			return
 
 		// Randomize the first box
 		b1x1 = pixel_x - pick(1,1,1,1,2,2,3,3,4)

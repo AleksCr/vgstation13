@@ -7,6 +7,7 @@
 
 #define ACT_BBCODE_IMG /datum/speech_filter_action/bbcode/img
 #define ACT_BBCODE_VIDEO /datum/speech_filter_action/bbcode/video
+#define ACT_BBCODE_YOUTUBE /datum/speech_filter_action/bbcode/youtube
 #define CHECK_NANO /obj/item/weapon/pen
 // MACROS
 #define REG_NOTBB "\[^\\\[\]+"    // [^\]]+
@@ -36,6 +37,18 @@
 	while(expr.Find(text, expr.index))
 		message_admins("[key_name_admin(user)] added a video ([html_encode(expr.group[1])]) to [P] at [formatJumpTo(get_turf(P))]")
 		var/rtxt   = "<embed src=\"[html_encode(expr.group[1])]\" width=\"420\" height=\"344\" type=\"x-ms-wmv\" volume=\"85\" autoStart=\"0\" autoplay=\"true\" />"
+		text       = copytext(text, 1, expr.index) + rtxt + copytext(text, expr.index + length(expr.match))
+		expr.index = expr.index + length(rtxt)
+	return text
+
+/datum/speech_filter_action/bbcode/youtube/Run(var/text, var/mob/user, var/atom/movable/P)
+	expr.index = 1
+	while(expr.Find(text,expr.index))
+		var/regex/youtubeid = regex("(youtu\\.be\\/|youtube\\.com\\/(watch\\?(.*&)?v=|(embed|v)\\/))(\[\\w\]+)", "gi")
+		youtubeid.Find(expr.group[1])
+		var/link = "http://www.youtube.com/embed/[youtubeid.group[5]]?autoplay=1&loop=1&controls=0&showinfo=0&rel=0"
+		message_admins("[key_name_admin(user)] added a youtube video ([html_encode(expr.group[1])]) to [P] at [formatJumpTo(get_turf(P))]")
+		var/rtxt   = "<iframe width=\"420\" height=\"345\" src=\"[link]\" frameborder=\"0\">"
 		text       = copytext(text, 1, expr.index) + rtxt + copytext(text, expr.index + length(expr.match))
 		expr.index = expr.index + length(rtxt)
 	return text
@@ -77,7 +90,8 @@ var/paperwork_library
 	set category = "Debug"
 	set name = "Modify Paperwork Mode"
 
-	if(!check_rights(R_DEBUG)) return
+	if(!check_rights(R_DEBUG))
+		return
 
 	if(!paperwork)
 		paperwork_setup()
@@ -137,7 +151,7 @@ var/paperwork_library
 	return "<span style=\"[style];color:[P.color]\">[t]</span>"
 
 /datum/writing_style/pen/New()
-	addReplacement(REG_BBTAG("*"), "<li>")
+	addReplacement(REG_BBTAG("\\*"), "<li>")
 	addReplacement(REG_BBTAG("hr"), "<HR>")
 	addReplacement(REG_BBTAG("small"), "<span style=\"font-size:15px\">")
 	addReplacement(REG_BBTAG("/small"), "</span>")
@@ -166,14 +180,13 @@ var/paperwork_library
 	addReplacement(REG_BBTAG("tnr"),		"<span style=\"font-family:Times New Roman\">")
 	addReplacement(REG_BBTAG("/tnr"),		"</span>")
 
-	// : is our delimiter, gi = global search, case-insensitive.
-	addExpression(":"+REG_BBTAG("img")+"("+REG_NOTBB+")"+REG_BBTAG("/img")+":gi", ACT_BBCODE_IMG,list())
+	addExpression(REG_BBTAG("img")+"("+REG_NOTBB+")"+REG_BBTAG("/img"), ACT_BBCODE_IMG,list(),flags = "gi")
 
 	..() // Order of operations
 
 /datum/writing_style/pen/nano_paper/New()
-	// : is our delimiter, gi = global search, case-insensitive.
-	addExpression(":"+REG_BBTAG("video")+"("+REG_NOTBB+")"+REG_BBTAG("/video")+":gi", ACT_BBCODE_VIDEO,list())
+	addExpression(REG_BBTAG("video")+"("+REG_NOTBB+")"+REG_BBTAG("/video"), ACT_BBCODE_VIDEO,list(),flags = "gi")
+	addExpression(REG_BBTAG("youtube")+"("+REG_NOTBB+")"+REG_BBTAG("/youtube"), ACT_BBCODE_YOUTUBE,list(),flags = "gi")
 
 	..()
 
@@ -190,12 +203,12 @@ var/paperwork_library
 	icon = 'icons/obj/bureaucracy.dmi'
 	icon_state = "pen"
 	item_state = "pen"
-	origin_tech = "materials=1"
+	origin_tech = Tc_MATERIALS + "=1"
 	sharpness = 0.5
 	flags = FPRINT
-	slot_flags = SLOT_BELT | slot_ears
+	slot_flags = SLOT_BELT | SLOT_EARS
 	throwforce = 0
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throw_speed = 7
 	throw_range = 15
 	starting_materials = list(MAT_IRON = 10)
@@ -263,20 +276,21 @@ var/paperwork_library
 	desc = "It's a black ink pen with a sharp point and a carefully engraved \"Waffle Co.\""
 	flags = FPRINT  | OPENCONTAINER
 	slot_flags = SLOT_BELT
-	origin_tech = "materials=2;syndicate=5"
+	origin_tech = Tc_MATERIALS + "=2;" + Tc_SYNDICATE + "=5"
 
 
 /obj/item/weapon/pen/sleepypen/New()
 	. = ..()
 	create_reagents(30) // Used to be 300
-	reagents.add_reagent("chloralhydrate", 22) // Used to be 100 sleep toxin // 30 Chloral seems to be fatal, reducing it to 22. /N
+	reagents.add_reagent(CHLORALHYDRATE, 22) // Used to be 100 sleep toxin // 30 Chloral seems to be fatal, reducing it to 22. /N
 
 /obj/item/weapon/pen/sleepypen/attack(mob/M as mob, mob/user as mob)
 	if(!(istype(M,/mob)))
 		return
 	..()
 	if(reagents.total_volume)
-		if(M.reagents) reagents.trans_to(M, 50) //used to be 150
+		if(M.reagents)
+			reagents.trans_to(M, 50) //used to be 150
 	return
 
 
@@ -286,7 +300,7 @@ var/paperwork_library
  /obj/item/weapon/pen/paralysis
 	flags = FPRINT  | OPENCONTAINER
 	slot_flags = SLOT_BELT
-	origin_tech = "materials=2;syndicate=5"
+	origin_tech = Tc_MATERIALS + "=2;" + Tc_SYNDICATE + "=5"
 
 
 /obj/item/weapon/pen/paralysis/attack(mob/M as mob, mob/user as mob)
@@ -294,7 +308,8 @@ var/paperwork_library
 		return
 	..()
 	if(reagents.total_volume)
-		if(M.reagents) reagents.trans_to(M, 50)
+		if(M.reagents)
+			reagents.trans_to(M, 50)
 	return
 
 
@@ -302,8 +317,8 @@ var/paperwork_library
 	var/datum/reagents/R = new/datum/reagents(50)
 	reagents = R
 	R.my_atom = src
-	R.add_reagent("zombiepowder", 10)
-	R.add_reagent("impedrezene", 25)
-	R.add_reagent("cryptobiolin", 15)
+	R.add_reagent(ZOMBIEPOWDER, 10)
+	R.add_reagent(IMPEDREZENE, 25)
+	R.add_reagent(CRYPTOBIOLIN, 15)
 	..()
 	return

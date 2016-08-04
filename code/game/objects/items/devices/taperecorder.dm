@@ -3,8 +3,8 @@
 	name = "universal recorder"
 	icon_state = "taperecorderidle"
 	item_state = "analyzer"
-	origin_tech = "magnets=1;programming=1"
-	w_class = 1.0
+	origin_tech = Tc_MAGNETS + "=1;" + Tc_PROGRAMMING + "=1"
+	w_class = W_CLASS_TINY
 	starting_materials = list(MAT_IRON = 60, MAT_GLASS = 30)
 	w_type = RECYK_ELECTRONIC
 	melt_temperature = MELTPOINT_PLASTIC
@@ -112,8 +112,10 @@
 		to_chat(usr, "<span class='notice'>You can't clear the memory while playing or recording!</span>")
 		return
 	else
-		if(storedinfo)	storedinfo.Cut()
-		if(timestamp)	timestamp.Cut()
+		if(storedinfo)
+			storedinfo.Cut()
+		if(timestamp)
+			timestamp.Cut()
 		timerecorded = 0
 		to_chat(usr, "<span class='notice'>Memory cleared.</span>")
 		return

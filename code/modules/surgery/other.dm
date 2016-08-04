@@ -46,7 +46,8 @@
 	for(var/datum/wound/W in affected.wounds) if(W.internal)
 		affected.wounds -= W
 		affected.update_damages()
-	if (ishuman(user) && prob(40)) user:bloody_hands(target, 0)
+	if (ishuman(user) && prob(40))
+		user:bloody_hands(target, 0)
 
 /datum/surgery_step/fix_vein/fail_step(mob/living/user, mob/living/carbon/human/target, target_zone, obj/item/tool)
 	var/datum/organ/external/affected = target.get_organ(target_zone)
@@ -130,7 +131,7 @@
 		return 0
 
 	var/obj/item/weapon/reagent_containers/container = tool
-	if(!container.reagents.has_reagent("peridaxon"))
+	if(!container.reagents.has_reagent(PERIDAXON))
 		return 0
 
 	if(!hasorgans(target))
@@ -161,7 +162,7 @@
 	if (trans > 0)
 		container.reagents.reaction(target, INGEST)	//technically it's contact, but the reagents are being applied to internal tissue
 
-		if(container.reagents.has_reagent("peridaxon"))
+		if(container.reagents.has_reagent(PERIDAXON))
 			affected.status &= ~ORGAN_DEAD
 
 		user.visible_message("<span class='notice'>[user] applies [trans] units of the solution to affected tissue in [target]'s [affected.display_name]</span>", \

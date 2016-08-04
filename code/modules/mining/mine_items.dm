@@ -47,7 +47,8 @@ var/mining_shuttle_moving = 0
 var/mining_shuttle_location = 0 // 0 = station 13, 1 = mining station
 
 proc/move_mining_shuttle()
-	if(mining_shuttle_moving)	return
+	if(mining_shuttle_moving)
+		return
 	mining_shuttle_moving = 1
 	spawn(mining_shuttle_tickstomove*10)
 		var/area/fromArea
@@ -167,9 +168,11 @@ proc/move_mining_shuttle()
 	light_color = LIGHT_COLOR_TUNGSTEN
 
 //Explicit
-/obj/item/device/flashlight/lantern/on
+/obj/item/device/flashlight/lantern/on/New()
+	..()
 
 	on = 1
+	update_brightness()
 
 /*****************************Pickaxe********************************/
 
@@ -185,12 +188,12 @@ proc/move_mining_shuttle()
 	force = 15.0
 	throwforce = 4.0
 	item_state = "pickaxe"
-	w_class = 4.0
+	w_class = W_CLASS_LARGE
 	sharpness = 0.6
 	starting_materials = list(MAT_IRON = 3750) //one sheet, but where can you make them?
 	w_type = RECYK_METAL
 	var/digspeed = 40 //moving the delay to an item var so R&D can make improved picks. --NEO
-	origin_tech = "materials=1;engineering=1"
+	origin_tech = Tc_MATERIALS + "=1;" + Tc_ENGINEERING + "=1"
 	attack_verb = list("hits", "pierces", "slices", "attacks")
 	var/drill_sound = 'sound/weapons/Genhit.ogg'
 	var/drill_verb = "picking"
@@ -209,7 +212,7 @@ proc/move_mining_shuttle()
 	icon_state = "spickaxe"
 	item_state = "spickaxe"
 	digspeed = 30
-	origin_tech = "materials=3"
+	origin_tech = Tc_MATERIALS + "=3"
 	desc = "This makes no metallurgic sense."
 
 /obj/item/weapon/pickaxe/jackhammer
@@ -217,7 +220,7 @@ proc/move_mining_shuttle()
 	icon_state = "jackhammer"
 	item_state = "jackhammer"
 	digspeed = 20 //faster than drill, but cannot dig
-	origin_tech = "materials=3;powerstorage=2;engineering=2"
+	origin_tech = Tc_MATERIALS + "=3;" + Tc_POWERSTORAGE + "=2;" + Tc_ENGINEERING + "=2"
 	desc = "Cracks rocks with sonic blasts, perfect for killing cave lizards."
 	drill_verb = "hammering"
 
@@ -226,19 +229,19 @@ proc/move_mining_shuttle()
 	icon_state = "gpickaxe"
 	item_state = "gpickaxe"
 	digspeed = 20
-	origin_tech = "materials=4"
+	origin_tech = Tc_MATERIALS + "=4"
 	desc = "This makes no metallurgic sense."
 
 /obj/item/weapon/pickaxe/plasmacutter
 	name = "plasma cutter"
 	icon_state = "plasmacutter"
 	item_state = "gun"
-	w_class = 3.0 //it is smaller than the pickaxe
+	w_class = W_CLASS_MEDIUM //it is smaller than the pickaxe
 	damtype = "fire"
 	heat_production = 3800
 	digspeed = 20 //Can slice though normal walls, all girders, or be used in reinforced wall deconstruction/ light thermite on fire
 	sharpness = 1.0
-	origin_tech = "materials=4;plasmatech=3;engineering=3"
+	origin_tech = Tc_MATERIALS + "=4;" + Tc_PLASMATECH + "=3;" + Tc_ENGINEERING + "=3"
 	desc = "A rock cutter that uses bursts of hot plasma. You could use it to cut limbs off of xenos! Or, you know, mine stuff."
 	diggables = DIG_ROCKS | DIG_WALLS
 	drill_verb = "cutting"
@@ -253,7 +256,7 @@ proc/move_mining_shuttle()
 	item_state = "dpickaxe"
 	digspeed = 10
 	sharpness = 1.2
-	origin_tech = "materials=6;engineering=4"
+	origin_tech = Tc_MATERIALS + "=6;" + Tc_ENGINEERING + "=4"
 	desc = "A pickaxe with a diamond pick head, this is just like minecraft."
 
 /obj/item/weapon/pickaxe/drill
@@ -261,7 +264,7 @@ proc/move_mining_shuttle()
 	icon_state = "handdrill"
 	item_state = "jackhammer"
 	digspeed = 30
-	origin_tech = "materials=2;powerstorage=3;engineering=2"
+	origin_tech = Tc_MATERIALS + "=2;" + Tc_POWERSTORAGE + "=3;" + Tc_ENGINEERING + "=2"
 	desc = "Yours is the drill that will pierce through the rock walls."
 	drill_verb = "drilling"
 
@@ -272,7 +275,7 @@ proc/move_mining_shuttle()
 	icon_state = "diamonddrill"
 	item_state = "jackhammer"
 	digspeed = 5 //Digs through walls, girders, and can dig up sand
-	origin_tech = "materials=6;powerstorage=4;engineering=5"
+	origin_tech = Tc_MATERIALS + "=6;" + Tc_POWERSTORAGE + "=4;" + Tc_ENGINEERING + "=5"
 	desc = "Yours is the drill that will pierce the heavens!"
 
 	diggables = DIG_ROCKS | DIG_SOIL | DIG_WALLS | DIG_RWALLS
@@ -293,10 +296,10 @@ proc/move_mining_shuttle()
 	force = 8.0
 	throwforce = 4.0
 	item_state = "shovel"
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	sharpness = 0.5
 	w_type = RECYK_MISC
-	origin_tech = "materials=1;engineering=1"
+	origin_tech = Tc_MATERIALS + "=1;" + Tc_ENGINEERING + "=1"
 	attack_verb = list("bashes", "bludgeons", "thrashes", "whacks")
 
 
@@ -311,7 +314,7 @@ proc/move_mining_shuttle()
 	force = 5.0
 	sharpness = 0.8
 	throwforce = 7.0
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 
 	digspeed = 60 //slower than the large shovel
 
@@ -336,10 +339,10 @@ proc/move_mining_shuttle()
 	icon_state = "Jaunter"
 	item_state = "electronic"
 	throwforce = 0
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	throw_speed = 3
 	throw_range = 5
-	origin_tech = "bluespace=2"
+	origin_tech = Tc_BLUESPACE + "=2"
 
 /obj/item/device/wormhole_jaunter/attack_self(mob/user as mob)
 	var/turf/device_turf = get_turf(user)
@@ -421,7 +424,7 @@ proc/move_mining_shuttle()
 	icon_state = "resonator"
 	item_state = "resonator"
 	desc = "A handheld device that creates small fields of energy that resonate until they detonate, crushing rock. It can also be activated without a target to create a field at the user's location, to act as a delayed time trap. It's more effective in a vaccuum."
-	w_class = 3
+	w_class = W_CLASS_MEDIUM
 	force = 10
 	throwforce = 10
 	var/cooldown = 0
@@ -450,7 +453,7 @@ proc/move_mining_shuttle()
 	desc = "A resonating field that significantly damages anything inside of it when the field eventually ruptures."
 	icon = 'icons/effects/effects.dmi'
 	icon_state = "shield1"
-	layer = 4.1
+	plane = ABOVE_HUMAN_PLANE
 	mouse_opacity = 0
 	var/resonance_damage = 30
 	var/creator = null
@@ -534,7 +537,7 @@ proc/move_mining_shuttle()
 	minbodytemp = 0
 	wander = 0
 	idle_vision_range = 5
-	move_to_delay = 10
+	speed = 10
 	retreat_distance = 1
 	minimum_distance = 2
 	health = 100
@@ -654,7 +657,7 @@ proc/move_mining_shuttle()
 	icon_state = "lazarus_hypo"
 	item_state = "hypo"
 	throwforce = 0
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	throw_speed = 3
 	throw_range = 5
 	var/loaded = 1
@@ -721,10 +724,11 @@ proc/move_mining_shuttle()
 			to_chat(user, "<span class='warning'>\The [src] briefly flashes an error.</span>")
 			return 0
 		spawn()
-			var/name = sanitize(input("Choose a name for your friend.", "Name your friend", contained_mob.name) as text|null)
-			if(name)
-				contained_mob.name = name
+			var/mname = sanitize(input("Choose a name for your friend.", "Name your friend", contained_mob.name) as text|null)
+			if(mname)
+				contained_mob.name = mname
 				to_chat(user, "<span class='notice'>Renaming successful, say hello to [contained_mob]</span>")
+				name = "lazarus capsule - [mname]"
 	..()
 
 /obj/item/device/mobcapsule/throw_impact(atom/A, mob/user)
@@ -756,6 +760,7 @@ proc/move_mining_shuttle()
 		return 0
 	AM.loc = src
 	contained_mob = AM
+	name = "lazarus capsule - [AM.name]"
 	return 1
 
 /obj/item/device/mobcapsule/pickup(mob/user)
@@ -783,6 +788,7 @@ proc/move_mining_shuttle()
 			contained_mob.client.eye = contained_mob.client.mob
 			contained_mob.client.perspective = MOB_PERSPECTIVE
 		contained_mob = null
+		name = "lazarus capsule"
 
 /obj/item/device/mobcapsule/attack_self(mob/user)
 	colorindex += 1
@@ -796,7 +802,8 @@ proc/move_mining_shuttle()
 		if(istype(AM))
 			var/mob/living/simple_animal/M = AM
 			var/mob/living/simple_animal/hostile/H = M
-			if(!istype(H)) continue
+			if(!istype(H))
+				continue
 			for(var/things in H.friends)
 				if(capsuleowner in H.friends)
 					if(insert(AM, user) == -1) //Limit reached
@@ -809,7 +816,7 @@ proc/move_mining_shuttle()
 	name = "mining scanner"
 	icon_state = "mining"
 	item_state = "analyzer"
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	flags = 0
 	siemens_coefficient = 1
 	slot_flags = SLOT_BELT
@@ -834,7 +841,8 @@ proc/move_mining_shuttle()
 		else
 			for(M in L)
 				var/turf/T = get_turf(M)
-				var/image/I = image('icons/turf/walls.dmi', loc = T, icon_state = M.scan_state, layer = 18)
+				var/image/I = image('icons/turf/walls.dmi', loc = T, icon_state = M.scan_state, layer = UNDER_HUD_LAYER)
+				I.plane = HUD_PLANE
 				C.images += I
 				spawn(30)
 					if(C)

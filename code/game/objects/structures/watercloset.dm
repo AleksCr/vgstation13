@@ -74,7 +74,8 @@
 		return
 	if(open && cistern && state == NORODS && istype(I,/obj/item/stack/rods)) //State = 0 if no rods
 		var/obj/item/stack/rods/R = I
-		if(R.amount < 2) return
+		if(R.amount < 2)
+			return
 		to_chat(user, "<span class='notice'>You add the rods to the toilet, creating flood avenues.</span>")
 		R.use(2)
 		state = RODSADDED //State 0 -> 1
@@ -120,10 +121,10 @@
 				to_chat(user, "<span class='notice'>You need a tighter grip.</span>")
 
 	if(cistern)
-		if(I.w_class > 3)
+		if(I.w_class > W_CLASS_MEDIUM)
 			to_chat(user, "<span class='notice'>\The [I] does not fit.</span>")
 			return
-		if(w_items + I.w_class > 5)
+		if(w_items + I.w_class > W_CLASS_HUGE)
 			to_chat(user, "<span class='notice'>The cistern is full.</span>")
 			return
 		if(user.drop_item(I, src))
@@ -208,7 +209,7 @@
 	name = "mist"
 	icon = 'icons/obj/watercloset.dmi'
 	icon_state = "mist"
-	layer = MOB_LAYER + 1
+	plane = ABOVE_HUMAN_PLANE
 	anchored = 1
 	mouse_opacity = 0
 
@@ -278,7 +279,9 @@
 		returnToPool(mymist)
 
 	if(on)
-		overlays += image('icons/obj/watercloset.dmi', src, "water", MOB_LAYER + 1, dir)
+		var/image/water = image('icons/obj/watercloset.dmi', src, "water", BELOW_OBJ_LAYER, dir)
+		water.plane = ABOVE_HUMAN_PLANE
+		overlays += water
 		if(watertemp == "freezing") //No mist if the water is really cold
 			return
 		if(!ismist)
@@ -320,12 +323,10 @@
 
 	if(iscarbon(O))
 		var/mob/living/carbon/M = O
-		if(M.r_hand && prob(CLEAN_PROB))
-			M.r_hand.clean_blood()
-			M.update_inv_r_hand()
-		if(M.l_hand && prob(CLEAN_PROB))
-			M.l_hand.clean_blood()
-			M.update_inv_l_hand()
+		for(var/obj/item/I in M.held_items)
+			if(prob(CLEAN_PROB))
+				I.clean_blood()
+				M.update_inv_hand(M.is_holding_item(I))
 		if(M.back && prob(CLEAN_PROB))
 			if(M.back.clean_blood())
 				M.update_inv_back(0)
@@ -405,7 +406,7 @@
 		watersource.reagents.reaction(O, TOUCH)
 		if(istype(O, /obj/item/weapon/reagent_containers/glass))
 			var/obj/item/weapon/reagent_containers/glass/G = O
-			G.reagents.add_reagent("water", 5)
+			G.reagents.add_reagent(WATER, 5)
 	watersource.reagents.reaction(get_turf(src), TOUCH)
 
 /obj/machinery/shower/proc/check_heat(mob/living/carbon/C as mob)
@@ -413,14 +414,14 @@
 		return
 
 	//Note : Remember process() rechecks this, so the mix/max procs slowly increase/decrease body temperature
-	//Every second under the shower adjusts body temperature by 0.5°C. Water conducts heat pretty efficiently in real life too
-	if(watertemp == "freezing cold") //Down to 0°C, Nanotrasen waterworks are perfect and never fluctuate even slightly below that
+	//Every second under the shower adjusts body temperature by 0.5ï¿½C. Water conducts heat pretty efficiently in real life too
+	if(watertemp == "freezing cold") //Down to 0ï¿½C, Nanotrasen waterworks are perfect and never fluctuate even slightly below that
 		C.bodytemperature = max(T0C, C.bodytemperature - 0.5)
 		return
-	if(watertemp == "searing hot") //Up to 60°c, upper limit for common water boilers
+	if(watertemp == "searing hot") //Up to 60ï¿½c, upper limit for common water boilers
 		C.bodytemperature = min(T0C + 60, C.bodytemperature + 0.5)
 		return
-	if(watertemp == "cool") //Adjusts towards "perfect" body temperature, 37.5°C. Actual showers tend to average at 40°C, but it's the future
+	if(watertemp == "cool") //Adjusts towards "perfect" body temperature, 37.5ï¿½C. Actual showers tend to average at 40ï¿½C, but it's the future
 		if(C.bodytemperature > T0C + 37.5) //Cooling down
 			C.bodytemperature = max(T0C + 37.5, C.bodytemperature - 0.5)
 			return
@@ -474,7 +475,8 @@
 	sleep(40)
 	busy = 0
 
-	if(!Adjacent(M)) return		//Person has moved away from the sink
+	if(!Adjacent(M))
+		return		//Person has moved away from the sink
 
 	M.clean_blood()
 	if(ishuman(M))
@@ -483,7 +485,8 @@
 		V.show_message("<span class='notice'>[M] washes their hands using \the [src].</span>")
 
 /obj/structure/sink/mop_act(obj/item/weapon/mop/M, mob/user)
-	if(busy) return 1
+	if(busy)
+		return 1
 	user.visible_message("<span class='notice'>[user] puts \the [M] underneath the running water.","<span class='notice'>You put \the [M] underneath the running water.</span>")
 	busy = 1
 	sleep(40)
@@ -491,7 +494,7 @@
 	M.clean_blood()
 	if(M.reagents.maximum_volume > M.reagents.total_volume)
 		playsound(get_turf(src), 'sound/effects/slosh.ogg', 25, 1)
-		M.reagents.add_reagent("water", min(M.reagents.maximum_volume - M.reagents.total_volume, 50))
+		M.reagents.add_reagent(WATER, min(M.reagents.maximum_volume - M.reagents.total_volume, 50))
 		user.visible_message("<span class='notice'>[user] finishes soaking \the [M], \he could clean the entire station with that.</span>","<span class='notice'>You finish soaking \the [M], you feel as if you could clean anything now, even the Chef's backroom...</span>")
 	else
 		user.visible_message("<span class='notice'>[user] removes \the [M], cleaner than before.</span>","<span class='notice'>You remove \the [M] from \the [src], it's all nice and sparkly now but somehow didnt get it any wetter.</span>")
@@ -508,7 +511,8 @@
 	if(anchored == 0)
 		return
 
-	if(istype(O, /obj/item/weapon/mop)) return
+	if(istype(O, /obj/item/weapon/mop))
+		return
 
 	if (istype(O, /obj/item/weapon/reagent_containers))
 		var/obj/item/weapon/reagent_containers/RG = O
@@ -517,9 +521,9 @@
 			return
 		if (istype(RG, /obj/item/weapon/reagent_containers/chempack)) //Chempack can't use amount_per_transfer_from_this, so it needs its own if statement.
 			var/obj/item/weapon/reagent_containers/chempack/C = RG
-			C.reagents.add_reagent("water", C.fill_amount)
+			C.reagents.add_reagent(WATER, C.fill_amount)
 		else
-			RG.reagents.add_reagent("water", min(RG.volume - RG.reagents.total_volume, RG.amount_per_transfer_from_this))
+			RG.reagents.add_reagent(WATER, min(RG.volume - RG.reagents.total_volume, RG.amount_per_transfer_from_this))
 		user.visible_message("<span class='notice'>[user] fills \the [RG] using \the [src].</span>","<span class='notice'>You fill the [RG] using \the [src].</span>")
 		return
 

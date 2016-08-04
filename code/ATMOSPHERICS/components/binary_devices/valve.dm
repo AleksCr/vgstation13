@@ -35,7 +35,8 @@
 /obj/machinery/atmospherics/binary/valve/proc/open()
 
 
-	if(open) return 0
+	if(open)
+		return 0
 
 	open = 1
 	update_icon()
@@ -79,9 +80,6 @@
 
 /obj/machinery/atmospherics/binary/valve/attack_ai(mob/user as mob)
 	return
-
-/obj/machinery/atmospherics/binary/valve/attack_paw(mob/user as mob)
-	return attack_hand(user)
 
 /obj/machinery/atmospherics/binary/valve/attack_hand(mob/user as mob)
 	if(isobserver(user) && !canGhostWrite(user,src,"toggles"))

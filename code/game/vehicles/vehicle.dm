@@ -6,7 +6,8 @@
 	density = 1
 	anchored = 1
 	unacidable = 1 //To avoid the pilot-deleting shit that came with mechas
-	layer = MOB_LAYER
+	layer = VEHICLE_LAYER
+	plane = ABOVE_HUMAN_PLANE
 	//var/can_move = 1
 	var/mob/living/carbon/occupant = null
 	//var/step_in = 10 //make a step in step_in/10 sec.

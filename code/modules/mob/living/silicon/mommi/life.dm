@@ -1,7 +1,8 @@
 /mob/living/silicon/robot/mommi/Life()
 	set invisibility = 0
 	//set background = 1
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 
 	if (src.monkeyizing)
 		return
@@ -68,7 +69,8 @@
 
 	health = maxHealth - (getOxyLoss() + getFireLoss() + getBruteLoss())
 
-	if(getOxyLoss() > 50) Paralyse(3)
+	if(getOxyLoss() > 50)
+		Paralyse(3)
 
 	if(src.sleeping)
 		Paralyse(3)
@@ -100,13 +102,15 @@
 		src.blinded = 1
 		src.stat = 2
 
-	if (src.stuttering) src.stuttering--
+	if (src.stuttering)
+		src.stuttering--
 
 	if (src.eye_blind)
 		src.eye_blind--
 		src.blinded = 1
 
-	if (src.ear_deaf > 0) src.ear_deaf--
+	if (src.ear_deaf > 0)
+		src.ear_deaf--
 	if (src.ear_damage < 25)
 		src.ear_damage -= 0.05
 		src.ear_damage = max(src.ear_damage, 0)
@@ -206,7 +210,7 @@
 				src.bodytemp.icon_state = "temp-2"
 
 
-	if(src.pullin)	src.pullin.icon_state = "pull[src.pulling ? 1 : 0]"
+	update_pull_icon()
 //Oxygen and fire does nothing yet!!
 //	if (src.oxygen) src.oxygen.icon_state = "oxy[src.oxygen_alert ? 1 : 0]"
 //	if (src.fire) src.fire.icon_state = "fire[src.fire_alert ? 1 : 0]"

@@ -71,7 +71,8 @@
 	if(proximity_flag == 0) // not adjacent
 		return
 
-	if(!target.reagents) return
+	if(!target.reagents)
+		return
 
 	if(mode == SYRINGE_BROKEN)
 		to_chat(user, "<span class='warning'>\The [src] is broken!</span>")
@@ -137,7 +138,7 @@
 			to_chat(user, "<span class='warning'>You are unable to locate any blood.</span>")
 			return
 
-		if (reagents.has_reagent("blood")) // TODO Current reagent system can't handle multiple blood sources properly
+		if (reagents.has_reagent(BLOOD)) // TODO Current reagent system can't handle multiple blood sources properly
 			to_chat(user, "<span class='warning'>There is already a blood sample in this syringe!</span>")
 			return
 		if(ishuman(target))
@@ -159,9 +160,9 @@
 
 			var/amount = src.reagents.maximum_volume - src.reagents.total_volume
 			var/datum/reagent/B = T.take_blood(null, amount)
-			//reagents.add_reagent("blood",
+			//reagents.add_reagent(BLOOD,
 			if (B)
-				reagents.add_reagent("blood", amount, B.data)
+				reagents.add_reagent(BLOOD, amount, B.data)
 				user.visible_message("<span class='notice'>[user] takes a blood sample from [target].</span>",
 									 "<span class='notice'>You take a blood sample from [target].</span>")
 			else
@@ -193,7 +194,7 @@
 		to_chat(user, "<span class='warning'>\The [src] is empty.</span>")
 		return
 
-	if (istype(target, /obj/item/clothing/mask/facehugger/lamarr) && (user.l_hand != target && user.r_hand != target))
+	if (istype(target, /obj/item/clothing/mask/facehugger/lamarr) && !user.is_holding_item(target))
 		to_chat(user, "<span class='warning'>\The [target] is squirming around too much. She needs to be held still.</span>")
 		return
 
@@ -226,19 +227,14 @@
 			add_attacklogs(user, target, "injected", object = src, addition = "Reagents: [reagent_names]", admin_warn = TRUE)
 
 	// Handle transfers and mob reactions
-	var/list/bad_reagents = reagents.get_bad_reagent_names() // Used for logging
 	var/tx_amount = min(amount_per_transfer_from_this, reagents.total_volume)
 	if (ismob(target))
 		// TODO Every reagent reacts with the full volume instead of being scaled accordingly
 		// TODO which is pretty irrelevant now but should be fixed
 		reagents.reaction(target, INGEST)
 
-	tx_amount = reagents.trans_to(target, tx_amount)
+	tx_amount = reagents.trans_to(target, tx_amount, log_transfer = TRUE, whodunnit = user)
 	to_chat(user, "<span class='notice'>You inject [tx_amount] units of the solution. The syringe now contains [reagents.total_volume] units.</span>")
-
-	// Log transfers of 'bad things' (/vg/)
-	if (tx_amount > 0 && isobj(target) && target:log_reagents && bad_reagents && bad_reagents.len > 0)
-		log_reagents(user, src, target, tx_amount, bad_reagents)
 
 	if (src.is_empty())
 		mode = SYRINGE_DRAW
@@ -344,7 +340,7 @@
 	desc = "Contains inaprovaline - used to stabilize patients."
 /obj/item/weapon/reagent_containers/syringe/inaprovaline/New()
 	..()
-	reagents.add_reagent("inaprovaline", 15)
+	reagents.add_reagent(INAPROVALINE, 15)
 	mode = SYRINGE_INJECT
 	update_icon()
 
@@ -353,7 +349,7 @@
 	desc = "Contains anti-toxins."
 /obj/item/weapon/reagent_containers/syringe/antitoxin/New()
 	..()
-	reagents.add_reagent("anti_toxin", 15)
+	reagents.add_reagent(ANTI_TOXIN, 15)
 	mode = SYRINGE_INJECT
 	update_icon()
 
@@ -362,7 +358,7 @@
 	desc = "Contains antiviral agents."
 /obj/item/weapon/reagent_containers/syringe/antiviral/New()
 	..()
-	reagents.add_reagent("spaceacillin", 15)
+	reagents.add_reagent(SPACEACILLIN, 15)
 	mode = SYRINGE_INJECT
 	update_icon()
 
@@ -380,7 +376,7 @@
 	desc = "Puts people into a sleep they'll never wake up from."
 /obj/item/weapon/reagent_containers/syringe/giant/chloral/New()
 	..()
-	reagents.add_reagent("chloralhydrate", 50)
+	reagents.add_reagent(CHLORALHYDRATE, 50)
 	mode = SYRINGE_INJECT
 	update_icon()
 
@@ -392,7 +388,7 @@
 	desc = "Contains anti-toxins."
 /obj/item/weapon/reagent_containers/syringe/robot/antitoxin/New()
 	..()
-	reagents.add_reagent("anti_toxin", 15)
+	reagents.add_reagent(ANTI_TOXIN, 15)
 	mode = SYRINGE_INJECT
 	update_icon()
 
@@ -401,7 +397,7 @@
 	desc = "Contains inaprovaline - used to stabilize patients."
 /obj/item/weapon/reagent_containers/syringe/robot/inoprovaline/New()
 	..()
-	reagents.add_reagent("inaprovaline", 15)
+	reagents.add_reagent(INAPROVALINE, 15)
 	mode = SYRINGE_INJECT
 	update_icon()
 
@@ -419,7 +415,7 @@
 	desc = "Contains inaprovaline & anti-toxins."
 /obj/item/weapon/reagent_containers/syringe/robot/mixed/New()
 	..()
-	reagents.add_reagent("inaprovaline", 7)
-	reagents.add_reagent("anti_toxin", 8)
+	reagents.add_reagent(INAPROVALINE, 7)
+	reagents.add_reagent(ANTI_TOXIN, 8)
 	mode = SYRINGE_INJECT
 	update_icon()

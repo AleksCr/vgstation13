@@ -88,7 +88,8 @@ rcd light flash thingy on matter drain
 			for(var/obj/item/mecha_parts/mecha_equipment/tool/rcd/rcd in world)
 				rcd.disabled = 1
 			to_chat(src, "RCD-disabling pulse emitted.")
-		else to_chat(src, "Out of uses.")
+		else
+			to_chat(src, "Out of uses.")
 
 /datum/AI_Module/small/overload_machine
 	module_name = "Machine overload"
@@ -112,8 +113,10 @@ rcd light flash thingy on matter drain
 				spawn(50)
 					explosion(get_turf(M), -1, 1, 2, 3) //C4 Radius + 1 Dest for the machine
 					qdel(M)
-			else to_chat(src, "Out of uses.")
-	else to_chat(src, "That's not a machine.")
+			else
+				to_chat(src, "Out of uses.")
+	else
+		to_chat(src, "That's not a machine.")
 
 
 /datum/AI_Module/large/place_cyborg_transformer
@@ -180,8 +183,9 @@ rcd light flash thingy on matter drain
 /datum/AI_Module/large/highrescams
 	module_name = "High Resolution Cameras"
 	mod_pick_name = "High Res Cameras"
-	description = "Allows the AI to read papers and the lips of crewmembers from his cameras!"
+	description = "Allows the AI to better interpret the actions of the crew! Read papers and their lips from his cameras!"
 	cost = 10
+	one_time = 1
 
 	power_type = /mob/living/silicon/ai/proc/highrescameras
 
@@ -191,7 +195,7 @@ rcd light flash thingy on matter drain
 
 	ai_flags |= HIGHRESCAMS
 
-	eyeobj.addHear()
+	eyeobj.high_res = 1
 	src.verbs -= /mob/living/silicon/ai/proc/highrescameras
 
 
@@ -214,24 +218,59 @@ rcd light flash thingy on matter drain
 			for(var/obj/machinery/power/apc/apc in power_machines)
 				if(prob(30*apc.overload))
 					apc.overload_lighting()
-				else apc.overload++
-		else to_chat(src, "Out of uses.")
+				else
+					apc.overload++
+		else
+			to_chat(src, "Out of uses.")
 
 /datum/AI_Module/small/interhack
-	module_name = "Hack intercept"
+	module_name = "Fake Centcom Announcement"
 	mod_pick_name = "interhack"
-	description = "Hacks the status upgrade from Cent. Com, removing any information about malfunctioning electrical systems."
+	description = "Gain control of the station's automated announcement system, allowing you to create up to 3 fake Centcom announcements - completely undistinguishable from real ones."
 	cost = 15
-	one_time = 1
+	uses = 3
 
 	power_type = /mob/living/silicon/ai/proc/interhack
 
 /mob/living/silicon/ai/proc/interhack()
 	set category = "Malfunction"
-	set name = "Hack intercept"
+	set name = "Fake Announcement"
 
-	src.verbs -= /mob/living/silicon/ai/proc/interhack
-	ticker.mode:hack_intercept()
+	var/allowed = 0
+	var/datum/AI_Module/small/interhack/module_to_charge
+
+	for(var/datum/AI_Module/small/interhack/interhack in current_modules)
+		if(interhack.uses > 0)
+			module_to_charge = interhack
+			allowed = 1
+			break
+
+	if(!allowed)
+		to_chat(src, "Out of uses.")
+		return
+
+	//Create a list which looks like this
+	//list( "Alert 1" = /datum/command_alert_1, "Alert 5" = /datum/command_alert_5, ...)
+	//Then ask the AI to pick one announcement from the list
+
+	var/list/possible_announcements = typesof(/datum/command_alert)
+	for(var/A in possible_announcements)
+		var/datum/command_alert/CA = A
+		possible_announcements[initial(CA.name)] = A
+		possible_announcements.Remove(A)
+
+	var/chosen_announcement = input(usr, "Select a fake announcement to send out.", "Interhack") as null|anything in possible_announcements
+	if(!chosen_announcement)
+		to_chat(src, "Selection cancelled.")
+		return
+	if(module_to_charge.uses <= 0)
+		to_chat(src, "ERROR: Out of uses.")
+		return
+
+	module_to_charge.uses--
+	command_alert(possible_announcements[chosen_announcement])
+	log_game("[key_name(usr)] faked a centcom announcement: [possible_announcements[chosen_announcement]]!")
+	message_admins("[key_name(usr)] faked a centcom announcement: [possible_announcements[chosen_announcement]]!")
 
 /datum/AI_Module/small/reactivate_camera
 	module_name = "Reactivate camera"
@@ -254,8 +293,10 @@ rcd light flash thingy on matter drain
 					camera.uses --
 				else
 					to_chat(src, "This camera is either active, or not repairable.")
-			else to_chat(src, "Out of uses.")
-	else to_chat(src, "That's not a camera.")
+			else
+				to_chat(src, "Out of uses.")
+	else
+		to_chat(src, "That's not a camera.")
 
 /datum/AI_Module/small/upgrade_camera
 	module_name = "Upgrade Camera"
@@ -373,6 +414,7 @@ rcd light flash thingy on matter drain
 			A.current_modules += new AM.type
 			temp = AM.description
 			src.processing_time -= AM.cost
+			stat_collection.malf.bought_modules += AM.module_name
 
 	src.use(usr)
 	return

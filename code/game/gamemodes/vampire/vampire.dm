@@ -68,10 +68,12 @@
 
 	if(possible_vampires.len>0)
 		for(var/i = 0, i < vampire_amount, i++)
-			if(!possible_vampires.len) break
+			if(!possible_vampires.len)
+				break
 			var/datum/mind/vampire = pick(possible_vampires)
 			possible_vampires -= vampire
-			if(vampire.special_role) continue
+			if(vampire.special_role)
+				continue
 			vampires += vampire
 			modePlayer += vampires
 		log_admin("Starting a round of vampire with [vampires.len] vampires.")
@@ -93,7 +95,8 @@
 		greet_vampire(vampire)
 	if(!mixed)
 		spawn (rand(waittime_l, waittime_h))
-			if(!mixed) send_intercept()
+			if(!mixed)
+				send_intercept()
 		..()
 	return
 
@@ -259,7 +262,8 @@
 	return
 
 /datum/game_mode/proc/grant_vampire_powers(mob/living/carbon/vampire_mob)
-	if(!istype(vampire_mob))	return
+	if(!istype(vampire_mob))
+		return
 	vampire_mob.make_vampire()
 
 /datum/game_mode/proc/greet_vampire(var/datum/mind/vampire, var/you_are=1)
@@ -299,7 +303,8 @@ You are weak to holy things and starlight. Don't go into space and avoid the Cha
 	gender = gend
 
 /mob/living/proc/make_vampire()
-	if(!mind) return
+	if(!mind)
+		return
 	if(!mind.vampire)
 		mind.vampire = new /datum/vampire(gender)
 		mind.vampire.owner = src
@@ -351,7 +356,8 @@ You are weak to holy things and starlight. Don't go into space and avoid the Cha
 			verbs -= handler
 
 /datum/vampire/proc/OnLife()
-	if(!owner) return
+	if(!owner)
+		return
 	if(!owner.druggy)
 		owner.see_invisible = SEE_INVISIBLE_LEVEL_TWO
 
@@ -385,34 +391,40 @@ You are weak to holy things and starlight. Don't go into space and avoid the Cha
 			src.mind.vampire.draining = null
 			return 0
 		if(H.species.flags & NO_BLOOD)
-			to_chat(src, "<span class='warning'>Not a drop of blood here</span>")
+			to_chat(src, "<span class='warning'>Not a drop of blood here.</span>")
+			src.mind.vampire.draining = null
+			return 0
+		if(!H.mind)
+			to_chat(src, "<span class='warning'>This blood is lifeless and has no power.</span>")
 			src.mind.vampire.draining = null
 			return 0
 		bloodtotal = src.mind.vampire.bloodtotal
 		bloodusable = src.mind.vampire.bloodusable
-		if(!H.vessel.get_reagent_amount("blood"))
+		if(!H.vessel.get_reagent_amount(BLOOD))
 			to_chat(src, "<span class='warning'>They've got no blood left to give.</span>")
 			break
 		if(H.stat < 2) //alive
-			blood = min(10, H.vessel.get_reagent_amount("blood"))// if they have less than 10 blood, give them the remnant else they get 10 blood
+			blood = min(10, H.vessel.get_reagent_amount(BLOOD))// if they have less than 10 blood, give them the remnant else they get 10 blood
 			src.mind.vampire.bloodtotal += blood
 			src.mind.vampire.bloodusable += blood
 			H.adjustCloneLoss(10) // beep boop 10 damage
 		else
-			blood = min(5, H.vessel.get_reagent_amount("blood"))// The dead only give 5 bloods
+			blood = min(5, H.vessel.get_reagent_amount(BLOOD))// The dead only give 5 bloods
 			src.mind.vampire.bloodtotal += blood
 		if(bloodtotal != src.mind.vampire.bloodtotal)
 			to_chat(src, "<span class='notice'>You have accumulated [src.mind.vampire.bloodtotal] [src.mind.vampire.bloodtotal > 1 ? "units" : "unit"] of blood[src.mind.vampire.bloodusable != bloodusable ?", and have [src.mind.vampire.bloodusable] left to use" : "."]</span>")
 		check_vampire_upgrade(mind)
-		H.vessel.remove_reagent("blood",25)
+		H.vessel.remove_reagent(BLOOD,25)
 
 	src.mind.vampire.draining = null
 	to_chat(src, "<span class='notice'>You stop draining [H.name] of blood.</span>")
 	return 1
 
 /mob/proc/check_vampire_upgrade(datum/mind/v)
-	if(!v) return
-	if(!v.vampire) return
+	if(!v)
+		return
+	if(!v.vampire)
+		return
 	var/datum/vampire/vamp = v.vampire
 	var/list/old_powers = vamp.powers.Copy()
 
@@ -535,7 +547,8 @@ You are weak to holy things and starlight. Don't go into space and avoid the Cha
 	if(ref in thralls)
 		if(vampire_mind.current)
 			if(vampire_mind.current.client)
-				var/I = image('icons/mob/mob.dmi', loc = vampire_mind.current, icon_state = "vampire", layer = 13)
+				var/image/I = image('icons/mob/mob.dmi', loc = vampire_mind.current, icon_state = "vampire")
+				I.plane = VAMP_ANTAG_HUD_PLANE
 				vampire_mind.current.client.images += I
 	for(var/headref in thralls)
 		for(var/datum/mind/t_mind in thralls[headref])
@@ -543,15 +556,18 @@ You are weak to holy things and starlight. Don't go into space and avoid the Cha
 			if(head)
 				if(head.current)
 					if(head.current.client)
-						var/I = image('icons/mob/mob.dmi', loc = t_mind.current, icon_state = "vampthrall", layer = 13)
+						var/image/I = image('icons/mob/mob.dmi', loc = t_mind.current, icon_state = "vampthrall")
+						I.plane = VAMP_ANTAG_HUD_PLANE
 						head.current.client.images += I
 				if(t_mind.current)
 					if(t_mind.current.client)
-						var/I = image('icons/mob/mob.dmi', loc = head.current, icon_state = "vampire", layer = 13)
+						var/image/I = image('icons/mob/mob.dmi', loc = head.current, icon_state = "vampire")
+						I.plane = VAMP_ANTAG_HUD_PLANE
 						t_mind.current.client.images += I
 				if(t_mind.current)
 					if(t_mind.current.client)
-						var/I = image('icons/mob/mob.dmi', loc = t_mind.current, icon_state = "vampthrall", layer = 13)
+						var/image/I = image('icons/mob/mob.dmi', loc = t_mind.current, icon_state = "vampthrall")
+						I.plane = VAMP_ANTAG_HUD_PLANE
 						t_mind.current.client.images += I
 
 /datum/game_mode/proc/update_vampire_icons_removed(datum/mind/vampire_mind)
@@ -714,9 +730,9 @@ You are weak to holy things and starlight. Don't go into space and avoid the Cha
 		if(!hud_used.vampire_blood_display)
 			hud_used.vampire_hud()
 			//hud_used.human_hud(hud_used.ui_style)
-		hud_used.vampire_blood_display.maptext_width = 64
-		hud_used.vampire_blood_display.maptext_height = 32
-		hud_used.vampire_blood_display.maptext = "<div align='left' valign='top' style='position:relative; top:0px; left:6px'> U:<font color='#33FF33' size='1'>[mind.vampire.bloodusable]</font><br> T:<font color='#FFFF00' size='1'>[mind.vampire.bloodtotal]</font></div>"
+		hud_used.vampire_blood_display.maptext_width = WORLD_ICON_SIZE*2
+		hud_used.vampire_blood_display.maptext_height = WORLD_ICON_SIZE
+		hud_used.vampire_blood_display.maptext = "<div align='left' valign='top' style='position:relative; top:0px; left:6px'>U:<font color='#33FF33'>[mind.vampire.bloodusable]</font><br> T:<font color='#FFFF00'>[mind.vampire.bloodtotal]</font></div>"
 	handle_vampire_cloak()
 	handle_vampire_menace()
 	handle_vampire_smite()
@@ -737,3 +753,30 @@ You are weak to holy things and starlight. Don't go into space and avoid the Cha
 				I.status &= ~ORGAN_SPLINTED
 				I.status &= ~ORGAN_BLEEDING
 	mind.vampire.nullified = max(0, mind.vampire.nullified - 1)
+
+/datum/mind/proc/make_new_vampire(var/show_message = 1, var/generate_objectives = 1)
+	if(!isvampire(current))
+		ticker.mode.vampires += src
+		ticker.mode.grant_vampire_powers(current)
+		special_role = "Vampire"
+		if(show_message)
+			to_chat(current, "<B><font color='red'>Your powers are awoken. Your lust for blood grows... You are a Vampire!</font></B>")
+			var/wikiroute = role_wiki[ROLE_VAMPIRE]
+			to_chat(current, "<span class='info'><a HREF='?src=\ref[current];getwiki=[wikiroute]'>(Wiki Guide)</a></span>")
+		if(generate_objectives)
+			ticker.mode.forge_vampire_objectives(src)
+		return 1
+	return 0
+
+/datum/mind/proc/remove_vampire_status(var/show_message = 1)
+	if(isvampire(current))
+		ticker.mode.vampires -= src
+		special_role = null
+		current.remove_vampire_powers()
+		if(vampire)
+			qdel(vampire)
+			vampire = null
+		if(show_message)
+			to_chat(current, "<FONT color='red' size = 3><B>You grow weak and lose your powers! You are no longer a vampire and are stuck in your current form!</B></FONT>")
+		return 1
+	return 0

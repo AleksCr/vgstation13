@@ -70,11 +70,12 @@
 	updatehealth()
 
 /mob/living/carbon/alien/larva/blob_act()
-	..()
 	if(flags & INVULNERABLE)
 		return
-	if(stat == 2)
+	if(stat == DEAD)
 		return
+	..()
+	playsound(loc, 'sound/effects/blobattack.ogg',50,1)
 	var/shielded = 0
 
 	var/damage = null
@@ -134,12 +135,15 @@
 		to_chat(M, "<span class='warning'>You cannot attack people before the game has started.</span>")
 		return
 
-	if(M.Victim) return // can't attack while eating!
+	if(M.Victim)
+		return // can't attack while eating!
 
 	if(health > -100)
 
 		for(var/mob/O in viewers(src, null))
 			visible_message("<span class='danger'>\The [M] glomps \the [src]!</span>")
+
+		add_logs(M, src, "glomped on", 0)
 
 		var/damage = rand(1, 3)
 
@@ -186,23 +190,7 @@
 	switch(M.a_intent)
 
 		if(I_HELP)
-			if(health > 0)
-				help_shake_act(M)
-			else
-				if(M.health >= -75.0)
-					if ((M.head && M.head.flags & 4) || (M.wear_mask && !( M.wear_mask.flags & 32 )) )
-						to_chat(M, "<span class='notice'>Remove that mask!</span>")
-						return
-					var/obj/effect/equip_e/human/O = new /obj/effect/equip_e/human()
-					O.source = M
-					O.target = src
-					O.s_loc = M.loc
-					O.t_loc = loc
-					O.place = "CPR"
-					requests += O
-					spawn(0)
-						O.process()
-						return
+			help_shake_act(M)
 
 		if(I_GRAB)
 			if(M == src)
@@ -276,7 +264,8 @@
 	return
 
 /mob/living/carbon/alien/larva/restrained()
-	if(timestopped) return 1 //under effects of time magick
+	if(timestopped)
+		return 1 //under effects of time magick
 
 	return 0
 
@@ -305,3 +294,7 @@
 		return 1
 	return ..()
 */
+
+/mob/living/carbon/alien/larva/reset_layer()
+	if(stat == DEAD)
+		plane = MOB_PLANE

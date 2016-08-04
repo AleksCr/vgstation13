@@ -5,7 +5,7 @@
 	icon_state = "blastcannon_empty"
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/guninhands_left.dmi', "right_hand" = 'icons/mob/in-hand/right/guninhands_right.dmi')
 	item_state = null
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	force = 5
 	flags = FPRINT
 	siemens_coefficient = 1
@@ -60,8 +60,8 @@
 	var/image/bomb_icon = image('icons/obj/weaponsmithing.dmi', src, "nothing")
 	bomb_icon.appearance = bomb_appearance
 	bomb_icon.layer = src.layer
-	bomb_icon.pixel_x = 2
-	bomb_icon.pixel_y = 9
+	bomb_icon.pixel_x = 2 * PIXEL_MULTIPLIER
+	bomb_icon.pixel_y = 9 * PIXEL_MULTIPLIER
 
 	overlays += bomb_icon
 

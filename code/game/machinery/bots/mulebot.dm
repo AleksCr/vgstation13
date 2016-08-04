@@ -11,7 +11,6 @@ var/global/mulebot_count = 0
 	desc = "A Multiple Utility Load Effector bot."
 	icon_state = "mulebot0"
 	icon_initial = "mulebot"
-	layer = MOB_LAYER
 	density = 1
 	anchored = 1
 	animate_movement=1
@@ -437,14 +436,15 @@ var/global/mulebot_count = 0
 
 	C.loc = src.loc
 	sleep(2)
-	if(C.loc != src.loc) //To prevent you from going onto more thano ne bot.
+	if(C.loc != src.loc) //To prevent you from going onto more than one bot.
 		return
 	C.loc = src
 	load = C
 
-	C.pixel_y += 9
+	C.pixel_y += 9 * PIXEL_MULTIPLIER
 	if(C.layer < layer)
 		C.layer = layer + 0.1
+	C.plane = plane
 	overlays += C
 
 	if(ismob(C))
@@ -467,8 +467,8 @@ var/global/mulebot_count = 0
 	overlays.len = 0
 
 	load.loc = src.loc
-	load.pixel_y -= 9
-	load.layer = initial(load.layer)
+	load.pixel_y -= 9 * PIXEL_MULTIPLIER
+	load.reset_plane_and_layer()
 	if(ismob(load))
 		var/mob/M = load
 		if(M.client)
@@ -491,10 +491,11 @@ var/global/mulebot_count = 0
 	// with items dropping as mobs are loaded
 
 	for(var/atom/movable/AM in src)
-		if(AM == cell || AM == botcard) continue
+		if(AM == cell || AM == botcard)
+			continue
 
 		AM.loc = src.loc
-		AM.layer = initial(AM.layer)
+		AM.reset_plane_and_layer()
 		AM.pixel_y = initial(AM.pixel_y)
 		if(ismob(AM))
 			var/mob/M = AM
@@ -531,7 +532,8 @@ var/global/mulebot_count = 0
 			if(3)
 				process_bot()
 
-	if(refresh) updateDialog()
+	if(refresh)
+		updateDialog()
 
 /obj/machinery/bot/mulebot/proc/process_bot()
 //	to_chat(if(mode) world, "Mode: [mode]")
@@ -575,7 +577,8 @@ var/global/mulebot_count = 0
 						bloodiness--
 
 					var/moved = step_towards(src, next)	// attempt to move
-					if(cell) cell.use(1)
+					if(cell)
+						cell.use(1)
 					if(moved)	// successful move
 //						to_chat(world, "Successful move.")
 						blockcount = 0
@@ -749,12 +752,12 @@ var/global/mulebot_count = 0
 	src.visible_message("<span class='warning'>[src] drives over [H]!</span>")
 	playsound(get_turf(src), 'sound/effects/splat.ogg', 50, 1)
 	var/damage = rand(5,15)
-	H.apply_damage(2*damage, BRUTE, "head")
-	H.apply_damage(2*damage, BRUTE, "chest")
-	H.apply_damage(0.5*damage, BRUTE, "l_leg")
-	H.apply_damage(0.5*damage, BRUTE, "r_leg")
-	H.apply_damage(0.5*damage, BRUTE, "l_arm")
-	H.apply_damage(0.5*damage, BRUTE, "r_arm")
+	H.apply_damage(2*damage, BRUTE, LIMB_HEAD)
+	H.apply_damage(2*damage, BRUTE, LIMB_CHEST)
+	H.apply_damage(0.5*damage, BRUTE, LIMB_LEFT_LEG)
+	H.apply_damage(0.5*damage, BRUTE, LIMB_RIGHT_LEG)
+	H.apply_damage(0.5*damage, BRUTE, LIMB_LEFT_ARM)
+	H.apply_damage(0.5*damage, BRUTE, LIMB_RIGHT_ARM)
 	bloodiness += 4
 	currentBloodColor=bloodcolor // For if species get different blood colors.
 
@@ -855,7 +858,8 @@ var/global/mulebot_count = 0
 
 	var/datum/radio_frequency/frequency = radio_controller.return_frequency(freq)
 
-	if(!frequency) return
+	if(!frequency)
+		return
 
 
 

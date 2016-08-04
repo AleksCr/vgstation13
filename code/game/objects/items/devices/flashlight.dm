@@ -4,8 +4,8 @@
 	icon = 'icons/obj/lighting.dmi'
 	icon_state = "flashlight"
 	item_state = "flashlight"
-	origin_tech = "engineering=1"
-	w_class = 2
+	origin_tech = Tc_ENGINEERING + "=1"
+	w_class = W_CLASS_SMALL
 	flags = FPRINT
 	siemens_coefficient = 1
 	slot_flags = SLOT_BELT
@@ -118,7 +118,7 @@
 	icon_state = "lamp"
 	item_state = "lamp"
 	brightness_on = 5
-	w_class = 4
+	w_class = W_CLASS_LARGE
 	flags = FPRINT
 	siemens_coefficient = 1
 	starting_materials = null
@@ -149,7 +149,7 @@
 /obj/item/device/flashlight/flare
 	name = "flare"
 	desc = "A red Nanotrasen issued flare. There are instructions on the side, it reads 'pull cord, make light'."
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	brightness_on = 4 // Pretty bright.
 	light_power = 2.5
 	icon_state = "flare"
@@ -227,7 +227,7 @@
 	desc = "A lamp powered by a slime core. You can adjust its brightness by touching it."
 	icon_state = "slimelamp"
 	item_state = ""
-	origin_tech = "biotech=3"
+	origin_tech = Tc_BIOTECH + "=3"
 	light_color = LIGHT_COLOR_SLIME_LAMP
 	on = 0
 	luminosity = 2

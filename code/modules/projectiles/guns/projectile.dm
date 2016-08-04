@@ -7,8 +7,8 @@
 	name = "revolver"
 	icon_state = "revolver"
 	caliber = list("357" = 1)
-	origin_tech = "combat=2;materials=2"
-	w_class = 3.0
+	origin_tech = Tc_COMBAT + "=2;" + Tc_MATERIALS + "=2"
+	w_class = W_CLASS_MEDIUM
 	starting_materials = list(MAT_IRON = 1000)
 	w_type = RECYK_METAL
 	recoil = 1
@@ -49,8 +49,7 @@
 		update_icon()
 
 		if(user)
-			user.update_inv_r_hand()
-			user.update_inv_l_hand()
+			user.update_inv_hands()
 		return 1
 	return 0
 
@@ -64,8 +63,7 @@
 		stored_magazine = null
 		update_icon()
 		if(user)
-			user.update_inv_r_hand()
-			user.update_inv_l_hand()
+			user.update_inv_hands()
 		return 1
 	return 0
 
@@ -121,14 +119,14 @@
 
 /obj/item/weapon/gun/projectile/attackby(var/obj/item/A as obj, mob/user as mob)
 	if(istype(A, /obj/item/gun_part/silencer) && src.gun_flags &SILENCECOMP)
-		if(user.l_hand != src && user.r_hand != src)	//if we're not in his hands
+		if(!user.is_holding_item(src))	//if we're not in his hands
 			to_chat(user, "<span class='notice'>You'll need [src] in your hands to do that.</span>")
 			return
 
 		if(user.drop_item(A, src)) //put the silencer into the gun
 			to_chat(user, "<span class='notice'>You screw [A] onto [src].</span>")
 			silenced = A	//dodgy?
-			w_class = 3
+			w_class = W_CLASS_MEDIUM
 			update_icon()
 			return 1
 
@@ -190,13 +188,13 @@
 			update_icon()
 			return
 		if(silenced)
-			if(user.l_hand != src && user.r_hand != src)
+			if(!user.is_holding_item(src))
 				..()
 				return
 			to_chat(user, "<span class='notice'>You unscrew [silenced] from [src].</span>")
 			user.put_in_hands(silenced)
 			silenced = 0
-			w_class = 2
+			w_class = W_CLASS_SMALL
 			update_icon()
 			return
 	else

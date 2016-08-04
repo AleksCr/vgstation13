@@ -1,9 +1,3 @@
-#define FULLSCREEN_LAYER 18
-#define DAMAGE_LAYER FULLSCREEN_LAYER + 0.1
-#define IMPAIRED_LAYER DAMAGE_LAYER + 0.1
-#define BLIND_LAYER IMPAIRED_LAYER + 0.1
-#define CRIT_LAYER BLIND_LAYER + 0.1
-
 /mob
 	var/list/screens = list()
 
@@ -47,15 +41,21 @@
 		clear_fullscreen(category)
 
 /datum/hud/proc/reload_fullscreen()
-	var/list/screens = mymob.screens
-	for(var/category in screens)
-		mymob.client.screen |= screens[category]
+	if(mymob && mymob.client && mymob.stat != DEAD)
+		var/list/screens = mymob.screens
+		for(var/category in screens)
+			var/obj/A = screens[category]
+			if(istype(A, /atom) && !istype(A, /obj/screen))
+				log_debug("Wrong type of object in screens, type [A.type]")
+				continue
+			mymob.client.screen |= A
 
 /obj/screen/fullscreen
 	icon = 'icons/mob/screen1_full.dmi'
 	icon_state = "default"
 	screen_loc = "CENTER-7,CENTER-7"
 	layer = FULLSCREEN_LAYER
+	plane = FULLSCREEN_PLANE
 	mouse_opacity = 0
 	var/severity = 0
 
@@ -102,11 +102,3 @@
 	icon = 'icons/mob/screen1.dmi'
 	screen_loc = "WEST,SOUTH to EAST,NORTH"
 	icon_state = "druggy"
-
-
-
-#undef FULLSCREEN_LAYER
-#undef BLIND_LAYER
-#undef IMPAIRED_LAYER
-#undef DAMAGE_LAYER
-#undef CRIT_LAYER

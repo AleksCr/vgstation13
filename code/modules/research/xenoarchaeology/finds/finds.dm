@@ -31,7 +31,7 @@
 	var/obj/item/weapon/inside
 	var/method = 0// 0 = fire, 1 = brush, 2 = pick
 	var/datum/geosample/geologic_data
-	origin_tech = "materials=5"
+	origin_tech = Tc_MATERIALS + "=5"
 
 /obj/item/weapon/strangerock/New(loc, var/inside_item_type = 0)
 	..()
@@ -236,14 +236,15 @@
 			possible_spawns += /obj/item/stack/sheet/mineral/mythril
 			possible_spawns += /obj/item/stack/sheet/mineral/gold
 			possible_spawns += /obj/item/stack/sheet/mineral/silver
-			possible_spawns += /obj/item/stack/sheet/mineral/enruranium
+			possible_spawns += /obj/item/stack/sheet/mineral/uranium
 			possible_spawns += /obj/item/stack/sheet/mineral/sandstone
 			possible_spawns += /obj/item/stack/sheet/mineral/silver
 
 			var/new_type = pick(possible_spawns)
 			if(new_type == /obj/item/stack/sheet/metal)
 				new_item = getFromPool(/obj/item/stack/sheet/metal, get_turf(src))
-			else new_item = new new_type(get_turf(src))
+			else
+				new_item = new new_type(get_turf(src))
 			new_item:amount = rand(5,45)
 		if(15)
 			if(prob(75))
@@ -274,7 +275,7 @@
 		if(17)
 			//cultblade
 			apply_prefix = 0
-			new_item = new /obj/item/weapon/melee/cultblade(src.loc)
+			new_item = new /obj/item/weapon/melee/cultblade/nocult(src.loc)
 			apply_material_decorations = 0
 			apply_image_decorations = 0
 		if(18)
@@ -292,7 +293,8 @@
 			new_item = new new_type(src.loc)
 			apply_prefix = 0
 
-			if(istype(new_item, /obj/item/weapon/claymore)) new_item.force = 10
+			if(istype(new_item, /obj/item/weapon/claymore))
+				new_item.force = 10
 
 			item_type = new_item.name
 		if(20)
@@ -590,6 +592,7 @@
 	else if(talkative)
 		listening_to_players = 1
 		if(prob(25))
-			if(!heard_words) heard_words = list()
+			if(!heard_words)
+				heard_words = list()
 			speaking_to_players = 1
 			processing_objects.Add(src)

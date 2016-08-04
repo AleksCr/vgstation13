@@ -29,7 +29,8 @@
 /obj/item/alien_embryo/Topic(href,href_list)
 	if("signup" in href_list)
 		var/mob/dead/observer/O = locate(href_list["signup"])
-		if(!O) return
+		if(!O)
+			return
 		volunteer(O)
 
 
@@ -66,7 +67,8 @@
 	..()
 
 /obj/item/alien_embryo/process()
-	if(!affected_mob)	return
+	if(!affected_mob)
+		return
 	if(loc != affected_mob)
 		affected_mob.status_flags &= ~(XENO_HOST)
 		processing_objects.Remove(src)
@@ -85,7 +87,7 @@
 			if(prob(1))
 				affected_mob.emote("sneeze")
 			if(prob(1))
-				affected_mob.emote("cough")
+				affected_mob.audible_cough()
 			if(prob(1))
 				to_chat(affected_mob, "<span class='warning'>Your throat feels sore.</span>")
 			if(prob(1))
@@ -94,7 +96,7 @@
 			if(prob(1))
 				affected_mob.emote("sneeze")
 			if(prob(1))
-				affected_mob.emote("cough")
+				affected_mob.audible_cough()
 			if(prob(2))
 				to_chat(affected_mob, "<span class='warning'>Your muscles ache.</span>")
 				if(prob(20))

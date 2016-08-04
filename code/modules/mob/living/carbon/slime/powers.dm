@@ -15,7 +15,8 @@
 			choices += C
 
 	var/mob/living/carbon/M = input(src,"Who do you wish to feed on?") in null|choices
-	if(!M) return
+	if(!M)
+		return
 	if(M in view(1, src))
 
 		if(!istype(src, /mob/living/carbon/brain))
@@ -53,7 +54,7 @@
 		icon_state = "[colour] adult slime eat"
 	else
 		icon_state = "[colour] baby slime eat"
-
+	add_logs(src, Victim, "fed on", 0)
 	while(Victim && M.health > -70 && stat != 2)
 		// M.canmove = 0
 		canmove = 0
@@ -145,19 +146,23 @@
 				if(prob(85))
 					rabid() // UUUNNBGHHHH GONNA EAT JUUUUUU
 
-			if(client) to_chat(src, "<i>This subject does not have a strong enough life energy anymore...</i>")
+			if(client)
+				to_chat(src, "<i>This subject does not have a strong enough life energy anymore...</i>")
 		else
 			M.update_canmove()
 
-			if(client) to_chat(src, "<i>I have stopped feeding...</i>")
+			if(client)
+				to_chat(src, "<i>I have stopped feeding...</i>")
 	else
-		if(client) to_chat(src, "<i>I have stopped feeding...</i>")
+		if(client)
+			to_chat(src, "<i>I have stopped feeding...</i>")
 
 	Victim = null
 
 /mob/living/carbon/slime/proc/Feedstop()
 	if(Victim)
-		if(Victim.client) to_chat(Victim, "[src] has let go of your head!")
+		if(Victim.client)
+			to_chat(Victim, "[src] has let go of your head!")
 		Victim = null
 
 /mob/living/carbon/slime/proc/UpdateFeed(var/mob/M)
@@ -183,9 +188,11 @@
 				src.mind.transfer_to(new_slime)
 			else
 				new_slime.key = src.key
+			attack_log += text("\[[time_stamp()]\] <font color='black'>Evolved to an adult slime at x=[x],y=[y],z=[z]!</font>")
 			new_slime.languages = languages.Copy()
 			new_slime.name = src.name
 			new_slime.real_name = src.real_name
+			new_slime.attack_log = attack_log
 			transferImplantsTo(new_slime)
 			transferBorers(new_slime)
 
@@ -224,7 +231,8 @@
 				var/mob/living/carbon/slime/M = new newslime(loc)
 				M.nutrition = new_nutrition
 				M.powerlevel = new_powerlevel
-				if(i != 1) step_away(M,src)
+				if(i != 1)
+					step_away(M,src)
 				babies += M
 				feedback_add_details("slime_babies_born","slimebirth_[replacetext(M.colour," ","_")]")
 
@@ -232,7 +240,9 @@
 			new_slime.a_intent = I_HURT
 			new_slime.languages = languages.Copy()
 			new_slime.name = src.name
+			attack_log += text("\[[time_stamp()]\] <font color='black'>Reproduced to make more slimes at x=[x],y=[y],z=[z]!</font>")
 			new_slime.real_name = src.real_name
+			new_slime.attack_log = attack_log
 			if(src.mind)
 				src.mind.transfer_to(new_slime)
 			else
@@ -253,7 +263,8 @@
 	set name = "Crawl through Vent"
 	set desc = "Enter an air vent and crawl through the pipe system."
 	set category = "Object"
-	if(Victim)	return
+	if(Victim)
+		return
 	var/pipe = start_ventcrawl()
 	if(pipe && !Victim)
 		handle_ventcrawl(pipe)

@@ -15,7 +15,7 @@
 	//How much results you can spawn before this datum disappears
 
 	var/stored_in_organ
-	//Example value: "head" or "arm". When an organ with the same type is cut off, this object will be transferred to it.
+	//Example value: LIMB_HEAD or "arm". When an organ with the same type is cut off, this object will be transferred to it.
 
 /datum/butchering_product/New()
 	..()
@@ -38,17 +38,19 @@
 	verb_name = "harvest teeth"
 	verb_gerund = "removing teeth from"
 
-	stored_in_organ = "head" //Cutting a "head" off will transfer teeth to the head object
+	stored_in_organ = LIMB_HEAD //Cutting a LIMB_HEAD off will transfer teeth to the head object
 
 /datum/butchering_product/teeth/desc_modifier(mob/parent, mob/user)
-	if(amount == initial_amount) return
-	if(!isliving(parent)) return
+	if(amount == initial_amount)
+		return
+	if(!isliving(parent))
+		return
 
 	var/mob/living/L = parent
 
 	if(ishuman(L))
 		var/mob/living/carbon/human/H = L
-		var/datum/organ/external/head = H.get_organ("head")
+		var/datum/organ/external/head = H.get_organ(LIMB_HEAD)
 		if((head.status & ORGAN_DESTROYED) || !head)
 			return //If he has no head, you can't see whether he has teeth or not!
 
@@ -57,8 +59,10 @@
 			return //If his mouth is covered, we can't see his teeth
 
 	var/pronoun = "Its"
-	if(L.gender == MALE) pronoun = "His"
-	if(L.gender == FEMALE) pronoun = "Her"
+	if(L.gender == MALE)
+		pronoun = "His"
+	if(L.gender == FEMALE)
+		pronoun = "Her"
 
 	if(amount == 0)
 		return "[pronoun] teeth are gone. "
@@ -70,7 +74,8 @@
 
 #define ALL_TEETH -1
 /datum/butchering_product/teeth/spawn_result(location, mob/parent, drop_amount = ALL_TEETH)
-	if(amount <= 0) return
+	if(amount <= 0)
+		return
 
 	var/obj/item/stack/teeth/T = new(location)
 	T.update_name(parent) //Change name of the teeth - from the default "teeth" to "corgi teeth", for example
@@ -113,8 +118,10 @@
 /datum/butchering_product/skin/desc_modifier(mob/parent)
 	if(!amount)
 		var/pronoun = "It"
-		if(parent.gender == MALE) pronoun = "He"
-		if(parent.gender == FEMALE) pronoun = "She"
+		if(parent.gender == MALE)
+			pronoun = "He"
+		if(parent.gender == FEMALE)
+			pronoun = "She"
 		return "[pronoun] has been skinned. "
 
 /datum/butchering_product/skin/cat
@@ -171,6 +178,18 @@
 	if(!amount)
 		return "Its claws have been cut off. "
 
+//======frog legs
+
+/datum/butchering_product/frog_leg
+	result = /obj/item/weapon/reagent_containers/food/snacks/frog_leg
+	verb_name = "remove legs from"
+	verb_gerund = "removing legs from"
+	amount = 2 //not a magic number, frogs have 2 legs
+
+/datum/butchering_product/frog_leg/desc_modifier()
+	if(amount < 2)
+		return "It only has [amount] [amount==1 ? "leg" : "legs"]. "
+
 #define TEETH_FEW		/datum/butchering_product/teeth/few		//4-8
 #define TEETH_BUNCH		/datum/butchering_product/teeth/bunch	//8-16
 #define TEETH_LOTS		/datum/butchering_product/teeth/lots	//16-24
@@ -187,6 +206,7 @@ var/global/list/animal_butchering_products = list(
 	/mob/living/simple_animal/hostile/alien				= list(/datum/butchering_product/xeno_claw, /datum/butchering_product/skin/xeno, TEETH_BUNCH), //Same as the player-controlled aliens
 	/mob/living/simple_animal/hostile/retaliate/cluwne	= list(TEETH_BUNCH), //honk
 	/mob/living/simple_animal/hostile/creature			= list(TEETH_LOTS),
+	/mob/living/simple_animal/hostile/frog				= list(/datum/butchering_product/frog_leg),
 	/mob/living/carbon/monkey							= list(/datum/butchering_product/skin/monkey, TEETH_FEW),
 
 	/mob/living/carbon/human							= list(TEETH_HUMAN),

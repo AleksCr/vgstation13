@@ -31,7 +31,7 @@
 				return 1
 
 			playsound(get_turf(master), 'sound/items/Deconstruct.ogg', 50, 1)
-			T.ChangeTurf(get_base_turf(T.z))
+			T.ChangeTurf(T.get_underlying_turf())
 			return 0
 
 	else if(istype(A, /obj/machinery/door/airlock))
@@ -146,9 +146,9 @@
 /datum/rcd_schematic/con_airlock/get_HTML(var/obj/machinery/door/airlock/D)
 	. = "<p>"
 	. += {"
-		
+
 		<form action="?src=\ref[master.interface]" method="get">
-			<input type="hidden" name="src" value="\ref[master.interface]"/> 
+			<input type="hidden" name="src" value="\ref[master.interface]"/>
 			[istype(D) ? "<input type=\"hidden\" name = \"target\" value=\"\ref[D]\"/>" : ""]
 			<input type="text" name="new_name" value="[istype(D) ? D.name : selected_name]"/>
 			<input type="submit" name="act" value="Save Name"/>
@@ -177,7 +177,7 @@
 
 
 		<form action="?src=\ref[master.interface]" method="get" id="accessList" style="display:inline-block;font-size:100%">
-			<input type="hidden" name="src" value="\ref[master.interface]"/> 
+			<input type="hidden" name="src" value="\ref[master.interface]"/>
 			[istype(D) ? "<input type=\"hidden\" name = \"target\" value=\"\ref[D]\"/>" : ""]
 			<input type="submit" value="Save Access Settings"/><br/><br/>
 
@@ -206,7 +206,8 @@
 			. += "<td style='width:14%' valign='top'>"
 			for(var/A in get_region_accesses(i))
 				var/access_name = get_access_desc(A)
-				if(!access_name) continue
+				if(!access_name)
+					continue
 				var/checked = ""//((D && (D.req_access.Find(A)) || (D.req_one_access.Find(A)))) || (!D && (selected_access.Find(A))) ? " checked" : ""
 				if(istype(D))
 					if(D.req_access.Find(A) || D.req_one_access.Find(A))
@@ -295,7 +296,7 @@
 				return
 		var/list/new_access = new
 		//Along with oneAccess, the hrefs for access levels get called, as such we process them here before we return 1
-		
+
 		var/list/access_levels = get_all_accesses()
 
 		for(var/href_key in href_list - list("oneAccess", "src"))	//This should loop through all the access levels that are on.
@@ -315,7 +316,7 @@
 			else
 				D.req_access = new_access.Copy()
 				D.req_one_access.Cut()
-		
+
 		master.update_options_menu(list2params(list(D)))
 		return 1
 
@@ -399,8 +400,10 @@
 /datum/selection_schematic/airlock_schematic/clicked(var/mob/user)
 	if(master:selected == src)
 		master:selected_name = copytext(sanitize(input(usr,"What would you like to name this airlock?","Input a name",name) as text|null),1,MAX_NAME_LEN)
-		if(capitalize(master:selected_name) == master:selected_name) master:selected_name = "\improper[master:selected_name]"
-	else master.selected = src
+		if(capitalize(master:selected_name) == master:selected_name)
+			master:selected_name = "\improper[master:selected_name]"
+	else
+		master.selected = src
 // Schematics for schematics, I know, but it's OOP!
 /datum/selection_schematic/airlock_schematic
 	name			= "airlock"						//Name of the airlock for the tooltip.

@@ -42,7 +42,7 @@ var/list/blob_looks
 	icon_state = "center"
 	luminosity = 2
 	desc = "Some blob creature thingy"
-	density = 0
+	density = 0 //Necessary for spore pathfinding
 	opacity = 0
 	anchored = 1
 	penetration_dampening = 17
@@ -51,9 +51,9 @@ var/list/blob_looks
 	var/health_timestamp = 0
 	var/brute_resist = 4
 	var/fire_resist = 1
-	pixel_x = -16
-	pixel_y = -16
-	layer = 6
+	pixel_x = -WORLD_ICON_SIZE/2
+	pixel_y = -WORLD_ICON_SIZE/2
+	plane = BLOB_PLANE
 	var/spawning = 2
 	var/dying = 0
 	var/mob/camera/blob/overmind = null
@@ -65,7 +65,6 @@ var/list/blob_looks
 
 	var/time_since_last_pulse
 
-	var/layer_new = 6
 	var/icon_new = "center"
 	var/icon_classic = "blob"
 
@@ -75,7 +74,7 @@ var/list/blob_looks
 	return
 
 
-/obj/effect/blob/New(turf/loc,newlook = "new")
+/obj/effect/blob/New(turf/loc,newlook = "new",no_morph = 0)
 	looks = newlook
 	update_looks()
 	blobs += src
@@ -88,14 +87,17 @@ var/list/blob_looks
 	time_since_last_pulse = world.time
 
 	if(blob_looks[looks] == 64)
-		if(spawning)
+		if(spawning && !no_morph)
 			icon_state = initial(icon_state) + "_spawn"
 			spawn(10)
 				spawning = 0//for sprites
 				icon_state = initial(icon_state)
 				src.update_icon(1)
 		else
+			spawning = 0
 			update_icon()
+			for(var/obj/effect/blob/B in orange(src,1))
+				B.update_icon()
 
 	..(loc)
 	for(var/atom/A in loc)
@@ -120,7 +122,7 @@ var/list/blob_looks
 		for(var/obj/effect/blob/core/C in range(loc,4))
 			if((C != src) && C.overmind && (C.overmind.blob_warning <= world.time))
 				C.overmind.blob_warning = world.time + (10 SECONDS)
-				to_chat(C.overmind,"<span class='danger'>A blob died near your core!</span>")
+				to_chat(C.overmind,"<span class='danger'>A blob died near your core!</span> <b><a href='?src=\ref[C.overmind];blobjump=\ref[loc]'>(JUMP)</a></b>")
 
 	overmind = null
 	..()
@@ -129,8 +131,11 @@ var/list/blob_looks
 	return PROJREACT_BLOB
 
 /obj/effect/blob/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
-	if(air_group || (height==0))	return 1
-	if(istype(mover) && mover.checkpass(PASSBLOB))	return 1
+	if(air_group || (height==0))
+		return 1
+	if(istype(mover) && mover.checkpass(PASSBLOB))
+		return 1
+	mover.Bump(src) //Only automatic for dense objects
 	return 0
 
 /obj/effect/blob/beam_connect(var/obj/effect/beam/B)
@@ -234,22 +239,22 @@ var/list/blob_looks
 					hurt_icon = "hurt_50"
 				else
 					hurt_icon = "hurt_25"
-			overlays += image(icon,hurt_icon, layer = layer+0.15)
+			overlays += image(icon,hurt_icon)
 
 /obj/effect/blob/proc/update_looks(var/right_now = 0)
 	switch(blob_looks[looks])
 		if(64)
 			icon_state = icon_new
-			pixel_x = -16
-			pixel_y = -16
-			layer = layer_new
+			pixel_x = -WORLD_ICON_SIZE/2
+			pixel_y = -WORLD_ICON_SIZE/2
+			layer = initial(layer)
 			if(right_now)
 				spawning = 0
 		if(32)
 			icon_state = icon_classic
 			pixel_x = 0
 			pixel_y = 0
-			layer = 3
+			layer = OBJ_LAYER
 			overlays.len = 0
 
 	switch(looks)
@@ -257,6 +262,8 @@ var/list/blob_looks
 			icon = 'icons/mob/blob_64x64.dmi'
 		if("classic")
 			icon = 'icons/mob/blob.dmi'
+		if("adminbus")
+			icon = adminblob_icon
 		//<----------------------------------------------------------------------------DEAR SPRITERS, THIS IS WHERE YOU ADD YOUR NEW BLOB DMIs
 		/*EXAMPLES
 		if("fleshy")
@@ -271,6 +278,7 @@ var/list/blob_looks
 var/list/blob_looks = list(
 	"new" = 64,
 	"classic" = 32,
+	"adminbus" = adminblob_size,
 	)
 	//<---------------------------------------ALSO ADD THE NAME OF YOUR BLOB LOOKS HERE, AS WELL AS THE RESOLUTION OF THE DMIS (64 or 32)
 
@@ -309,7 +317,8 @@ var/list/blob_looks = list(
 	var/list/dirs = cardinal.Copy()
 	dirs.Remove(origin_dir)//Dont pulse the guy who pulsed us
 	for(var/i in 1 to 4)
-		if(!dirs.len)	break
+		if(!dirs.len)
+			break
 		var/dirn = pick_n_take(dirs)
 		var/turf/T = get_step(src, dirn)
 		var/obj/effect/blob/B = locate() in T
@@ -335,10 +344,13 @@ var/list/blob_looks = list(
 		for(var/i in 1 to 4)
 			var/dirn = pick_n_take(dirs)
 			T = get_step(src, dirn)
-			if(!(locate(/obj/effect/blob) in T))	break
-			else	T = null
+			if(!(locate(/obj/effect/blob) in T))
+				break
+			else
+				T = null
 
-	if(!T)	return 0
+	if(!T)
+		return 0
 	var/obj/effect/blob/normal/B = new(src.loc, newlook = looks)
 	B.density = 1
 
@@ -408,26 +420,24 @@ var/list/blob_looks = list(
 	if(blob_looks[looks] == 64)
 		spawn(1)
 			overlays.len = 0
+			underlays.len = 0
 
-			overlays += image(icon,"roots", layer = 3)
+			underlays += image(icon,"roots")
 
 			if(!spawning)
 				for(var/obj/effect/blob/B in orange(src,1))
 					if(B.spawning == 1)
-						anim(target = loc, a_icon = icon, flick_anim = "connect_spawn", sleeptime = 15, direction = get_dir(src,B), lay = layer+0.1, offX = -16, offY = -16)
+						anim(target = loc, a_icon = icon, flick_anim = "connect_spawn", sleeptime = 15, direction = get_dir(src,B), lay = layer, offX = -16, offY = -16,plane = plane)
 						spawn(8)
 							update_icon()
 					else if(!B.dying && !B.spawning)
 						if(spawnend)
-							anim(target = loc, a_icon = icon, flick_anim = "connect_spawn", sleeptime = 15, direction = get_dir(src,B), lay = layer+0.1, offX = -16, offY = -16)
+							anim(target = loc, a_icon = icon, flick_anim = "connect_spawn", sleeptime = 15, direction = get_dir(src,B), lay = layer, offX = -16, offY = -16,plane = plane)
 						else
-
 							if(istype(B,/obj/effect/blob/core))
-								overlays += image(icon,"connect",dir = get_dir(src,B), layer = layer)
+								overlays += image(icon,"connect",dir = get_dir(src,B))
 							else
-								var/num = rand(1,100)
-								num /= 10000
-								overlays += image(icon,"connect",dir = get_dir(src,B), layer = layer+0.1-num)
+								overlays += image(icon,"connect",dir = get_dir(src,B))
 
 			if(spawnend)
 				spawn(10)
@@ -437,6 +447,3 @@ var/list/blob_looks = list(
 	else
 		if(health <= 15)
 			icon_state = "blob_damaged"
-			return
-
-

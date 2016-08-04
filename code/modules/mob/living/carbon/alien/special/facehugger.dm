@@ -1,4 +1,4 @@
-//This file was auto-corrected by findeclaration.exe on 25.5.2012 20:42:32
+
 
 //TODO: Make these simple_animals
 
@@ -14,7 +14,7 @@ var/const/MAX_ACTIVE_TIME = 400
 	icon = 'icons/mob/alien.dmi'
 	icon_state = "facehugger"
 	item_state = "facehugger"
-	w_class = 1 //note: can be picked up by aliens unlike most other items of w_class below 4
+	w_class = W_CLASS_TINY //note: can be picked up by aliens unlike most other items of w_class below 4
 	flags = FPRINT  | MASKINTERNALS | PROXMOVE
 	throw_range = 5
 	health = 5
@@ -46,7 +46,8 @@ var/const/MAX_ACTIVE_TIME = 400
 	followtarget()
 
 /obj/item/clothing/mask/facehugger/proc/findtarget()
-	if(!real) return
+	if(!real)
+		return
 	for(var/mob/living/carbon/T in hearers(src,4))
 		if(!ishuman(T) && !ismonkey(T))
 			continue
@@ -59,7 +60,8 @@ var/const/MAX_ACTIVE_TIME = 400
 
 
 /obj/item/clothing/mask/facehugger/proc/followtarget()
-	if(!real) return // Why are you trying to path stupid toy
+	if(!real)
+		return // Why are you trying to path stupid toy
 	if(!target || target.stat == DEAD || target.stat == UNCONSCIOUS || target.status_flags & XENO_HOST)
 		findtarget()
 		return
@@ -271,7 +273,8 @@ var/const/MAX_ACTIVE_TIME = 400
 		target.equip_to_slot(src, slot_wear_mask)
 		target.update_inv_wear_mask()
 
-		if(!sterile) L.Paralyse((preggers/10)+10) //something like 25 ticks = 20 seconds with the default settings
+		if(!sterile)
+			L.Paralyse((preggers/10)+10) //something like 25 ticks = 20 seconds with the default settings
 	else if (iscorgi(M))
 		var/mob/living/simple_animal/corgi/C = M
 		src.loc = C
@@ -295,7 +298,7 @@ var/const/MAX_ACTIVE_TIME = 400
 		target.status_flags |= XENO_HOST
 		if(istype(target, /mob/living/carbon/human))
 			var/mob/living/carbon/human/T = target
-			var/datum/organ/external/chest/affected = T.get_organ("chest")
+			var/datum/organ/external/chest/affected = T.get_organ(LIMB_CHEST)
 			affected.implants += E
 		target.visible_message("<span class='danger'>\The [src] falls limp after violating [target]'s face !</span>")
 		stat_collection.xeno.faces_hugged++

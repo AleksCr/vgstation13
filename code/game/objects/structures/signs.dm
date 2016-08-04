@@ -15,7 +15,8 @@
 	anchored = 1
 	opacity = 0
 	density = 0
-	layer = 3.5
+	layer = ABOVE_WINDOW_LAYER
+
 
 /obj/structure/sign/ex_act(severity)
 	switch(severity)
@@ -47,37 +48,41 @@
 		S.sign_state = icon_state
 		qdel(src)
 		return
-	else ..()
+	else
+		..()
 
 /obj/item/sign
 	name = "sign"
 	desc = ""
 	icon = 'icons/obj/decals.dmi'
-	w_class = 3		//big
+	w_class = W_CLASS_MEDIUM		//big
 	var/sign_state = ""
 
 /obj/item/sign/attackby(obj/item/tool as obj, mob/user as mob)	//construction
 	if(isscrewdriver(tool) && isturf(user.loc))
 		var/direction = input("In which direction?", "Select direction.") in list("North", "East", "South", "West", "Cancel")
-		if(direction == "Cancel" || src.loc == null) return // We can get qdel'd if someone spams screwdrivers on signs before responding to the prompt.
+		if(direction == "Cancel" || src.loc == null)
+			return // We can get qdel'd if someone spams screwdrivers on signs before responding to the prompt.
 		var/obj/structure/sign/S = new(user.loc)
 		switch(direction)
 			if("North")
-				S.pixel_y = 32
+				S.pixel_y = WORLD_ICON_SIZE
 			if("East")
-				S.pixel_x = 32
+				S.pixel_x = WORLD_ICON_SIZE
 			if("South")
-				S.pixel_y = -32
+				S.pixel_y = -WORLD_ICON_SIZE
 			if("West")
-				S.pixel_x = -32
-			else return
+				S.pixel_x = -WORLD_ICON_SIZE
+			else
+				return
 		S.name = name
 		S.desc = desc
 		S.icon_state = sign_state
 		to_chat(user, "You fasten \the [S] with your [tool].")
 		qdel(src)
 		return
-	else ..()
+	else
+		..()
 
 /obj/structure/sign/kick_act(mob/living/carbon/human/H)
 	H.visible_message("<span class='danger'>[H] kicks \the [src]!</span>", "<span class='danger'>You kick \the [src]!</span>")
@@ -85,7 +90,7 @@
 	if(prob(70))
 		to_chat(H, "<span class='userdanger'>Ouch! That hurts!</span>")
 
-		H.apply_damage(rand(5,7), BRUTE, pick("r_leg", "l_leg", "r_foot", "l_foot"))
+		H.apply_damage(rand(5,7), BRUTE, pick(LIMB_RIGHT_LEG, LIMB_LEFT_LEG, LIMB_RIGHT_FOOT, LIMB_LEFT_FOOT))
 
 /obj/structure/sign/double/map
 	name = "station map"
@@ -232,3 +237,8 @@
 	name = "Escape Arm"
 	desc = "A direction sign, pointing out which way escape shuttle dock is."
 	icon_state = "direction_evac"
+
+/obj/structure/sign/crime
+	name = "CRIME DOES NOT PAY"
+	desc = "A warning sign which suggests that you reconsider your poor life choices."
+	icon_state = "crime"

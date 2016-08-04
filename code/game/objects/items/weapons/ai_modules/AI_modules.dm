@@ -15,11 +15,11 @@ Refactored AI modules by N3X15
 	flags = FPRINT
 	siemens_coefficient = 1
 	force = 5.0
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	throwforce = 5.0
 	throw_speed = 3
 	throw_range = 15
-	origin_tech = "programming=3"
+	origin_tech = Tc_PROGRAMMING + "=3"
 
 	//Recycling
 	starting_materials = list(MAT_GLASS = 2000)
@@ -95,7 +95,7 @@ Refactored AI modules by N3X15
 /obj/item/weapon/aiModule/reset
 	modname = "Reset"
 	desc = "A 'reset' AI module: 'Clears all non-inherent (non-core) laws.'"
-	origin_tech = "programming=3;materials=4"
+	origin_tech = Tc_PROGRAMMING + "=3;" + Tc_MATERIALS + "=4"
 
 	// Recycling
 	starting_materials = list(MAT_GLASS = 2000/CC_PER_SHEET_GLASS, MAT_GOLD = 100/CC_PER_SHEET_MISC)
@@ -120,7 +120,7 @@ Refactored AI modules by N3X15
 /obj/item/weapon/aiModule/purge // -- TLE
 	modname = "Purge"
 	desc = "A 'Purge' AI Module: 'Purges all laws.'"
-	origin_tech = "programming=3;materials=6"
+	origin_tech = Tc_PROGRAMMING + "=3;" + Tc_MATERIALS + "=6"
 
 	// Recycling
 	starting_materials = list(MAT_GLASS = 2000/CC_PER_SHEET_GLASS, MAT_DIAMOND = 100/CC_PER_SHEET_MISC)

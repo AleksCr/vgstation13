@@ -4,7 +4,7 @@
 	icon_state = "mousetrap"
 	starting_materials = list(MAT_IRON = 100)
 	w_type = RECYK_METAL
-	origin_tech = "combat=1"
+	origin_tech = Tc_COMBAT + "=1"
 	var/armed = 0
 	wires = WIRE_PULSE
 
@@ -30,9 +30,9 @@
 		switch(type)
 			if("feet")
 				if(!H.shoes)
-					affecting = H.get_organ(pick("l_leg", "r_leg"))
+					affecting = H.get_organ(pick(LIMB_LEFT_LEG, LIMB_RIGHT_LEG))
 					H.Weaken(3)
-			if("l_hand", "r_hand")
+			if(LIMB_LEFT_HAND, LIMB_RIGHT_HAND)
 				if(!H.gloves)
 					affecting = H.get_organ(type)
 					H.Stun(3)
@@ -55,10 +55,10 @@
 		to_chat(user, "<span class='notice'>You arm [src].</span>")
 	else
 		if(((user.getBrainLoss() >= 60 || (M_CLUMSY in user.mutations)) && prob(50)))
-			var/which_hand = "l_hand"
-			if(!user.hand)
-				which_hand = "r_hand"
-			triggered(user, which_hand)
+
+			var/datum/organ/external/OE = user.get_active_hand_organ()
+
+			triggered(user, OE.name)
 			user.visible_message("<span class='warning'>[user] accidentally sets off [src], breaking their fingers.</span>", \
 								 "<span class='warning'>You accidentally trigger [src]!</span>")
 			return
@@ -71,10 +71,8 @@
 /obj/item/device/assembly/mousetrap/attack_hand(mob/living/user as mob)
 	if(armed)
 		if(((user.getBrainLoss() >= 60 || M_CLUMSY in user.mutations)) && prob(50))
-			var/which_hand = "l_hand"
-			if(!user.hand)
-				which_hand = "r_hand"
-			triggered(user, which_hand)
+			var/datum/organ/external/OE = user.get_active_hand_organ()
+			triggered(user, OE.name)
 			user.visible_message("<span class='warning'>[user] accidentally sets off [src], breaking their fingers.</span>", \
 								 "<span class='warning'>You accidentally trigger [src]!</span>")
 			return
@@ -98,7 +96,9 @@
 	if(armed)
 		finder.visible_message("<span class='warning'>[finder] accidentally sets off [src], breaking their fingers.</span>", \
 							   "<span class='warning'>You accidentally trigger [src]!</span>")
-		triggered(finder, finder.hand ? "l_hand" : "r_hand")
+
+		var/datum/organ/external/OE = finder.get_active_hand_organ()
+		triggered(finder, OE.name)
 		return 1	//end the search!
 	return 0
 
@@ -123,5 +123,6 @@
 	if(usr.isUnconscious())
 		return
 
-	layer = TURF_LAYER+0.2
+	plane = ABOVE_TURF_PLANE
+	layer = MOUSETRAP_LAYER
 	to_chat(usr, "<span class='notice'>You hide [src].</span>")

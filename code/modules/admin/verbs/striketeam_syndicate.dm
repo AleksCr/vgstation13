@@ -65,7 +65,8 @@ var/global/sent_syndicate_strike_team = 0
 
 //Spawns commandos and equips them.
 	for(var/obj/effect/landmark/L in landmarks_list)
-		if(syndicate_commando_number<=0)	break
+		if(syndicate_commando_number<=0)
+			break
 		if (L.name == "Syndicate-Commando")
 			syndicate_leader_selected = syndicate_commando_number == 1?1:0
 
@@ -166,7 +167,7 @@ var/global/sent_syndicate_strike_team = 0
 	equip_to_slot_or_del(new /obj/item/weapon/tank/emergency_oxygen(src), slot_s_store)
 	equip_to_slot_or_del(new /obj/item/weapon/gun/projectile/silenced(src), slot_belt)
 
-	equip_to_slot_or_del(new /obj/item/weapon/gun/energy/pulse_rifle(src), slot_r_hand) //Will change to something different at a later time -- Superxpdude
+	put_in_hands(new /obj/item/weapon/gun/energy/pulse_rifle(src)) //Will change to something different at a later time -- Superxpdude
 
 	var/obj/item/weapon/card/id/syndicate/W = new(src) //Untrackable by AI
 	W.name = "[real_name]'s ID Card"

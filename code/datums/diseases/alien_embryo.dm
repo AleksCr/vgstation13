@@ -4,7 +4,8 @@
 
 //Our own special process so that dead hosts still chestburst
 /datum/disease/alien_embryo/process()
-	if(!holder) return
+	if(!holder)
+		return
 	if(holder == affected_mob)
 		stage_act()
 	if(affected_mob)
@@ -35,7 +36,7 @@
 	spread = "None"
 	spread_type = SPECIAL
 	cure = "Unknown"
-	cure_id = list("lexorin","toxin","gargleblaster")
+	cure_id = list(LEXORIN,TOXIN,GARGLEBLASTER)
 	cure_chance = 50
 	affected_species = list("Human", "Monkey")
 	permeability_mod = 15//likely to infect
@@ -75,7 +76,8 @@
 			affected_mob.adjustToxLoss(10)
 			affected_mob.updatehealth()
 			if(prob(50))
-				if(gibbed != 0) return 0
+				if(gibbed != 0)
+					return 0
 				var/list/candidates = get_alien_candidates()
 				var/picked = null
 

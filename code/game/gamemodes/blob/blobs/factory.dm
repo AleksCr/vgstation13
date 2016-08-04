@@ -9,9 +9,8 @@
 	var/max_spores = 2
 	var/spore_delay = 50
 	spawning = 0
-	layer = 6.6
+	layer = BLOB_FACTORY_LAYER
 
-	layer_new = 6.6
 	icon_new = "factory"
 	icon_classic = "blob_factory"
 
@@ -44,6 +43,8 @@
 	else
 		new/mob/living/simple_animal/hostile/blobspore(src.loc, src)
 
+	stat_collection.blobblob.spores_spawned++
+
 	return 1
 
 /obj/effect/blob/factory/Destroy()
@@ -51,19 +52,22 @@
 		for(var/mob/living/simple_animal/hostile/blobspore/S in spores)
 			S.Die()
 	if(!manual_remove && overmind)
-		to_chat(overmind,"<span class='warning'>A factory blob that you had created has been destroyed.</span>")
+		to_chat(overmind,"<span class='warning'>A factory blob that you had created has been destroyed.</span> <b><a href='?src=\ref[overmind];blobjump=\ref[loc]'>(JUMP)</a></b>")
+		overmind.special_blobs -= src
+		overmind.update_specialblobs()
 	..()
 
 /obj/effect/blob/factory/update_icon(var/spawnend = 0)
 	if(blob_looks[looks] == 64)
 		spawn(1)
 			overlays.len = 0
+			underlays.len = 0
 
-			overlays += image(icon,"roots", layer = 3)
+			underlays += image(icon,"roots")
 
 			if(!spawning)
 				for(var/obj/effect/blob/B in orange(src,1))
-					overlays += image(icon,"factoryconnect",dir = get_dir(src,B), layer = layer+0.1)
+					overlays += image(icon,"factoryconnect",dir = get_dir(src,B))
 			if(spawnend)
 				spawn(10)
 					update_icon()
@@ -93,7 +97,8 @@
 	max_co2 = 0
 	minbodytemp = 0
 	maxbodytemp = 360
-	layer = 7.2
+	plane = BLOB_PLANE
+	layer = BLOB_SPORE_LAYER
 
 /mob/living/simple_animal/hostile/blobspore/New(loc, var/obj/effect/blob/factory/linked_node)
 	if(istype(linked_node))

@@ -17,17 +17,20 @@ var/list/stationary_hearers = list(	/obj/item/device/radio/intercom,
 	invisibility = INVISIBILITY_MAXIMUM
 	flags = INVULNERABLE
 	status_flags = GODMODE
-
 	alpha = 0
 	animate_movement = 0
 	ignoreinvert = 1
 	//This can be expanded with vision flags to make a device to hear through walls for example
+	var/attached_type = null
+	var/attached_ref = null
 
-/mob/virtualhearer/New(attachedto)
+/mob/virtualhearer/New(atom/attachedto)
 	AddToProfiler()
 	virtualhearers += src
 	loc = get_turf(attachedto)
 	attached = attachedto
+	attached_type = attachedto.type //record the attached's typepath in case something goes wrong
+	attached_ref = "/ref[attachedto]" //record attached's text ref to see what is happening
 	if(is_type_in_list(attachedto,stationary_hearers))
 		virtualhearers -= src
 
@@ -52,9 +55,6 @@ var/list/stationary_hearers = list(	/obj/item/device/radio/intercom,
 
 /mob/virtualhearer/cultify()
 	return
-
-/mob/virtualhearer/singuloCanEat()
-	return 0
 
 /mob/virtualhearer/singularity_pull()
 	return

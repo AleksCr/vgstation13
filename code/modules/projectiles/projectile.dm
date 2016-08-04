@@ -17,6 +17,7 @@ var/list/impact_master = list()
 	icon_state = "bullet"
 	density = 1
 	unacidable = 1
+	plane = EFFECTS_PLANE
 	anchored = 1 //There's a reason this is here, Mport. God fucking damn it -Agouri. Find&Fix by Pete. The reason this is here is to stop the curving of emitter shots.
 	flags = FPRINT
 	pass_flags = PASSTABLE
@@ -33,8 +34,8 @@ var/list/impact_master = list()
 	var/turf/starting = null // the projectile's starting turf
 	var/list/permutated = list() // we've passed through these atoms, don't try to hit them again
 
-	var/p_x = 16
-	var/p_y = 16 // the pixel location of the tile that the player clicked. Default is the center
+	var/p_x = WORLD_ICON_SIZE/2
+	var/p_y = WORLD_ICON_SIZE/2 // the pixel location of the tile that the player clicked. Default is the center
 
 	var/grillepasschance = 66
 	var/damage = 10
@@ -93,6 +94,9 @@ var/list/impact_master = list()
 	var/PixelX = 0
 	var/PixelY = 0
 
+	var/initial_pixel_x = 0
+	var/initial_pixel_y = 0
+
 	animate_movement = 0
 	var/linear_movement = 1
 
@@ -101,19 +105,37 @@ var/list/impact_master = list()
 	var/penetration_message = 1 //Message that is shown when a projectile penetrates an object
 	var/fire_sound = 'sound/weapons/Gunshot.ogg' //sound that plays when the projectile is fired
 	var/rotate = 1 //whether the projectile is rotated based on angle or not
+	var/superspeed = 0 //When set to 1, the projectile will travel at twice the normal speed
+	var/super_speed = 0 //This exists just for proper functionality
+
+/obj/item/projectile/New()
+	..()
+	initial_pixel_x = pixel_x
+	initial_pixel_y = pixel_y
+	if(superspeed)
+		super_speed = 1
+
+/obj/item/projectile/New()
+	..()
+	if(superspeed)
+		super_speed = 1
 
 /obj/item/projectile/proc/on_hit(var/atom/atarget, var/blocked = 0)
-	if(blocked >= 2)		return 0//Full block
-	if(!isliving(atarget))	return 0
+	if(blocked >= 2)
+		return 0//Full block
+	if(!isliving(atarget))
+		return 0
 	// FUCK mice. - N3X
 	if(ismouse(atarget) && (stun+weaken+paralyze+agony)>5)
 		var/mob/living/simple_animal/mouse/M=atarget
 		to_chat(M, "<span class='warning'>What would probably not kill a human completely overwhelms your tiny body.</span>")
 		M.splat()
 		return 1
-	if(isanimal(atarget))	return 0
+	if(isanimal(atarget))
+		return 0
 	var/mob/living/L = atarget
-	if(L.flags & INVULNERABLE)			return 0
+	if(L.flags & INVULNERABLE)
+		return 0
 	L.apply_effects(stun, weaken, paralyze, irradiate, stutter, eyeblur, drowsy, agony, blocked) // add in AGONY!
 	if(jittery)
 		L.Jitter(jittery)
@@ -173,7 +195,8 @@ var/list/impact_master = list()
 		loc = A.loc
 		return 0 //cannot shoot yourself, unless an ablative armor sent back the projectile
 
-	if(bumped)	return 0
+	if(bumped)
+		return 0
 	var/forcedodge = 0 // force the projectile to pass
 
 	bumped = 1
@@ -268,13 +291,13 @@ var/list/impact_master = list()
 		var/PixelY = 0
 		switch(get_dir(src,A))
 			if(NORTH)
-				PixelY = 16
+				PixelY = WORLD_ICON_SIZE/2
 			if(SOUTH)
-				PixelY = -16
+				PixelY = -WORLD_ICON_SIZE/2
 			if(EAST)
-				PixelX = 16
+				PixelX = WORLD_ICON_SIZE/2
 			if(WEST)
-				PixelX = -16
+				PixelX = -WORLD_ICON_SIZE/2
 
 		var/image/impact = image('icons/obj/projectiles_impacts.dmi',loc,impact_icon)
 		impact.pixel_x = PixelX
@@ -326,7 +349,7 @@ var/list/impact_master = list()
 				var/icon/I = icon(T.icon, T.icon_state)
 				var/icon/trace = icon('icons/effects/96x96.dmi',mark_type)	//first we take the 96x96 icon with the overlay we want to blend on the wall
 				trace.Turn(target_angle+45)									//then we rotate it so it matches the bullet's angle
-				trace.Crop(33-pixel_x,33-pixel_y,64-pixel_x,64-pixel_y)		//lastly we crop a 32x32 square in the icon whose offset matches the projectile's pixel offset *-1
+				trace.Crop(WORLD_ICON_SIZE+1-pixel_x,WORLD_ICON_SIZE+1-pixel_y,WORLD_ICON_SIZE*2-pixel_x,WORLD_ICON_SIZE*2-pixel_y)		//lastly we crop a 32x32 square in the icon whose offset matches the projectile's pixel offset *-1
 				I.Blend(trace,ICON_MULTIPLY ,1 ,1)							//we can now blend our resulting icon on the wall
 				T.icon = I
 		return 1
@@ -335,7 +358,8 @@ var/list/impact_master = list()
 	return 1
 
 /obj/item/projectile/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
-	if(air_group || (height==0)) return 1
+	if(air_group || (height==0))
+		return 1
 
 	if(istype(mover, /obj/item/projectile))
 		return prob(95)
@@ -405,6 +429,20 @@ var/list/impact_master = list()
 
 
 /obj/item/projectile/proc/bresenham_step(var/distA, var/distB, var/dA, var/dB)
+	if(!superspeed)
+		return make_bresenham_step(distA, distB, dA, dB)
+	else
+		if(make_bresenham_step(distA, distB, dA, dB))
+			if(super_speed)
+				super_speed = 0
+				return 1
+			else
+				super_speed = 1
+				return 0
+		else
+			return 0
+
+/obj/item/projectile/proc/make_bresenham_step(var/distA, var/distB, var/dA, var/dB)
 	if(step_delay)
 		sleep(step_delay)
 	if(kill_count < 1)
@@ -434,11 +472,14 @@ var/list/impact_master = list()
 
 /obj/item/projectile/proc/update_pixel()
 	if(src && starting && target)
-		var/AX = (override_starting_X - src.x)*32
-		var/AY = (override_starting_Y - src.y)*32
-		var/BX = (override_target_X - src.x)*32
-		var/BY = (override_target_Y - src.y)*32
-		var/XX = (((BX-AX)*(-BX))+((BY-AY)*(-BY)))/(((BX-AX)*(BX-AX))+((BY-AY)*(BY-AY)))
+		var/AX = (override_starting_X - src.x)*WORLD_ICON_SIZE
+		var/AY = (override_starting_Y - src.y)*WORLD_ICON_SIZE
+		var/BX = (override_target_X - src.x)*WORLD_ICON_SIZE
+		var/BY = (override_target_Y - src.y)*WORLD_ICON_SIZE
+		var/XXcheck = ((BX-AX)*(BX-AX))+((BY-AY)*(BY-AY))
+		if(!XXcheck)
+			return
+		var/XX = (((BX-AX)*(-BX))+((BY-AY)*(-BY)))/XXcheck
 
 		PixelX = round(BX+((BX-AX)*XX))
 		PixelY = round(BY+((BY-AY)*XX))
@@ -451,6 +492,9 @@ var/list/impact_master = list()
 				PixelX -= 16
 			if(WEST)
 				PixelX += 16
+
+		PixelX += initial_pixel_x
+		PixelY += initial_pixel_y
 	return
 
 /obj/item/projectile/proc/bullet_die()
@@ -557,8 +601,8 @@ var/list/impact_master = list()
 	var/disty
 	var/distx
 	var/newangle
-	disty = (32 * override_target_Y)-(32 * override_starting_Y)
-	distx = (32 * override_target_X)-(32 * override_starting_X)
+	disty = (WORLD_ICON_SIZE * override_target_Y)-(WORLD_ICON_SIZE * override_starting_Y)
+	distx = (WORLD_ICON_SIZE * override_target_X)-(WORLD_ICON_SIZE * override_starting_X)
 	if(!disty)
 		if(distx >= 0)
 			newangle = 90
@@ -628,3 +672,38 @@ var/list/impact_master = list()
 
 /obj/item/projectile/kick_act() //Can't be kicked around
 	return
+
+/obj/item/projectile/attack_hand(mob/user)
+	if(timestopped)
+		..()
+
+/obj/item/projectile/friendlyCheck
+	invisibility = 101
+	rotate = 0
+	damage = 0
+	nodamage = 1
+	var/atom/impact = null
+
+/obj/item/projectile/friendlyCheck/process()
+	OnFired()
+	while(!impact && loc && (kill_count > 0))
+		if(dist_x > dist_y)
+			bresenham_step(dist_x,dist_y,dx,dy)
+		else
+			bresenham_step(dist_y,dist_x,dy,dx)
+	return impact
+
+/obj/item/projectile/proc/get_hit_atom(var/atom/A)
+	if(istype(A, /obj/structure/bed/chair/vehicle))
+		var/obj/structure/bed/chair/vehicle/JC = A
+		if(JC.occupant)
+			return JC.occupant
+	return A
+
+/obj/item/projectile/friendlyCheck/Bump(var/atom/A)
+	if(bumped)
+		return 0
+	bumped = 1
+
+	if(ismob(A) || isturf(A) || isobj(A))
+		impact = get_hit_atom(A)

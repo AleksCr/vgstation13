@@ -3,12 +3,12 @@
 	desc = "Dance my monkeys! DANCE!!!"
 	icon_state = "electropack0"
 	item_state = "electropack"
-	origin_tech = "materials=1;powerstorage=2"
+	origin_tech = Tc_MATERIALS + "=1;" + Tc_POWERSTORAGE + "=2"
 	frequency = 1449
 	flags = FPRINT
 	siemens_coefficient = 1
 	slot_flags = SLOT_BACK
-	w_class = 5.0
+	w_class = W_CLASS_HUGE
 	starting_materials = list(MAT_IRON = 10000, MAT_GLASS = 2500)
 	w_type = RECYK_ELECTRONIC
 	var/code = 2
@@ -20,7 +20,8 @@
 		initialize()
 	else
 		spawn(50)
-			if(radio_controller) initialize()
+			if(radio_controller)
+				initialize()
 
 /obj/item/device/radio/electropack/initialize()
 	if(frequency < MINIMUM_FREQUENCY || frequency > MAXIMUM_FREQUENCY)

@@ -13,6 +13,7 @@
 #define PROFILE_MACHINES // Disable when not debugging.
 
 #define ARBITRARILY_LARGE_NUMBER 10000 //Used in delays.dm and vehicle.dm. Upper limit on delays
+#define MAX_VALUE 65535
 
 #ifdef PROFILE_MACHINES
 #define CHECK_DISABLED(TYPE) if(disable_##TYPE) return
@@ -28,8 +29,8 @@ var/global/disable_vents     = 0
 #define PIPING_LAYER_MIN	1
 #define PIPING_LAYER_MAX	5
 
-#define PIPING_LAYER_P_X		5 //each positive increment of piping_layer changes the pixel_x by this amount
-#define PIPING_LAYER_P_Y		-5 //same, but negative because they form a diagonal
+#define PIPING_LAYER_P_X		5*PIXEL_MULTIPLIER //each positive increment of piping_layer changes the pixel_x by this amount
+#define PIPING_LAYER_P_Y		-5*PIXEL_MULTIPLIER //same, but negative because they form a diagonal
 #define PIPING_LAYER_LCHANGE	0.05 //how much the layer var changes per increment
 
 #define PI 3.1415
@@ -70,7 +71,12 @@ var/global/disable_vents     = 0
 #define TEMPERATURE_DAMAGE_COEFFICIENT 1.5	//This is used in handle_temperature_damage() for humans, and in reagents that affect body temperature. Temperature damage is multiplied by this amount.
 #define BODYTEMP_AUTORECOVERY_DIVISOR 0.5 //This is the divisor which handles how much of the temperature difference between the current body temperature and 310.15K (optimal temperature) humans auto-regenerate each tick. The higher the number, the slower the recovery. This is applied each tick, so long as the mob is alive.
 #define BODYTEMP_AUTORECOVERY_MAXIMUM 2.0 //Maximum amount of kelvin moved toward 310.15K per tick. So long as abs(310.15 - bodytemp) is more than 0.5 .
+
 #define BODYTEMP_COLD_DIVISOR 100 //Similar to the BODYTEMP_AUTORECOVERY_DIVISOR, but this is the divisor which is applied at the stage that follows autorecovery. This is the divisor which comes into play when the human's loc temperature is lower than their body temperature. Make it lower to lose bodytemp faster.
+
+#define PRESSUREFACTOR_NO_LINEAR 1.5  // Where growth of the pressure factor stops being linear
+#define COLD_PRESSUREFACTOR_MAX (PRESSUREFACTOR_NO_LINEAR)/((-1/PRESSUREFACTOR_NO_LINEAR)+1)    // The highest that heat loss can be multiplied by due to pressure. Depends on where non linear starts.
+
 #define BODYTEMP_HEAT_DIVISOR 80 //Similar to the BODYTEMP_AUTORECOVERY_DIVISOR, but this is the divisor which is applied at the stage that follows autorecovery. This is the divisor which comes into play when the human's loc temperature is higher than their body temperature. Make it lower to gain bodytemp faster.
 #define BODYTEMP_HEATING_MAX 10 //The maximum number of degrees that your body can heat up in 1 tick, when in a hot area.
 
@@ -122,13 +128,6 @@ var/global/disable_vents     = 0
 
 // Factor of how fast mob nutrition decreases
 #define HUNGER_FACTOR 0.15  // Please remember when editing this that it will also affect hypothermia.
-
-// How many units of reagent are consumed per tick, by default.
-#define REAGENTS_METABOLISM 0.2
-
-// By defining the effect multiplier this way, it'll exactly adjust
-// all effects according to how they originally were with the 0.4 metabolism
-#define REAGENTS_EFFECT_MULTIPLIER REAGENTS_METABOLISM / 0.4
 
 
 #define MINIMUM_AIR_RATIO_TO_SUSPEND 0.05
@@ -196,6 +195,9 @@ var/MAX_EXPLOSION_RANGE = 14
 //#define MAX_EXPLOSION_RANGE		14					// Defaults to 12 (was 8) -- TLE
 
 #define HUMAN_STRIP_DELAY 40 //takes 40ds = 4s to strip someone.
+#define HUMAN_REVERSESTRIP_DELAY 20
+#define MONKEY_STRIP_DELAY 40
+#define MONKEY_REVERSESTRIP_DELAY 5
 
 #define ALIEN_SELECT_AFK_BUFFER 1 // How many minutes that a person can be AFK before not being allowed to be an alien.
 #define ROLE_SELECT_AFK_BUFFER  1 // Default value.
@@ -206,6 +208,14 @@ var/MAX_EXPLOSION_RANGE = 14
 #define FLOWFRAC 0.99				// fraction of gas transfered per process
 
 #define SHOES_SLOWDOWN -1.0			// How much shoes slow you down by default. Negative values speed you up
+
+//WEIGHT CLASSES
+#define W_CLASS_TINY 1
+#define W_CLASS_SMALL 2
+#define W_CLASS_MEDIUM 3
+#define W_CLASS_LARGE 4
+#define W_CLASS_HUGE 5
+#define W_CLASS_GIANT 20
 
 
 //ITEM INVENTORY SLOT BITMASKS
@@ -267,8 +277,11 @@ var/MAX_EXPLOSION_RANGE = 14
 #define PASSTABLE	1
 #define PASSGLASS	2
 #define PASSGRILLE	4
-#define PASSBLOB	8
-#define PASSMACHINE	16//computers, vending machines, rnd machines
+#define PASSMOB		8
+#define PASSBLOB	16
+#define PASSMACHINE	32 //computers, vending machines, rnd machines
+#define PASSDOOR	64 //not just airlocks, but also firelocks, windoors etc
+
 
 /*
 	These defines are used specifically with the atom/movable/languages bitmask.
@@ -295,23 +308,21 @@ var/MAX_EXPLOSION_RANGE = 14
 #define slot_back 1
 #define slot_wear_mask 2
 #define slot_handcuffed 3
-#define slot_l_hand 4
-#define slot_r_hand 5
-#define slot_belt 6
-#define slot_wear_id 7
-#define slot_ears 8
-#define slot_glasses 9
-#define slot_gloves 10
-#define slot_head 11
-#define slot_shoes 12
-#define slot_wear_suit 13
-#define slot_w_uniform 14
-#define slot_l_store 15
-#define slot_r_store 16
-#define slot_s_store 17
-#define slot_in_backpack 18
-#define slot_legcuffed 19
-#define slot_legs 21
+#define slot_belt 4
+#define slot_wear_id 5
+#define slot_ears 6
+#define slot_glasses 7
+#define slot_gloves 8
+#define slot_head 9
+#define slot_shoes 10
+#define slot_wear_suit 11
+#define slot_w_uniform 12
+#define slot_l_store 13
+#define slot_r_store 14
+#define slot_s_store 15
+#define slot_in_backpack 16
+#define slot_legcuffed 17
+#define slot_legs 18
 
 //Cant seem to find a mob bitflags area other than the powers one
 
@@ -410,6 +421,7 @@ var/global/list/BODY_COVER_VALUE_LIST=list("[HEAD]" = COVER_PROTECTION_HEAD,"[EY
 #define DISABILITY_FLAG_FAT         2
 #define DISABILITY_FLAG_EPILEPTIC   4
 #define DISABILITY_FLAG_DEAF        8
+#define DISABILITY_FLAG_BLIND       16
 
 ///////////////////////////////////////
 // MUTATIONS
@@ -663,22 +675,34 @@ var/list/liftable_structures = list(\
 
 #define SEE_INVISIBLE_MINIMUM 5
 
-#define SEE_INVISIBLE_OBSERVER_NOLIGHTING 15
+#define SEE_INVISIBLE_OBSERVER_NOLIGHTING 15	//Used by Ghosts when they click "Toggle Darkness".
 
-#define INVISIBILITY_LIGHTING 20
+#define INVISIBILITY_LIGHTING 20	//Used by the lighting_overlay. Any value bellow that one will let you see in the dark.
 
-#define SEE_INVISIBLE_LIVING 25
+#define SEE_INVISIBLE_LIVING 25		//This what players have by default.
 
-#define SEE_INVISIBLE_LEVEL_ONE 35	//Used by some stuff in code. It's really poorly organized.
-#define INVISIBILITY_LEVEL_ONE 35	//Used by some stuff in code. It's really poorly organized.
+#define SEE_INVISIBLE_LEVEL_ONE 35	//Used by mobs under certain conditions.
+#define INVISIBILITY_LEVEL_ONE 35	//Unused.
 
-#define SEE_INVISIBLE_LEVEL_TWO 45	//Used by some other stuff in code. It's really poorly organized.
-#define INVISIBILITY_LEVEL_TWO 45	//Used by some other stuff in code. It's really poorly organized.
+#define SEE_INVISIBLE_LEVEL_TWO 45	//Used by mobs under certain conditions.
+#define INVISIBILITY_LEVEL_TWO 45	//Used by turrets inside their covers.
 
-#define INVISIBILITY_OBSERVER 60
-#define SEE_INVISIBLE_OBSERVER 60
+#define INVISIBILITY_OBSERVER 60	//Used by Ghosts.
+#define SEE_INVISIBLE_OBSERVER 60	//Used by Ghosts.
 
 #define INVISIBILITY_MAXIMUM 100
+
+/*
+FOR IN-GAME TESTING PURPOSES (var/sight bitflags)
+
+BLIND		1
+SEE_MOBS	4
+SEE_OBJS	8
+SEE_TURFS	16
+SEE_SELF	32
+SEE_INFRA	64
+SEE_PIXELS	256
+*/
 
 // Object specific defines.
 #define CANDLE_LUM 2 //For how bright candles are.
@@ -755,9 +779,10 @@ var/list/liftable_structures = list(\
 #define MAT_PLASTIC		"$plastic"
 #define MAT_CARDBOARD   "$cardboard"
 
-
-//Please don't edit these values without speaking to Errorage first	~Carn
 //Admin Permissions
+//Please don't edit these values without speaking to [current /vg/ host here] first
+//Currently at the limit for rank bitflags, if any are needed to be added in the future then consider replacement of R_MOD as we don't use it at time of writing, or merge R_STEALTH into R_ADMIN.
+
 #define R_BUILDMODE		1
 #define R_ADMIN			2
 #define R_BAN			4
@@ -773,8 +798,9 @@ var/list/liftable_structures = list(\
 #define R_SPAWN			4096
 #define R_MOD			8192
 #define R_ADMINBUS		16384
+#define R_POLLING		32768
 
-#define R_MAXPERMISSION 16384 //This holds the maximum value for a permission. It is used in iteration, so keep it updated.
+#define R_MAXPERMISSION 32768 //This holds the maximum value for a permission. It is used in iteration, so keep it updated.
 
 #define R_HOST			65535
 
@@ -881,11 +907,6 @@ var/list/liftable_structures = list(\
 #define PULSE_FAST		4	//90-120 bpm
 #define PULSE_2FAST		5	//>120 bpm
 #define PULSE_THREADY	6	//occurs during hypovolemic shock
-//feel free to add shit to lists below
-var/list/tachycardics = list("coffee", "inaprovaline", "hyperzine", "nitroglycerin", "thirteenloko", "nicotine")	//increase heart rate
-var/list/bradycardics = list("neurotoxin", "cryoxadone", "clonexadone", "space_drugs", "stoxin")					//decrease heart rate
-var/list/heartstopper = list("potassium_phorochloride", "zombie_powder") //this stops the heart
-var/list/cheartstopper = list("potassium_chloride") //this stops the heart when overdose is met -- c = conditional
 
 //proc/get_pulse methods
 #define GETPULSE_HAND	0	//less accurate (hand)
@@ -935,7 +956,6 @@ var/default_colour_matrix = list(1,0,0,0,\
 #define NO_CRYO 16
 
 
-
 // from bay station
 #define INFECTION_LEVEL_ONE 100
 #define INFECTION_LEVEL_TWO 500
@@ -954,6 +974,11 @@ var/default_colour_matrix = list(1,0,0,0,\
 #define EQUIP_FAILACTION_NOTHING 0
 #define EQUIP_FAILACTION_DELETE 1
 #define EQUIP_FAILACTION_DROP 2
+
+//mob_can_equip flags
+#define CANNOT_EQUIP 0
+#define CAN_EQUIP 1
+#define CAN_EQUIP_BUT_SLOT_TAKEN 2
 
 // Vampire power defines
 #define VAMP_REJUV    1
@@ -1116,6 +1141,9 @@ var/default_colour_matrix = list(1,0,0,0,\
 #define I_NTSL     "ntsl"
 #define I_SINGULO  "singulo"
 #define I_ATMOS    "atmos"
+#define I_CHEMS	   "chems"
+#define I_WIRES    "wires"
+#define I_GHOST    "poltergeist"
 
 // delayNext() flags.
 #define DELAY_MOVE    1
@@ -1152,11 +1180,10 @@ var/default_colour_matrix = list(1,0,0,0,\
 #define ID_LAYER				18		//IDs should be visible above suits and backpacks
 #define HANDCUFF_LAYER			19
 #define LEGCUFF_LAYER			20
-#define L_HAND_LAYER			21
-#define R_HAND_LAYER			22
-#define TAIL_LAYER				23		//bs12 specific. this hack is probably gonna come back to haunt me
-#define TARGETED_LAYER			24		//BS12: Layer for the target overlay from weapon targeting system
-#define TOTAL_LAYERS			25
+#define HAND_LAYER				21
+#define TAIL_LAYER				22		//bs12 specific. this hack is probably gonna come back to haunt me
+#define TARGETED_LAYER			23		//BS12: Layer for the target overlay from weapon targeting system
+#define TOTAL_LAYERS			23
 //////////////////////////////////
 
 
@@ -1199,6 +1226,8 @@ var/default_colour_matrix = list(1,0,0,0,\
 //End split flags
 #define CONSTRUCT_CHECK	256	//used by construct spells - checks for nullrods
 #define NO_BUTTON		512	//spell won't show up in the HUD with this
+#define WAIT_FOR_CLICK	1024//spells wait for you to click on a target to cast
+#define TALKED_BEFORE	2048//spells require you to have heard the person you are casting it upon
 
 //invocation
 #define SpI_SHOUT	"shout"
@@ -1240,7 +1269,7 @@ var/default_colour_matrix = list(1,0,0,0,\
 #define LANGUAGE_GALACTIC_COMMON "Galactic Common"
 #define LANGUAGE_HUMAN "Sol Common"
 #define LANGUAGE_UNATHI "Sinta'unathi"
-#define LANGUAGE_SIIK_TAJR "Siik'tajr"
+#define LANGUAGE_CATBEAST "Siik'tajr"
 #define LANGUAGE_SKRELLIAN "Skrellian"
 #define LANGUAGE_ROOTSPEAK "Rootspeak"
 #define LANGUAGE_TRADEBAND "Tradeband"
@@ -1251,7 +1280,8 @@ var/default_colour_matrix = list(1,0,0,0,\
 #define LANGUAGE_MONKEY "Monkey"
 #define LANGUAGE_VOX "Vox-pidgin"
 #define LANGUAGE_CULT "Cult"
-#define LANGUAGE_MOUSE "Mouse" // This broke the code, so fuck it
+#define LANGUAGE_MOUSE "Mouse"
+#define LANGUAGE_GOLEM "Golem"
 
 //#define SAY_DEBUG 1
 #ifdef SAY_DEBUG
@@ -1271,47 +1301,12 @@ var/proccalls = 1
 /proc/write_panic(a)
 	set background = 1
 	panicfile["[proccalls]"] << a
-	if(++proccalls > 200) proccalls = 1
+	if(++proccalls > 200)
+		proccalls = 1
 
 #else
 	#define writepanic(a) null << a
 #endif*/
-
-//Bay lighting engine shit, not in /code/modules/lighting because BYOND is being shit about it
-#define LIGHTING_INTERVAL 5 // frequency, in 1/10ths of a second, of the lighting process
-
-#define LIGHTING_FALLOFF 1 // type of falloff to use for lighting; 1 for circular, 2 for square
-#define LIGHTING_LAMBERTIAN 0 // use lambertian shading for light sources
-#define LIGHTING_HEIGHT 1 // height off the ground of light sources on the pseudo-z-axis, you should probably leave this alone
-#define LIGHTING_TRANSITIONS 0 // smooth, animated transitions, similar to TG station
-#ifdef LIGHTING_TRANSITIONS
-#define LIGHTING_TRANSITION_SPEED (LIGHTING_INTERVAL - 2)
-#endif
-#define LIGHTING_ROUND_VALUE 1 / 128 //Value used to round lumcounts, values smaller than 1/255 don't matter (if they do, thanks sinking points), greater values will make lighting less precise, but in turn increase performance, VERY SLIGHTLY.
-
-#define LIGHTING_LAYER 10 // drawing layer for lighting overlays
-#define LIGHTING_ICON 'icons/effects/lighting_overlay.dmi' // icon used for lighting shading effects
-
-#define LIGHTING_SOFT_THRESHOLD 0.05 // If the max of the lighting lumcounts of each spectrum drops below this, disable luminosity on the lighting overlays.
-
-//Some defines to generalise colours used in lighting.
-//Important note on colors. Colors can end up significantly different from the basic html picture, especially when saturated
-#define LIGHT_COLOR_RED "#FA8282" //Warm but extremely diluted red. rgb(250, 130, 130)
-#define LIGHT_COLOR_GREEN "#64C864" //Bright but quickly dissipating neon green. rgb(100, 200, 100)
-#define LIGHT_COLOR_BLUE "#6496FA" //Cold, diluted blue. rgb(100, 150, 250)
-
-#define LIGHT_COLOR_CYAN "#7DE1E1" //Diluted cyan. rgb(125, 225, 225)
-#define LIGHT_COLOR_PINK "#E17DE1" //Diluted, mid-warmth pink. rgb(225, 125, 225)
-#define LIGHT_COLOR_YELLOW "#E1E17D" //Dimmed yellow, leaning kaki. rgb(225, 225, 125)
-#define LIGHT_COLOR_BROWN "#966432" //Clear brown, mostly dim. rgb(150, 100, 50)
-#define LIGHT_COLOR_ORANGE "#FA9632" //Mostly pure orange. rgb(250, 150, 50)
-
-//These ones aren't a direct colour like the ones above, because nothing would fit
-#define LIGHT_COLOR_FIRE "#FAA019" //Warm orange color, leaning strongly towards yellow. rgb(250, 160, 25)
-#define LIGHT_COLOR_FLARE "#FA644B" //Bright, non-saturated red. Leaning slightly towards pink for visibility. rgb(250, 100, 75)
-#define LIGHT_COLOR_SLIME_LAMP "#AFC84B" //Weird color, between yellow and green, very slimy. rgb(175, 200, 75)
-#define LIGHT_COLOR_TUNGSTEN "#FAE1AF" //Extremely diluted yellow, close to skin color (for some reason). rgb(250, 225, 175)
-#define LIGHT_COLOR_HALOGEN "#F0FAFA" //Barely visible cyan-ish hue, as the doctor prescribed. rgb(240, 250, 250)
 
 //Default frequencies of signal based RC stuff, because comic and his magic numbers.
 #define FREQ_DISPOSAL 1367
@@ -1358,6 +1353,7 @@ var/proccalls = 1
 #define FOOD_ANIMAL	2
 #define FOOD_SWEET	4
 #define FOOD_LIQUID	8
+#define FOOD_SKELETON_FRIENDLY 16 //Can be eaten by skeletons
 
 /*
  *
@@ -1393,6 +1389,9 @@ var/proccalls = 1
 
 #define log_adminwarn(text) diary << html_decode("\[[time_stamp()]]ADMINWARN: [text]")
 #define log_pda(text) diary << html_decode("\[[time_stamp()]]PDA: [text]")
+
+#define log_blobspeak(text) diary << html_decode("\[[time_stamp()]]BLOB: [text]")
+#define log_blobtelepathy(text) diary << html_decode("\[[time_stamp()]]BLOBTELE: [text]")
 
 //OOC isbanned
 #define oocban_isbanned(key) oocban_keylist.Find("[ckey(key)]")
@@ -1465,6 +1464,11 @@ var/proccalls = 1
 #define ATTACK_BITE 1
 #define ATTACK_KICK 2
 
+//Special attack returns (for procs like kick_act and bite_act)
+#define SPECIAL_ATTACK_SUCCESS 0
+#define SPECIAL_ATTACK_CANCEL 1 //Default return for the procs; cancel the special attack and perform a normal click instead
+#define SPECIAL_ATTACK_FAILED 2
+
 // Defines for the map writer, moved here for reasons.
 #define DMM_IGNORE_AREAS 1
 #define DMM_IGNORE_TURFS 2
@@ -1478,3 +1482,16 @@ var/proccalls = 1
 #define CANCER_STAGE_SMALL_TUMOR 300 //Cancer starts to have small effects depending on what the affected limb is, generally inconclusive ones. 5 minutes
 #define CANCER_STAGE_LARGE_TUMOR 600 //Cancer starts to have serious effects depending on what the affected limb is, generally obvious one, up to visible tumor growth. 15 minutes
 #define CANCER_STAGE_METASTASIS 1200 //Cancer has maximal effects, growing out of control in the organ, and can start "colonizing" other organs very quickly, dooming the patient. 30 minutes
+
+#define EVENT_OBJECT_INDEX "o"
+#define EVENT_PROC_INDEX "p"
+
+#define HIGHLANDER "highlander"
+
+//Grasp indexes
+#define GRASP_RIGHT_HAND 1
+#define GRASP_LEFT_HAND 2
+
+#define BLOB_CORE_PROPORTION 20
+
+#define DEFAULT FONT SIZE 4

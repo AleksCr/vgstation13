@@ -1,7 +1,8 @@
 /mob/living/silicon/hivebot/Life()
 	set invisibility = 0
 	set background = 1
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 
 	if (src.monkeyizing)
 		return
@@ -63,8 +64,10 @@
 				src.stat = 1
 
 		update_canmove()
-			if(incapacitated()) canmove = 0
-			else canmove = 1
+			if(incapacitated())
+				canmove = 0
+			else
+				canmove = 1
 
 
 		handle_regular_status_updates()
@@ -177,7 +180,7 @@
 					src.bodytemp.icon_state = "temp-2"
 
 
-			if(src.pullin)	src.pullin.icon_state = "pull[src.pulling ? 1 : 0]"
+			update_pull_icon()
 
 			src.client.screen -= src.hud_used.blurry
 			src.client.screen -= src.hud_used.druggy

@@ -7,7 +7,7 @@
 	spread_type = SPECIAL
 	curable = 1
 	cure = "Copper."
-	cure_id = "copper"
+	cure_id = COPPER
 	cure_chance = 50
 	agent = "R2D2 Nanomachines"
 	affected_species = list("Human")
@@ -59,7 +59,8 @@
 			affected_mob.adjustToxLoss(10)
 			affected_mob.updatehealth()
 			if(prob(40)) //So everyone can feel like robot Seth Brundle
-				if(src.gibbed != 0) return 0
+				if(src.gibbed != 0)
+					return 0
 				gibs(affected_mob)
 				gibbed = 1
 				var/mob/living/carbon/human/H = affected_mob

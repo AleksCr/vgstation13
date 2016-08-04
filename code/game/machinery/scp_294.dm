@@ -11,19 +11,22 @@
 	name = "\improper strange coffee machine"
 	desc = "It appears to be a standard coffee vending machine, the only noticeable difference being an entry touchpad with buttons corresponding to a Galactic Common QWERTY keyboard."
 	icon = 	'icons/obj/vending.dmi'
-	icon_state = "coffee"
+	icon_state = COFFEE
 	energy = 10
 	max_energy = 10
 	amount = 10
 	dispensable_reagents = null
-	var/list/prohibited_reagents = list("adminordrazine")
+	var/list/prohibited_reagents = list(ADMINORDRAZINE)
 
 	machine_flags = WRENCHMOVE | FIXED2WORK
 
 /obj/machinery/chem_dispenser/scp_294/ui_interact(mob/user, ui_key = "main", var/datum/nanoui/ui = null)
-	if(stat & (BROKEN|NOPOWER)) return
-	if((user.stat && !isobserver(user)) || user.restrained()) return
-	if(!chemical_reagents_list || !chemical_reagents_list.len) return
+	if(stat & (BROKEN|NOPOWER))
+		return
+	if((user.stat && !isobserver(user)) || user.restrained())
+		return
+	if(!chemical_reagents_list || !chemical_reagents_list.len)
+		return
 	// this is the data which will be sent to the ui
 	var/data[0]
 	data["isBeakerLoaded"] = beaker ? 1 : 0

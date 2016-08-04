@@ -1,12 +1,12 @@
-//This file was auto-corrected by findeclaration.exe on 25.5.2012 20:42:32
+
 
 /obj/item/device/mmi
 	name = "Man-Machine Interface"
 	desc = "The Warrior's bland acronym, MMI, obscures the true horror of this monstrosity."
 	icon = 'icons/obj/assemblies.dmi'
 	icon_state = "mmi_empty"
-	w_class = 3
-	origin_tech = "biotech=3"
+	w_class = W_CLASS_MEDIUM
+	origin_tech = Tc_BIOTECH + "=3"
 
 	var/list/mommi_assembly_parts = list(
 		/obj/item/weapon/cell = 1,
@@ -27,7 +27,8 @@
 
 obj/item/device/mmi/Destroy()
 	if(brainmob)
-		brainmob.ghostize()
+		qdel(brainmob)
+		brainmob = null
 	..()
 
 	// Return true if handled
@@ -65,7 +66,8 @@ obj/item/device/mmi/Destroy()
 		icon = null
 		invisibility = 101
 		var/mob/living/silicon/robot/mommi/M = new /mob/living/silicon/robot/mommi(get_turf(loc))
-		if(!M)	return
+		if(!M)
+			return
 		M.invisibility = 0
 		//M.custom_name = created_name
 		M.Namepick()
@@ -108,20 +110,27 @@ obj/item/device/mmi/Destroy()
 		// MaMIs inherit from brain, but they shouldn't be insertable into a MMI
 		if (istype(O, /obj/item/organ/brain/mami))
 			to_chat(user, "<span class='warning'>You are only able to fit organic brains on a MMI. [src] won't work.</span>")
-			return
+			return TRUE
 
 		var/obj/item/organ/brain/BO = O
 		if(!BO.brainmob)
 			to_chat(user, "<span class='warning'>You aren't sure where this brain came from, but you're pretty sure it's a useless brain.</span>")
-			return
+			return TRUE
 		// Checking to see if the ghost has been moused/borer'd/etc since death.
 		var/mob/living/carbon/brain/BM = BO.brainmob
 		if(!BM.client)
-			to_chat(user, "<span class='notice'>\The [src] indicates that their mind is completely unresponsive; there's no point.</span>")
-			return
+			var/mob/dead/observer/ghost = get_ghost_from_mind(BM.mind)
+			if(ghost && ghost.client && ghost.can_reenter_corpse)
+				to_chat(user, "<span class='warning'>\The [src] indicates that \the [O] seems slow to respond. Try again in a few seconds.</span>")
+				ghost << 'sound/effects/adminhelp.ogg'
+				to_chat(ghost, "<span class='interface big'><span class='bold'>Someone is trying to put your brain in a MMI. Return to your body if you want to be resurrected!</span> \
+					(Verbs -> Ghost -> Re-enter corpse, or <a href='?src=\ref[ghost];reentercorpse=1'>click here!</a>)</span>")
+				return TRUE
+			to_chat(user, "<span class='warning'>\The [src] indicates that \the [O] is completely unresponsive; there's no point.</span>")
+			return TRUE
 		if(!user.drop_item(O))
 			to_chat(user, "<span class='warning'>You can't let go of \the [O]!</span>")
-			return
+			return TRUE
 
 		src.visible_message("<span class='notice'>[user] sticks \a [O] into \the [src].</span>")
 
@@ -142,7 +151,7 @@ obj/item/device/mmi/Destroy()
 
 		feedback_inc("cyborg_mmis_filled",1)
 
-		return
+		return TRUE
 
 	if((istype(O,/obj/item/weapon/card/id)||istype(O,/obj/item/device/pda)) && brainmob)
 		if(allowed(user))
@@ -150,7 +159,7 @@ obj/item/device/mmi/Destroy()
 			to_chat(user, "<span class='notice'>You [locked ? "lock" : "unlock"] \the [src].</span>")
 		else
 			to_chat(user, "<span class='warning'>Access denied.</span>")
-		return
+		return TRUE
 
 	if(istype(O, /obj/item/weapon/implanter))
 		return//toplel
@@ -194,7 +203,7 @@ obj/item/device/mmi/Destroy()
 /obj/item/device/mmi/radio_enabled
 	name = "Radio-enabled Man-Machine Interface"
 	desc = "The Warrior's bland acronym, MMI, obscures the true horror of this monstrosity. This one comes with a built-in radio."
-	origin_tech = "biotech=4"
+	origin_tech = Tc_BIOTECH + "=4"
 
 	var/obj/item/device/radio/radio = null//Let's give it a radio.
 

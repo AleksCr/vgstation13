@@ -78,7 +78,7 @@
 			vermstring = "space bats"
 		if(VERM_BORERS)
 			spawn_types = /mob/living/simple_animal/borer
-			vermstring = "cortical borers"
+			vermstring = "borers"
 			max_number = 5
 		if(VERM_MIMICS)
 			spawn_types = /mob/living/simple_animal/hostile/mimic/crate/item
@@ -108,7 +108,7 @@
 			new spawn_type(picked)
 
 /datum/event/infestation/announce()
-	command_alert("Bioscans indicate that [vermstring] have been breeding in [locstring]. Clear them out, before this starts to affect productivity.", "Vermin infestation")
+	command_alert(new /datum/command_alert/vermin(vermstring, locstring))
 
 #undef LOC_KITCHEN
 #undef LOC_ATMOS

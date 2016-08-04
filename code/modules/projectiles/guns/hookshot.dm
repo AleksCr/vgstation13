@@ -1,16 +1,16 @@
 /obj/item/weapon/gun/hookshot	//-by Deity Link
 	name = "hookshot"
-	desc = "Used to create tethers! It's a very experimental device, recently developped by Nanotrasen."
+	desc = "Used to create tethers! It's a very experimental device, recently developed by Nanotrasen."
 	icon = 'icons/obj/gun_experimental.dmi'
 	icon_state = "hookshot"
 	item_state = "hookshot"
 	slot_flags = SLOT_BELT
-	origin_tech = "materials=2;engineering=3;magnets=2"
+	origin_tech = Tc_MATERIALS + "=2;" + Tc_ENGINEERING + "=3;" + Tc_MAGNETS + "=2"
 	mech_flags = null // So it can be scanned by the Device Analyser
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/guns_experimental.dmi', "right_hand" = 'icons/mob/in-hand/right/guns_experimental.dmi')
 	recoil = 0
 	flags = FPRINT
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	fire_delay = 0
 	fire_sound = 'sound/weapons/hookshot_fire.ogg'
 	var/maxlength = 14
@@ -37,9 +37,14 @@
 /obj/item/weapon/gun/hookshot/New()
 	..()
 	for(var/i = 0;i <= maxlength; i++)
-		var/obj/effect/overlay/hookchain/HC = new(src)
-		HC.shot_from = src
-		links["[i]"] = HC
+		if(istype(src, /obj/item/weapon/gun/hookshot/flesh))
+			var/obj/effect/overlay/hookchain/flesh/HC = new(src)
+			HC.shot_from = src
+			links["[i]"] = HC
+		else
+			var/obj/effect/overlay/hookchain/HC = new(src)
+			HC.shot_from = src
+			links["[i]"] = HC
 
 /obj/item/weapon/gun/hookshot/Destroy()//if a single link of the chain is destroyed, the rest of the chain is instantly destroyed as well.
 	if(chain_datum)
@@ -83,7 +88,8 @@
 	return 0
 
 /obj/item/weapon/gun/hookshot/afterattack(atom/A as mob|obj|turf|area, mob/living/user as mob|obj, flag, params, struggle = 0)//clicking anywhere reels the target to the player.
-	if(flag)	return //we're placing gun on a table or in backpack
+	if(flag)
+		return //we're placing gun on a table or in backpack
 	if(check_tether())
 		if(istype(chain_datum.extremity_B,/mob/living/carbon))
 			var/mob/living/carbon/C = chain_datum.extremity_B
@@ -232,11 +238,11 @@
 	undergoing_deletion = 1
 	if(extremity_A)
 		if(snap)
-			extremity_A.visible_message("The chain snaps and let go of \the [extremity_A]")
+			extremity_A.visible_message("The chain snaps and lets go of \the [extremity_A].")
 		extremity_A.tether = null
 	if(extremity_B)
 		if(snap)
-			extremity_B.visible_message("The chain snaps and let go of \the [extremity_B]")
+			extremity_B.visible_message("The chain snaps and lets go of \the [extremity_B].")
 		extremity_B.tether = null
 	for(var/i = 1; i<= links.len ;i++)
 		var/obj/effect/overlay/chain/C = links["[i]"]
@@ -318,10 +324,13 @@
 
 /obj/effect/overlay/chain/update_icon()
 	overlays.len = 0
+	var/image/chain_img
 	if(extremity_A && (loc != extremity_A.loc))
-		overlays += image(icon,src,"chain",MOB_LAYER-0.1,get_dir(src,extremity_A))
+		chain_img = image(icon,src,"chain",MOB_LAYER-0.1,get_dir(src,extremity_A))
 	if(extremity_B && (loc != extremity_B.loc))
-		overlays += image(icon,src,"chain",MOB_LAYER-0.1,get_dir(src,extremity_B))
+		chain_img = image(icon,src,"chain",MOB_LAYER-0.1,get_dir(src,extremity_B))
+	chain_img.plane = OBJ_PLANE
+	overlays += chain_img
 
 /obj/effect/overlay/chain/proc/update_overlays(var/obj/effect/overlay/chain/C)
 	var/obj/effect/overlay/chain/C1 = extremity_A

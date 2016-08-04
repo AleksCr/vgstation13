@@ -10,7 +10,7 @@
 /var/const/access_tox_storage = 8	// Toxins mixing and storage
 /var/const/access_genetics = 9
 /var/const/access_engine = 10		// Power Engines
-/var/const/access_engine_equip= 11	// Engineering Foyer
+/var/const/access_engine_equip = 11	// Engineering Foyer
 /var/const/access_maint_tunnels = 12
 /var/const/access_external_airlocks = 13
 /var/const/access_emergency_storage = 14
@@ -84,6 +84,9 @@
 	//The Syndicate
 /var/const/access_syndicate = 150//General Syndicate Access
 
+	//Vox are Pox
+/var/const/access_trade = 140//Vox Trader Access
+
 	//MONEY
 /var/const/access_crate_cash = 200
 
@@ -110,6 +113,9 @@
 	return list()
 
 /obj/item/proc/GetID()
+	return null
+
+/obj/item/proc/get_owner_name_from_ID()
 	return null
 
 /obj/proc/set_up_access()
@@ -142,11 +148,16 @@
 
 /obj/proc/check_access_list(var/list/L)
 	set_up_access()
-	if(!src.req_access  && !src.req_one_access)	return 1
-	if(!istype(src.req_access, /list))	return 1
-	if(!src.req_access.len && (!src.req_one_access || !src.req_one_access.len))	return 1
-	if(!L)	return 0
-	if(!istype(L, /list))	return 0
+	if(!src.req_access  && !src.req_one_access)
+		return 1
+	if(!istype(src.req_access, /list))
+		return 1
+	if(!src.req_access.len && (!src.req_one_access || !src.req_one_access.len))
+		return 1
+	if(!L)
+		return 0
+	if(!istype(L, /list))
+		return 0
 	for(var/req in src.req_access)
 		if(!(req in L)) //doesn't have this access
 			return 0
@@ -171,8 +182,10 @@
 		return 1
 
 	// User doesn't have any accesses?  Fuck off.
-	if(!L)	return 0
-	if(!istype(L, /list))	return 0
+	if(!L)
+		return 0
+	if(!istype(L, /list))
+		return 0
 
 	// Doesn't have a req_access
 	for(var/req in req_access)
@@ -457,7 +470,8 @@ var/global/list/all_jobs
 	all_jobs=list()
 	for(var/jobtype in typesof(/datum/job) - /datum/job)
 		var/datum/job/jobdatum = new jobtype
-		if(jobdatum.info_flag & JINFO_SILICON) continue
+		if(jobdatum.info_flag & JINFO_SILICON)
+			continue
 		all_jobs.Add(jobdatum.title)
 	return all_jobs
 

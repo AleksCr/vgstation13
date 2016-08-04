@@ -3,7 +3,7 @@
 
 	var/w_type = NOT_RECYCLABLE  // Waste category for sorters. See setup.dm
 
-	layer = 3
+	plane = OBJ_PLANE
 
 	var/last_move = null //Direction in which this atom last moved
 	var/last_moved = 0   //world.time when this atom last moved
@@ -42,6 +42,7 @@
 
 	// Can we send relaymove() if gravity is disabled or we are in space? (Should be handled by relaymove, but shitcode abounds)
 	var/internal_gravity = 0
+	var/inertia_dir = null
 
 	step_size = 1 //honk
 
@@ -60,12 +61,23 @@
 
 /atom/movable/Destroy()
 	if(flags & HEAR && !ismob(src))
+		var/found = 0
 		for(var/mob/virtualhearer/VH in virtualhearers)
 			if(VH.attached == src)
 				returnToPool(VH)
+				found = 1
+		if(!found)
+			world.log << "Atom Movable virtualhearer for [type] could not be found for /ref[src]"
 	gcDestroyed = "Bye, world!"
 	tag = null
+
+	var/turf/un_opaque
+	if (opacity && isturf(loc))
+		un_opaque = loc
+
 	loc = null
+	if (un_opaque)
+		un_opaque.recalc_atom_opacity()
 
 	for (var/atom/movable/AM in locked_atoms)
 		unlock_atom(AM)
@@ -82,7 +94,8 @@
 	..()
 
 /proc/delete_profile(var/type, code = 0)
-	if(!ticker || ticker.current_state < 3) return
+	if(!ticker || ticker.current_state < 3)
+		return
 	if(code == 0)
 		if (!("[type]" in del_profiling))
 			del_profiling["[type]"] = 0
@@ -155,6 +168,8 @@
 //		last_move = 0
 //		return
 
+	update_client_hook(loc)
+
 	if(tether && can_pull_tether && !tether_pull)
 		tether.follow(src,oldloc)
 		var/datum/chain/tether_datum = tether.chain_datum
@@ -162,7 +177,9 @@
 			tether_datum.snap = 1
 			tether_datum.Delete_Chain()
 
-	last_move = Dir
+	last_move = (Dir || get_dir(oldloc, newLoc)) //If direction isn't specified, calculate it ourselves
+	set_inertia(last_move)
+
 	last_moved = world.time
 	src.move_speed = world.timeofday - src.l_move_time
 	src.l_move_time = world.timeofday
@@ -283,19 +300,34 @@
 			var/area/A = get_area_master(destination)
 			A.Entered(src)
 
-		for(var/atom/movable/AM in loc)
-			AM.Crossed(src,no_tp)
+			for(var/atom/movable/AM in loc)
+				AM.Crossed(src,no_tp)
 
 
 		for(var/atom/movable/AM in locked_atoms)
 			var/datum/locking_category/category = locked_atoms[AM]
 			category.update_lock(AM)
 
+		update_client_hook(destination)
 
 		// Update on_moved listeners.
 		INVOKE_EVENT(on_moved,list("loc"=loc))
 		return 1
 	return 0
+
+/atom/movable/proc/update_client_hook(atom/destination)
+	if(locate(/mob) in src)
+		for(var/client/C in parallax_on_clients)
+			if((get_turf(C.eye) == destination) && (C.mob.hud_used))
+				C.mob.hud_used.update_parallax_values()
+
+/mob/update_client_hook(atom/destination)
+	if(locate(/mob) in src)
+		for(var/client/C in parallax_on_clients)
+			if((get_turf(C.eye) == destination) && (C.mob.hud_used))
+				C.mob.hud_used.update_parallax_values()
+	else if(client && hud_used)
+		hud_used.update_parallax_values()
 
 /atom/movable/proc/forceEnter(atom/destination)
 	if(destination)
@@ -310,6 +342,7 @@
 		for(var/atom/movable/AM in locked_atoms)
 			AM.forceMove(loc)
 
+		update_client_hook(destination)
 		return 1
 	return 0
 
@@ -318,11 +351,13 @@
 
 	if(src.throwing)
 		for(var/atom/A in get_turf(src))
-			if(A == src) continue
+			if(A == src)
+				continue
 
 			if(isliving(A))
 				var/mob/living/L = A
-				if(L.lying) continue
+				if(L.lying)
+					continue
 				src.throw_impact(L, speed, user)
 
 				if(src.throwing == 1) //If throwing == 1, the throw was weak and will stop when it hits a dude. If a hulk throws this item, throwing is set to 2 (so the item will pass through multiple mobs)
@@ -336,7 +371,8 @@
 					. = 0
 
 /atom/movable/proc/throw_at(atom/target, range, speed, override = 1, var/fly_speed = 0) //fly_speed parameter: if 0, does nothing. Otherwise, changes how fast the object flies WITHOUT affecting damage!
-	if(!target || !src)	return 0
+	if(!target || !src)
+		return 0
 	if(override)
 		sound_override = 1
 	//use a modified version of Bresenham's algorithm to get from the atom's current position to that of the target
@@ -394,7 +430,7 @@
 					. = 0
 					break
 
-				src.Move(step)
+				src.Move(step, dy)
 				. = hit_check(speed, user)
 				error += dist_x
 				dist_travelled++
@@ -408,7 +444,7 @@
 					. = 0
 					break
 
-				src.Move(step)
+				src.Move(step, dx)
 				. = hit_check(speed, user)
 				error -= dist_y
 				dist_travelled++
@@ -430,7 +466,7 @@
 					. = 0
 					break
 
-				src.Move(step)
+				src.Move(step, dx)
 				. = hit_check(speed, user)
 				error += dist_y
 				dist_travelled++
@@ -444,7 +480,7 @@
 					. = 0
 					break
 
-				src.Move(step)
+				src.Move(step, dy)
 				. = hit_check(speed, user)
 				error -= dist_x
 				dist_travelled++
@@ -498,14 +534,15 @@
 		return 1
 	else
 		var/turf/U = get_turf(A)
-		if(!U) return null
+		if(!U)
+			return null
 		return src.forceMove(U)
 
 /////////////////////////////
 // SINGULOTH PULL REFACTOR
 /////////////////////////////
 /atom/movable/proc/canSingulothPull(var/obj/machinery/singularity/singulo)
-	return singuloCanEat()
+	return 1
 
 /atom/movable/proc/say_understands(var/mob/other)
 	return 1
@@ -526,3 +563,73 @@
 //Can it be moved by a shuttle?
 /atom/movable/proc/can_shuttle_move(var/datum/shuttle/S)
 	return 1
+
+/atom/movable/proc/Process_Spacemove(check_drift)
+	var/dense_object = 0
+	for(var/turf/turf in oview(1,src))
+		if(!turf.has_gravity(src))
+			continue
+
+		dense_object++
+		break
+
+	if(!dense_object && (locate(/obj/structure/lattice) in oview(1, src)))
+		dense_object++
+	if(!dense_object && (locate(/obj/structure/catwalk) in oview(1, src)))
+		dense_object++
+	if(!dense_object && (locate(/obj/effect/blob) in oview(1, src)))
+		dense_object++
+
+	//Lastly attempt to locate any dense objects we could push off of
+	//TODO: If we implement objects drifing in space this needs to really push them
+	//Due to a few issues only anchored and dense objects will now work.
+	if(!dense_object)
+		for(var/obj/O in oview(1, src))
+			if((O) && (O.density) && (O.anchored))
+				dense_object++
+				break
+
+	//Nothing to push off of so end here
+	if(!dense_object)
+		return 0
+
+	//If not then we can reset inertia and move
+	inertia_dir = 0
+	return 1
+
+//INERTIA
+
+
+/atom/movable/proc/apply_inertia(direction)
+	if(isturf(loc))
+		var/turf/T = loc
+		if(!T.has_gravity())
+			src.inertia_dir = direction
+			step(src, src.inertia_dir)
+			return 1
+	else if(istype(loc, /atom/movable))
+		var/atom/movable/AM = loc
+		return AM.apply_inertia(direction)
+
+/atom/movable/proc/set_inertia(direction)
+	inertia_dir = direction
+
+/atom/movable/proc/process_inertia(turf/start)
+	set waitfor = 0
+	if(Process_Spacemove(1))
+		inertia_dir  = 0
+		return
+
+	sleep(5)
+
+	if(can_apply_inertia() && (src.loc == start))
+		if(!inertia_dir)
+			return //inertia_dir = last_move
+
+		step(src, inertia_dir)
+
+/atom/movable/proc/reset_inertia()
+	inertia_dir = 0
+
+/atom/movable/proc/can_apply_inertia()
+	return (!src.anchored && !(src.pulledby && src.pulledby.Adjacent(src)))

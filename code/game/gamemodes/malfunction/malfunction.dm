@@ -83,7 +83,8 @@ Rebooting world in 5 seconds."})
 	if(emergency_shuttle)
 		emergency_shuttle.always_fake_recall = 1
 	spawn (rand(waittime_l, waittime_h))
-		if(!mixed) send_intercept()
+		if(!mixed)
+			send_intercept()
 	..()
 
 
@@ -123,6 +124,8 @@ Once done, you will be able to interface with all systems, notably the onboard n
 /datum/game_mode/malfunction/proc/capture_the_station()
 	to_chat(world, {"<FONT size = 3><B>The AI has won!</B></FONT><br>
 <B>It has fully taken control of [station_name()]'s systems.</B>"})
+
+	stat_collection.malf.malf_wins = 1
 
 	to_nuke_or_not_to_nuke = 1
 	for(var/datum/mind/AI_mind in malf_ai)
@@ -181,7 +184,7 @@ You should now be able to use your Explode verb to interface with the nuclear fi
 	if (alert(usr, "Are you sure you wish to initiate the takeover? The station hostile runtime detection software is bound to alert everyone. You have hacked [ticker.mode:apcs] APCs.", "Takeover:", "Yes", "No") != "Yes")
 		return
 
-	command_alert("Hostile runtimes detected in all station systems, please deactivate your AI to prevent possible damage to its morality core.", "Anomaly Alert",alert='sound/AI/aimalf.ogg')
+	command_alert(/datum/command_alert/malf_announce)
 	set_security_level("delta")
 
 	ticker.mode:malf_mode_declared = 1
@@ -212,7 +215,8 @@ You should now be able to use your Explode verb to interface with the nuclear fi
 		AI_mind.current.verbs -= /datum/game_mode/malfunction/proc/ai_win
 	ticker.mode:explosion_in_progress = 1
 	for(var/mob/M in player_list)
-		if(M.client) M << 'sound/machines/Alarm.ogg'
+		if(M.client)
+			M << 'sound/machines/Alarm.ogg'
 	to_chat(world, "<span class='danger'>Self-destruction signal received. Self-destructing in 10...</span>")
 	for (var/i=9 to 1 step -1)
 		sleep(10)
@@ -259,7 +263,7 @@ You should now be able to use your Explode verb to interface with the nuclear fi
 	else if (!station_captured && !malf_dead && !station_was_nuked && crew_evacuated)
 		feedback_set_details("round_end_result","halfwin - evacuated")
 		completion_text += "<FONT size = 3><B>Neutral Victory</B></FONT>"
-		completion_text += "<BR><B>The Corporation has lose [station_name()]! All survived personnel will be fired!</B>"
+		completion_text += "<BR><B>The Corporation has lost [station_name()]! All surviving personnel will be fired!</B>"
 
 	else if (!station_captured && !malf_dead && !station_was_nuked && !crew_evacuated)
 		feedback_set_details("round_end_result","nalfwin - interrupted")

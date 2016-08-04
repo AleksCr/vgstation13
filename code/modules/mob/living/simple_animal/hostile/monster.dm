@@ -15,9 +15,11 @@
 	attacktext = "slashes"
 	attack_sound = 'sound/weapons/bladeslice.ogg'
 	faction = "creature"
-	speed = 4
 	size = SIZE_BIG
-	move_to_delay = 4
+	speed = 4
+	canRegenerate = 1
+	minRegenTime = 300
+	maxRegenTime = 1200
 
 	min_oxy = 0
 	max_oxy = 0
@@ -54,12 +56,12 @@
 	projectiletype = /obj/item/projectile/energy/neurotox
 	projectilesound = 'sound/weapons/pierce.ogg'
 	ranged = 1
-	move_to_delay = 7
+	speed = 7
 
 /obj/item/projectile/energy/neurotox
 	damage = 10
 	damage_type = TOX
-	icon_state = "toxin"
+	icon_state = TOXIN
 
 /mob/living/simple_animal/hostile/monster/cyber_horror
 	name = "cyber horror"
@@ -77,7 +79,7 @@
 	melee_damage_lower = 5
 	melee_damage_upper = 15
 	attacktext = "flails around and hits"
-	move_to_delay = 5
+	speed = 5
 	can_butcher = 0
 	attack_sound = 'sound/weapons/hivehand_empty.ogg'
 
@@ -111,7 +113,7 @@
 	if(L.reagents)
 		if(prob(nanobot_chance))
 			visible_message("<b><span class='warning'>[src] injects something from its flailing arm!</span>")
-			L.reagents.add_reagent("mednanobots", 2)
+			L.reagents.add_reagent(MEDNANOBOTS, 2)
 
 /mob/living/simple_animal/hostile/monster/cyber_horror/Die()
 	..()

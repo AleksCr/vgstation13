@@ -146,14 +146,16 @@
 	return 1
 
 /mob/living/silicon/bullet_act(var/obj/item/projectile/Proj)
-	if(!Proj.nodamage)	adjustBruteLoss(Proj.damage)
+	if(!Proj.nodamage)
+		adjustBruteLoss(Proj.damage)
 	Proj.on_hit(src,2)
 	return 2
 
 /mob/living/silicon/apply_effect(var/effect = 0,var/effecttype = STUN, var/blocked = 0)
 	return 0//The only effect that can hit them atm is flashes and they still directly edit so this works for now
 /*
-	if(!effect || (blocked >= 2))	return 0
+	if(!effect || (blocked >= 2))
+		return 0
 	switch(effecttype)
 		if(STUN)
 			stunned = max(stunned,(effect/(blocked+1)))
@@ -306,7 +308,9 @@
 				return 1
 	return 0
 
-/mob/living/silicon/spook()
+/mob/living/silicon/spook(mob/dead/observer/ghost)
+	if(!..(ghost, TRUE) || !client)
+		return
 	to_chat(src, "<i>[pick(boo_phrases_silicon)]</i>")
 
 /mob/living/silicon/bite_act(mob/living/carbon/human/H)
@@ -320,3 +324,9 @@
 /mob/living/silicon/flash_eyes(intensity = 1, override_blindness_check = 0, affect_silicon = 0, visual = 0, type = /obj/screen/fullscreen/flash/noise)
 	if(affect_silicon)
 		return ..()
+
+/mob/living/silicon/earprot()
+	return 1
+
+/mob/living/silicon/show_inv(mob/user)
+	return

@@ -107,7 +107,6 @@
 	desc = "What is that thing?"
 	density = 1
 	anchored = 1
-	layer = 3
 	icon = 'icons/mob/critter.dmi'
 	icon_state = "blob"
 	var/triggerproc = "explode" //name of the proc thats called when the mine is triggered
@@ -121,7 +120,8 @@
 
 /obj/effect/meatgrinder/Bumped(mob/M as mob|obj)
 
-	if(triggered) return
+	if(triggered)
+		return
 
 	if(istype(M, /mob/living/carbon/human) || istype(M, /mob/living/carbon/monkey))
 		for(var/mob/O in viewers(world.view, src.loc))

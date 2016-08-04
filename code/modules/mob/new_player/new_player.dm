@@ -27,8 +27,10 @@
 	output += {"<hr>
 		<p><a href='byond://?src=\ref[src];show_preferences=1'>Setup Character</A></p>"}
 	if(!ticker || ticker.current_state <= GAME_STATE_PREGAME)
-		if(!ready)	output += "<p><a href='byond://?src=\ref[src];ready=1'>Declare Ready</A></p>"
-		else	output += "<p><b>You are ready</b> (<a href='byond://?src=\ref[src];ready=2'>Cancel</A>)</p>"
+		if(!ready)
+			output += "<p><a href='byond://?src=\ref[src];ready=1'>Declare Ready</A></p>"
+		else
+			output += "<p><b>You are ready</b> (<a href='byond://?src=\ref[src];ready=2'>Cancel</A>)</p>"
 
 	else
 		ready = 0 // prevent setup character issues
@@ -89,7 +91,8 @@
 			for(var/mob/new_player/player in player_list)
 				stat("[player.key]", (player.ready)?("(Playing)"):(null))
 				totalPlayers++
-				if(player.ready)totalPlayersReady++
+				if(player.ready)
+					totalPlayersReady++
 
 /mob/new_player/Topic(href, href_list[])
 	//var/timestart = world.timeofday
@@ -97,7 +100,8 @@
 	if(usr != src)
 		return 0
 
-	if(!client)	return 0
+	if(!client)
+		return 0
 
 	if(href_list["show_preferences"])
 		if(!client.prefs.saveloaded)
@@ -129,7 +133,8 @@
 			to_chat(usr, "<span class='warning'>Your character preferences have not yet loaded.</span>")
 			return
 		if(alert(src,"Are you sure you wish to observe? You will not be able to play this round!","Player Setup","Yes","No") == "Yes")
-			if(!client)	return 1
+			if(!client)
+				return 1
 			sleep(1)
 			var/mob/dead/observer/observer = new()
 
@@ -252,10 +257,14 @@
 
 /mob/new_player/proc/IsJobAvailable(rank)
 	var/datum/job/job = job_master.GetJob(rank)
-	if(!job)	return 0
-	if((job.current_positions >= job.total_positions) && job.total_positions != -1)	return 0
-	if(jobban_isbanned(src,rank))	return 0
-	if(!job.player_old_enough(src.client))	return 0
+	if(!job)
+		return 0
+	if((job.current_positions >= job.total_positions) && job.total_positions != -1)
+		return 0
+	if(jobban_isbanned(src,rank))
+		return 0
+	if(!job.player_old_enough(src.client))
+		return 0
 	// assistant limits
 	if(config.assistantlimit)
 		if(job.title == "Assistant")
@@ -300,15 +309,16 @@
 	job_master.AssignRole(src, rank, 1)
 
 	var/mob/living/carbon/human/character = create_character()	//creates the human and transfers vars and mind
-	if(character.client.prefs.randomslot) character.client.prefs.random_character_sqlite(character, character.ckey)
+	if(character.client.prefs.randomslot)
+		character.client.prefs.random_character_sqlite(character, character.ckey)
 	job_master.EquipRank(character, rank, 1)					//equips the human
 	EquipCustomItems(character)
 
 	// TODO:  Job-specific latejoin overrides.
 	character.loc = pick((assistant_latejoin.len > 0 && rank == "Assistant") ? assistant_latejoin : latejoin)
 	//Give them their fucking wheelchair where they spawn instead of inside of the splash screen
-	var/datum/organ/external/left_leg = character.get_organ("l_foot")
-	var/datum/organ/external/right_leg = character.get_organ("r_foot")
+	var/datum/organ/external/left_leg = character.get_organ(LIMB_LEFT_FOOT)
+	var/datum/organ/external/right_leg = character.get_organ(LIMB_RIGHT_FOOT)
 
 	if( (!left_leg || left_leg.status & ORGAN_DESTROYED) && (!right_leg || right_leg.status & ORGAN_DESTROYED) ) //If the character is missing both of his feet
 		var/obj/structure/bed/chair/vehicle/wheelchair/W = new(character.loc)
@@ -352,6 +362,7 @@
 		if(character.mind.role_alt_title)
 			rank = character.mind.role_alt_title
 		var/datum/speech/speech = announcement_intercom.create_speech("[character.real_name],[rank ? " [rank]," : " visitor," ] has arrived on the station.", transmitter=announcement_intercom)
+		speech.speaker = character
 		speech.name = "Arrivals Announcement Computer"
 		speech.job = "Automated Announcement"
 		speech.as_name = "Arrivals Announcement Computer"
@@ -476,6 +487,3 @@ Round Duration: [round(hours)]h [round(mins)]m<br>"}
 
 /mob/new_player/cultify()
 	return
-
-/mob/new_player/singuloCanEat()
-	return 0

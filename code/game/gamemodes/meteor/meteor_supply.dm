@@ -1,4 +1,4 @@
-/datum/game_mode/meteor/proc/meteor_initial_supply()
+/datum/universal_state/meteor_storm/proc/meteor_initial_supply()
 
 	var/list/meteor_initial_drop = list(/obj/structure/closet/crate/engi/meteor_materials, \
 	/obj/structure/closet/crate/meteor_assorted_protection, \
@@ -103,7 +103,7 @@
 
 /obj/structure/closet/crate/meteor_panic/New()
 
-	new /obj/item/device/violin(src) //My tune will go on
+	new /obj/item/device/instrument/violin(src) //My tune will go on
 	new /obj/item/weapon/phone(src)
 	new /obj/item/weapon/storage/fancy/flares(src)
 	new /obj/item/weapon/storage/fancy/flares(src)

@@ -29,12 +29,14 @@ What are the archived variables for?
 	plmaster.icon = 'icons/effects/tile_effects.dmi'
 	plmaster.icon_state = "plasma"
 	plmaster.layer = FLY_LAYER
+	plmaster.plane = EFFECTS_PLANE
 	plmaster.mouse_opacity = 0
 
 	slmaster = new /obj/effect/overlay()
 	slmaster.icon = 'icons/effects/tile_effects.dmi'
 	slmaster.icon_state = "sleeping_agent"
 	slmaster.layer = FLY_LAYER
+	slmaster.plane = EFFECTS_PLANE
 	slmaster.mouse_opacity = 0
 	return 1
 
@@ -771,7 +773,8 @@ What are the archived variables for?
 
 	if(sharer.trace_gases.len)
 		for(var/datum/gas/trace_gas in sharer.trace_gases)
-			if(trace_gas.type in trace_types_considered) continue
+			if(trace_gas.type in trace_types_considered)
+				continue
 			else
 				var/datum/gas/corresponding
 				var/delta = 0
@@ -1057,7 +1060,8 @@ What are the archived variables for?
 	//Called by: Airgroups trying to rebuild
 	//Inputs: Gas mix to compare
 	//Outputs: 1 if can rebuild, 0 if not.
-	if(!sample) return 0
+	if(!sample)
+		return 0
 
 	if((abs(oxygen-sample.oxygen) > MINIMUM_AIR_TO_SUSPEND) && \
 		((oxygen < (1-MINIMUM_AIR_RATIO_TO_SUSPEND)*sample.oxygen) || (oxygen > (1+MINIMUM_AIR_RATIO_TO_SUSPEND)*sample.oxygen)))
@@ -1168,3 +1172,27 @@ What are the archived variables for?
 
 	update_values()
 	return 1
+
+/datum/gas_mixture/proc/english_contents_list()
+	var/all_contents = list()
+	if(oxygen)
+		all_contents += "Oxygen"
+	if(nitrogen)
+		all_contents += "Nitrogen"
+	if(carbon_dioxide)
+		all_contents += "CO<sub>2</sub>"
+	if(toxins)
+		all_contents += "Plasma"
+	if(locate(/datum/gas/sleeping_agent) in trace_gases)
+		all_contents += "N<sub>2</sub>O"
+	return english_list(all_contents)
+
+/datum/gas_mixture/proc/loggable_contents()
+	var/naughty_stuff = list()
+	if(toxins)
+		naughty_stuff += "<b><font color='red'>Plasma</font></b>"
+	if(carbon_dioxide)
+		naughty_stuff += "<b><font color='red'>CO<sub>2</sub></font></b>"
+	if(locate(/datum/gas/sleeping_agent) in trace_gases)
+		naughty_stuff += "<b><font color='red'>N<sub>2</sub>O</font>"
+	return english_list(naughty_stuff, nothing_text = "")

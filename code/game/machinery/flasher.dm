@@ -80,11 +80,13 @@ var/list/obj/machinery/flasher/flashers = list()
 	playsound(get_turf(src), 'sound/weapons/flash.ogg', 100, 1)
 	src.last_flash = world.time
 	use_power(1000)
-	if(harm_labeled >= min_harm_label)	return //Still "flashes," so power is used and the noise is made, etc., but it doesn't actually flash anyone.
+	if(harm_labeled >= min_harm_label)
+		return //Still "flashes," so power is used and the noise is made, etc., but it doesn't actually flash anyone.
 	flick("[base_state]_flash", src)
 
 	for (var/mob/O in viewers(src, null))
-		if(isobserver(O)) continue
+		if(isobserver(O))
+			continue
 		if (get_dist(src, O) > src.range)
 			continue
 
@@ -93,7 +95,12 @@ var/list/obj/machinery/flasher/flashers = list()
 		if(istype(O, /mob/living))
 			var/mob/living/L = O
 			L.flash_eyes(affect_silicon = 1)
-		O.Weaken(strength)
+		if(istype(O, /mob/living/carbon))
+			var/mob/living/carbon/C = O
+			if(C.eyecheck() <= 0) // Identical to handheld flash safety check
+				C.Weaken(strength)
+		else
+			O.Weaken(strength)
 
 
 /obj/machinery/flasher/emp_act(severity)
@@ -124,7 +131,7 @@ var/list/obj/machinery/flasher/flashers = list()
 
 		else if (src.anchored)
 			user.show_message(text("<span class='warning'>[src] is now secured.</span>"))
-			src.overlays += "[base_state]-s"
+			src.overlays += image(icon = icon, icon_state = "[base_state]-s")
 
 /obj/machinery/flasher_button/attack_ai(mob/user as mob)
 	src.add_hiddenprint(user)

@@ -23,14 +23,18 @@
 	pdatype=/obj/item/device/pda/heads/hos
 
 	equip(var/mob/living/carbon/human/H)
-		if(!H)	return 0
+		if(!H)
+			return 0
 		switch(H.backbag)
-			if(2) H.equip_or_collect(new /obj/item/weapon/storage/backpack/security(H), slot_back)
-			if(3) H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel_sec(H), slot_back)
-			if(4) H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel(H), slot_back)
+			if(2)
+				H.equip_or_collect(new /obj/item/weapon/storage/backpack/security(H), slot_back)
+			if(3)
+				H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel_sec(H), slot_back)
+			if(4)
+				H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel(H), slot_back)
 		H.equip_or_collect(new /obj/item/device/radio/headset/heads/hos(H), slot_ears)
 		H.equip_or_collect(new /obj/item/clothing/under/rank/head_of_security(H), slot_w_uniform)
-		H.equip_or_collect(new /obj/item/clothing/shoes/jackboots(H), slot_shoes)
+		H.equip_or_collect(new /obj/item/clothing/shoes/jackboots/knifeholster(H), slot_shoes)
 		//H.equip_or_collect(new /obj/item/device/pda/heads/hos(H), slot_belt)
 		H.equip_or_collect(new /obj/item/clothing/gloves/black(H), slot_gloves)
 //		H.equip_or_collect(new /obj/item/clothing/mask/gas(H), slot_wear_mask) //Grab one from the armory you donk
@@ -38,7 +42,7 @@
 		H.equip_or_collect(new /obj/item/clothing/suit/armor/hos/jensen(H), slot_wear_suit)
 		H.equip_or_collect(new /obj/item/weapon/gun/energy/gun(H), slot_s_store)
 		if(H.backbag == 1)
-			H.equip_or_collect(new H.species.survival_gear(H), slot_r_hand)
+			H.put_in_hand(GRASP_RIGHT_HAND, new H.species.survival_gear(H))
 			H.equip_or_collect(new /obj/item/weapon/handcuffs(H), slot_l_store)
 		else
 			H.equip_or_collect(new H.species.survival_gear(H.back), slot_in_backpack)
@@ -46,7 +50,7 @@
 		var/obj/item/weapon/implant/loyalty/L = new/obj/item/weapon/implant/loyalty(H)
 		L.imp_in = H
 		L.implanted = 1
-		var/datum/organ/external/affected = H.get_organ("head")
+		var/datum/organ/external/affected = H.get_organ(LIMB_HEAD)
 		affected.implants += L
 		L.part = affected
 		return 1
@@ -71,12 +75,16 @@
 	pdatype=/obj/item/device/pda/warden
 
 	equip(var/mob/living/carbon/human/H)
-		if(!H)	return 0
+		if(!H)
+			return 0
 		H.equip_or_collect(new /obj/item/device/radio/headset/headset_sec(H), slot_ears)
 		switch(H.backbag)
-			if(2) H.equip_or_collect(new /obj/item/weapon/storage/backpack/security(H), slot_back)
-			if(3) H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel_sec(H), slot_back)
-			if(4) H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel(H), slot_back)
+			if(2)
+				H.equip_or_collect(new /obj/item/weapon/storage/backpack/security(H), slot_back)
+			if(3)
+				H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel_sec(H), slot_back)
+			if(4)
+				H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel(H), slot_back)
 		H.equip_or_collect(new /obj/item/clothing/under/rank/warden(H), slot_w_uniform)
 		H.equip_or_collect(new /obj/item/clothing/shoes/jackboots(H), slot_shoes)
 		//H.equip_or_collect(new /obj/item/device/pda/warden(H), slot_belt)
@@ -85,15 +93,15 @@
 //		H.equip_or_collect(new /obj/item/clothing/mask/gas(H), slot_wear_mask) //Grab one from the armory you donk
 		H.equip_or_collect(new /obj/item/device/flash(H), slot_l_store)
 		if(H.backbag == 1)
-			H.equip_or_collect(new H.species.survival_gear(H), slot_r_hand)
-			H.equip_or_collect(new /obj/item/weapon/handcuffs(H), slot_l_hand)
+			H.put_in_hand(GRASP_RIGHT_HAND, new H.species.survival_gear(H))
+			H.put_in_hand(GRASP_LEFT_HAND, new /obj/item/weapon/handcuffs(H))
 		else
 			H.equip_or_collect(new H.species.survival_gear(H.back), slot_in_backpack)
 			H.equip_or_collect(new /obj/item/weapon/handcuffs(H), slot_in_backpack)
 		var/obj/item/weapon/implant/loyalty/L = new/obj/item/weapon/implant/loyalty(H)
 		L.imp_in = H
 		L.implanted = 1
-		var/datum/organ/external/affected = H.get_organ("head")
+		var/datum/organ/external/affected = H.get_organ(LIMB_HEAD)
 		affected.implants += L
 		L.part = affected
 		return 1
@@ -122,12 +130,16 @@
 	pdatype=/obj/item/device/pda/detective
 
 	equip(var/mob/living/carbon/human/H)
-		if(!H)	return 0
+		if(!H)
+			return 0
 		H.equip_or_collect(new /obj/item/device/radio/headset/headset_sec(H), slot_ears)
 		switch(H.backbag)
-			if(2) H.equip_or_collect(new /obj/item/weapon/storage/backpack(H), slot_back)
-			if(3) H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel_norm(H), slot_back)
-			if(4) H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel(H), slot_back)
+			if(2)
+				H.equip_or_collect(new /obj/item/weapon/storage/backpack(H), slot_back)
+			if(3)
+				H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel_norm(H), slot_back)
+			if(4)
+				H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel(H), slot_back)
 		//H.equip_or_collect(new /obj/item/device/pda/detective(H), slot_belt)
 /*		var/obj/item/clothing/mask/cigarette/CIG = new /obj/item/clothing/mask/cigarette(H)
 		CIG.light("")
@@ -152,8 +164,8 @@
 		H.equip_or_collect(new /obj/item/weapon/lighter/zippo(H), slot_l_store)
 
 		if(H.backbag == 1)//Why cant some of these things spawn in his office?
-			H.equip_or_collect(new H.species.survival_gear(H), slot_r_hand)
-			H.equip_or_collect(new /obj/item/weapon/storage/box/evidence(H), slot_l_hand)
+			H.put_in_r_hand(new H.species.survival_gear(H))
+			H.put_in_l_hand(new /obj/item/weapon/storage/box/evidence(H))
 			H.equip_or_collect(new /obj/item/device/detective_scanner(H), slot_r_store)
 		else
 			H.equip_or_collect(new H.species.survival_gear(H.back), slot_in_backpack)
@@ -162,7 +174,7 @@
 		var/obj/item/weapon/implant/loyalty/L = new/obj/item/weapon/implant/loyalty(H)
 		L.imp_in = H
 		L.implanted = 1
-		var/datum/organ/external/affected = H.get_organ("head")
+		var/datum/organ/external/affected = H.get_organ(LIMB_HEAD)
 		affected.implants += L
 		L.part = affected
 		H.dna.SetSEState(SOBERBLOCK,1)
@@ -190,12 +202,16 @@
 	pdatype=/obj/item/device/pda/security
 
 	equip(var/mob/living/carbon/human/H)
-		if(!H)	return 0
+		if(!H)
+			return 0
 		H.equip_or_collect(new /obj/item/device/radio/headset/headset_sec(H), slot_ears)
 		switch(H.backbag)
-			if(2) H.equip_or_collect(new /obj/item/weapon/storage/backpack/security(H), slot_back)
-			if(3) H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel_sec(H), slot_back)
-			if(4) H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel(H), slot_back)
+			if(2)
+				H.equip_or_collect(new /obj/item/weapon/storage/backpack/security(H), slot_back)
+			if(3)
+				H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel_sec(H), slot_back)
+			if(4)
+				H.equip_or_collect(new /obj/item/weapon/storage/backpack/satchel(H), slot_back)
 		H.equip_or_collect(new /obj/item/clothing/under/rank/security(H), slot_w_uniform)
 		H.equip_or_collect(new /obj/item/clothing/shoes/jackboots(H), slot_shoes)
 		H.equip_or_collect(new /obj/item/clothing/suit/armor/vest/security(H), slot_wear_suit)
@@ -204,7 +220,7 @@
 		H.equip_or_collect(new /obj/item/weapon/handcuffs(H), slot_in_backpack)
 		H.equip_or_collect(new /obj/item/device/flash(H), slot_l_store)
 		if(H.backbag == 1)
-			H.equip_or_collect(new H.species.survival_gear(H), slot_r_hand)
+			H.put_in_r_hand(new H.species.survival_gear(H))
 		else
 			H.equip_or_collect(new H.species.survival_gear(H.back), slot_in_backpack)
 		H.equip_or_collect(new /obj/item/clothing/gloves/black(H), slot_gloves)
@@ -212,7 +228,7 @@
 		var/obj/item/weapon/implant/loyalty/L = new/obj/item/weapon/implant/loyalty(H)
 		L.imp_in = H
 		L.implanted = 1
-		var/datum/organ/external/affected = H.get_organ("head")
+		var/datum/organ/external/affected = H.get_organ(LIMB_HEAD)
 		affected.implants += L
 		L.part = affected
 		return 1

@@ -8,7 +8,7 @@
 /obj/item/ammo_storage/magazine/mc9mm
 	name = "magazine (9mm)"
 	icon_state = "9x19p"
-	origin_tech = "combat=2"
+	origin_tech = Tc_COMBAT + "=2"
 	ammo_type = "/obj/item/ammo_casing/c9mm"
 	max_ammo = 8
 	sprite_modulo = 8
@@ -20,7 +20,7 @@
 /obj/item/ammo_storage/magazine/a12mm
 	name = "magazine (12mm)"
 	icon_state = "12mm"
-	origin_tech = "combat=2"
+	origin_tech = Tc_COMBAT + "=2"
 	ammo_type = "/obj/item/ammo_casing/a12mm"
 	max_ammo = 20
 	multiple_sprites = 1
@@ -33,7 +33,7 @@
 /obj/item/ammo_storage/magazine/smg9mm
 	name = "magazine (9mm)"
 	icon_state = "smg9mm"
-	origin_tech = "combat=3"
+	origin_tech = Tc_COMBAT + "=3"
 	ammo_type = "/obj/item/ammo_casing/c9mm"
 	max_ammo = 18
 	sprite_modulo = 3
@@ -45,7 +45,7 @@
 /obj/item/ammo_storage/magazine/a50
 	name = "magazine (.50)"
 	icon_state = "50ae"
-	origin_tech = "combat=2"
+	origin_tech = Tc_COMBAT + "=2"
 	ammo_type = "/obj/item/ammo_casing/a50"
 	max_ammo = 7
 	multiple_sprites = 1
@@ -68,7 +68,7 @@
 /obj/item/ammo_storage/magazine/a762
 	name = "magazine (a762)"
 	icon_state = "a762"
-	origin_tech = "combat=2"
+	origin_tech = Tc_COMBAT + "=2"
 	ammo_type = "/obj/item/ammo_casing/a762"
 	max_ammo = 50
 	multiple_sprites = 1
@@ -80,7 +80,7 @@
 /obj/item/ammo_storage/magazine/c45
 	name = "magazine (.45)"
 	icon_state = "45"
-	origin_tech = "combat=2"
+	origin_tech = Tc_COMBAT + "=2"
 	ammo_type = "/obj/item/ammo_casing/c45"
 	max_ammo = 8
 	multiple_sprites = 1
@@ -92,7 +92,7 @@
 /obj/item/ammo_storage/magazine/uzi45 //Uzi mag
 	name = "magazine (.45)"
 	icon_state = "uzi45"
-	origin_tech = "combat=2"
+	origin_tech = Tc_COMBAT + "=2"
 	ammo_type = "/obj/item/ammo_casing/c45"
 	max_ammo = 16
 	multiple_sprites = 1
@@ -106,7 +106,7 @@
 	desc = "State-of-the-art bluespace technology allows this magazine to generate new rounds from energy, requiring only a power source to refill the full suite of ammunition types."
 	icon_state = "lawgiver"
 	item_state = "syringe_kit"
-	origin_tech = "combat=2;bluespace=5"
+	origin_tech = Tc_COMBAT + "=2;" + Tc_BLUESPACE + "=5"
 	ammo_type = null
 	max_ammo = 0
 	multiple_sprites = 1
@@ -117,8 +117,8 @@
 	var/rapid_ammo_count = 5
 	var/flare_ammo_type = "/obj/item/ammo_casing/shotgun/flare"
 	var/flare_ammo_count = 5
-	var/hi_ex_ammo_type = "/obj/item/ammo_casing/a75"
-	var/hi_ex_ammo_count = 5
+	var/ricochet_ammo_type = "/obj/item/ammo_casing/a75"
+	var/ricochet_ammo_count = 5
 
 /obj/item/ammo_storage/magazine/lawgiver/New()
 	..()
@@ -126,11 +126,11 @@
 
 /obj/item/ammo_storage/magazine/lawgiver/examine(mob/user)
 	..()
-	to_chat(user, "<span class='info'>It has enough energy for [stuncharge/20] stun shot\s remaining.</span>")
-	to_chat(user, "<span class='info'>It has enough energy for [lasercharge/20] laser shot\s remaining.</span>")
+	to_chat(user, "<span class='info'>It has enough energy for [stuncharge/20] stun shot\s left.</span>")
+	to_chat(user, "<span class='info'>It has enough energy for [lasercharge/20] laser shot\s left.</span>")
 	to_chat(user, "<span class='info'>It has [rapid_ammo_count] rapid fire round\s remaining.</span>")
-	to_chat(user, "<span class='info'>It has [flare_ammo_count] flare round\s remaining.</span>")
-	to_chat(user, "<span class='info'>It has [hi_ex_ammo_count] hi-EX round\s remaining.</span>")
+	to_chat(user, "<span class='info'>It has [flare_ammo_count] [istype(src, /obj/item/ammo_storage/magazine/lawgiver/demolition) ? "hi-EX" : "flare"] round\s remaining.</span>")
+	to_chat(user, "<span class='info'>It has [ricochet_ammo_count] ricochet round\s remaining.</span>")
 
 /obj/item/ammo_storage/magazine/lawgiver/update_icon()
 	overlays.len = 0
@@ -146,12 +146,16 @@
 	if(flare_ammo_count > 0)
 		var/image/flare_ammo_overlay = image('icons/obj/ammo.dmi', src, "[initial(icon_state)]-flare-[flare_ammo_count]")
 		overlays += flare_ammo_overlay
-	if(hi_ex_ammo_count > 0)
-		var/image/hi_ex_ammo_overlay = image('icons/obj/ammo.dmi', src, "[initial(icon_state)]-hiEX-[hi_ex_ammo_count]")
-		overlays += hi_ex_ammo_overlay
+	if(ricochet_ammo_count > 0)
+		var/image/ricochet_ammo_overlay = image('icons/obj/ammo.dmi', src, "[initial(icon_state)]-ricochet-[ricochet_ammo_count]")
+		overlays += ricochet_ammo_overlay
 
 /obj/item/ammo_storage/magazine/lawgiver/proc/isFull()
-	if (stuncharge == 100 && lasercharge == 100 && rapid_ammo_count == 5 && flare_ammo_count == 5 && hi_ex_ammo_count == 5)
+	if (stuncharge == 100 && lasercharge == 100 && rapid_ammo_count == 5 && flare_ammo_count == 5 && ricochet_ammo_count == 5)
 		return 1
 	else
 		return 0
+
+/obj/item/ammo_storage/magazine/lawgiver/demolition
+	desc = "State-of-the-art bluespace technology allows this magazine to generate new rounds from energy, requiring only a power source to refill the full suite of ammunition types. This model is outfitted with high-explosive rounds."
+	flare_ammo_type = "/obj/item/ammo_casing/a75"

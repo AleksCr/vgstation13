@@ -4,7 +4,7 @@
 	icon = 'icons/policetape.dmi'
 	icon_state = "rollstart"
 	flags = FPRINT
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	var/turf/start
 	var/turf/end
 	var/tape_type = /obj/item/tape
@@ -78,12 +78,14 @@
 		var/dir
 		if (start.x == end.x)
 			var/d = end.y-start.y
-			if(d) d = d/abs(d)
+			if(d)
+				d = d/abs(d)
 			end = get_turf(locate(end.x,end.y+d,end.z))
 			dir = "v"
 		else
 			var/d = end.x-start.x
-			if(d) d = d/abs(d)
+			if(d)
+				d = d/abs(d)
 			end = get_turf(locate(end.x+d,end.y,end.z))
 			dir = "h"
 
@@ -132,7 +134,7 @@
 
 		var/atom/tape = new tape_type(turf)
 		tape.icon_state = "[icon_base]_door"
-		tape.layer = 3.2
+		tape.layer = ABOVE_DOOR_LAYER
 
 		to_chat(user, "<span class='notice'>You placed [src].</span>")
 

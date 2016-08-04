@@ -3,7 +3,7 @@
 	name = "mysterious structure"
 	requires_power = 0
 	icon_state = "firingrange"
-	lighting_use_dynamic = 1
+	dynamic_lighting = 1
 
 /area/vault/icetruck
 
@@ -32,9 +32,19 @@
 
 /area/vault/spacepond
 
+/area/vault/spacepond/wine_cellar
+
 /area/vault/ioufort
 
+/area/vault/hive_shuttle
+
+/area/vault/listening
+	requires_power = 1
+
 /area/vault/biodome
+	requires_power = 1
+
+/area/vault/brokeufo
 	requires_power = 1
 
 /mob/living/simple_animal/hostile/monster/cyber_horror/quiet
@@ -63,7 +73,8 @@
 
 /obj/effect/landmark/catechizer_spawn/New()
 	spawn()
-		if(!isturf(loc)) return
+		if(!isturf(loc))
+			return
 
 		var/list/all_spawns = list()
 		for(var/obj/effect/landmark/catechizer_spawn/S in get_area(src))
@@ -140,13 +151,31 @@
 	name = "paper- 'IOU'"
 	info = "I owe you a rod of destruction. Redeemable at Milliway's at the end of time."
 
-/obj/machinery/floodlight/on
+/obj/machinery/telecomms/relay/preset/vault_listening
+	id = "syndicate relay"
+	hide = 1
+	toggled = 0
+	autolinkers = list("hub")
 
-	New()
-		..()
-		on = 1
-		set_light(brightness_on)
-		update_icon()
+/obj/machinery/power/apc/no_alerts/vault_listening/initialize()
+	. = ..()
+	name = "\improper Listening Outpost APC."
+
+/obj/machinery/power/battery/smes/vault_listening
+	chargelevel = 30000
+	chargemode  = TRUE
+
+/obj/machinery/power/solar/control/vault_listening
+	track = 2 // Automatic
+
+/obj/machinery/floodlight/on/New()
+	..()
+	on = 1
+	set_light(brightness_on)
+	update_icon()
+
+/obj/machinery/floodlight/on/infinite
+	cell = /obj/item/weapon/cell/infinite
 
 /obj/machinery/bot/farmbot/duey
 	name = "Duey"
@@ -156,3 +185,13 @@
 	icon_state = "duey0"
 	icon_initial = "duey"
 	Max_Fertilizers = 50
+
+/obj/structure/ladder/spacepond/ground
+	name = "wine cellar"
+	id = "spacepond"
+	height = 1
+
+/obj/structure/ladder/spacepond/winecellar
+	name = "space cabin"
+	id = "spacepond"
+	height = 0

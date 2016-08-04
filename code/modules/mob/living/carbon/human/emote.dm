@@ -1,6 +1,7 @@
 /mob/living/carbon/human/emote(var/act,var/m_type=1,var/message = null, var/auto)
 	var/param = null
-	if(timestopped) return //under effects of time magick
+	if(timestopped)
+		return //under effects of time magick
 	if (findtext(act, "-", 1, null))
 		var/t1 = findtext(act, "-", 1, null)
 		param = copytext(act, t1 + 1, length(act) + 1)
@@ -185,8 +186,18 @@
 				m_type = VISIBLE
 			else
 				if (!muzzled)
-					message = "<B>[src]</B> coughs!"
-					m_type = HEARABLE
+					if (auto == 1)
+						if(world.time-last_emote_sound >= 30)//prevent cough spam
+							//Cough sounds from freesound.org and an anon in ss13g
+							var/coughSound = "malecough"
+							if (src.gender == FEMALE) //Females have their own coughes
+								coughSound = "femalecough"
+
+							playsound(get_turf(src), coughSound, 20, 0)
+							last_emote_sound = world.time
+
+						message = "<B>[src]</B> coughs!"
+						m_type = HEARABLE
 				else
 					message = "<B>[src]</B> makes a strong noise."
 					m_type = HEARABLE
@@ -415,10 +426,16 @@
 		if ("signal")
 			if (!src.restrained())
 				var/t1 = round(text2num(param))
+
+				var/maximum_finger_amount = 0
+				for(var/datum/organ/external/OE in list(organs_by_name[LIMB_LEFT_HAND], organs_by_name[LIMB_RIGHT_HAND]))
+					if(OE.is_usable())
+						maximum_finger_amount += 5
+
 				if (isnum(t1))
-					if (t1 <= 5 && (!src.r_hand || !src.l_hand))
-						message = "<B>[src]</B> raises [t1] finger\s."
-					else if (t1 <= 10 && (!src.r_hand && !src.l_hand))
+					t1 = Clamp(t1, 0, maximum_finger_amount)
+
+					if(t1 > 0)
 						message = "<B>[src]</B> raises [t1] finger\s."
 			m_type = VISIBLE
 
@@ -523,7 +540,7 @@
 
 		if ("handshake")
 			m_type = VISIBLE
-			if (!src.restrained() && !src.r_hand)
+			if (!src.restrained() && !get_held_item_by_index(GRASP_RIGHT_HAND))
 				var/mob/M = null
 				if (param)
 					for (var/mob/A in view(1, null))
@@ -534,7 +551,7 @@
 					M = null
 
 				if (M)
-					if (M.canmove && !M.r_hand && !M.restrained())
+					if (M.canmove && !M.get_held_item_by_index(GRASP_RIGHT_HAND) && !M.restrained())
 						message = "<B>[src]</B> shakes hands with [M]."
 					else
 						message = "<B>[src]</B> holds out \his hand to [M]."
@@ -561,7 +578,7 @@
 				if(!stat)
 					if (!muzzled)
 						if (auto == 1)
-							if(world.time-lastScream >= 30)//prevent scream spam with things like poly spray
+							if(world.time-last_emote_sound >= 30)//prevent scream spam with things like poly spray
 								message = "<B>[src]</B> screams in agony!"
 								var/list/screamSound = list('sound/misc/malescream1.ogg', 'sound/misc/malescream2.ogg', 'sound/misc/malescream3.ogg', 'sound/misc/malescream4.ogg', 'sound/misc/malescream5.ogg', 'sound/misc/wilhelm.ogg', 'sound/misc/goofy.ogg')
 								if (src.gender == FEMALE) //Females have their own screams. Trannys be damned.
@@ -569,7 +586,7 @@
 								var/scream = pick(screamSound)//AUUUUHHHHHHHHOOOHOOHOOHOOOOIIIIEEEEEE
 								playsound(get_turf(src), scream, 50, 0)
 								m_type = HEARABLE
-								lastScream = world.time
+								last_emote_sound = world.time
 						else
 							message = "<B>[src]</B> screams!"
 							m_type = HEARABLE
@@ -648,7 +665,7 @@
 						if(wearing_suit)
 							if(!wearing_mask)
 								to_chat(src, "<span class = 'warning'>You gas yourself!</span>")
-								reagents.add_reagent("space_drugs", rand(10,50))
+								reagents.add_reagent(SPACE_DRUGS, rand(10,50))
 						else
 							// Was /turf/, now /mob/
 							for(var/mob/living/M in view(location,aoe_range))
@@ -664,7 +681,7 @@
 								// <[REDACTED]> the user, of course, isn't impacted because it's not an actual smoke cloud
 								// So, let's give 'em space drugs.
 								if(M.reagents)
-									M.reagents.add_reagent("space_drugs",rand(1,50))
+									M.reagents.add_reagent(SPACE_DRUGS,rand(1,50))
 							/*
 							var/datum/effect/effect/system/smoke_spread/chem/fart/S = new /datum/effect/effect/system/smoke_spread/chem/fart
 							S.attach(location)
@@ -683,7 +700,8 @@
 							playsound(location, 'sound/effects/superfart.ogg', 50, 0)
 							if(!wearing_suit)
 								for(var/mob/living/V in view(src,aoe_range))
-									if(!airborne_can_reach(location,get_turf(V),aoe_range)) continue
+									if(!airborne_can_reach(location,get_turf(V),aoe_range))
+										continue
 									shake_camera(V,10,5)
 									if (V == src)
 										continue

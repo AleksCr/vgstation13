@@ -198,7 +198,8 @@
 			if(suplink)
 				var/extra = 4
 				suplink.uses += extra
-				if(man.mind) man.mind.total_TC += extra
+				if(man.mind)
+					man.mind.total_TC += extra
 				to_chat(man, "<span class='warning'>We have received notice that enemy intelligence suspects you to be linked with us. We have thus invested significant resources to increase your uplink's capacity.</span>")
 			else
 				// Give them a warning!
@@ -226,7 +227,7 @@
 			comm.messagetitle.Add("[command_name()] Status Summary")
 			comm.messagetext.Add(intercepttext)
 
-	command_alert("Summary downloaded and printed out at all communications consoles.", "Enemy communication intercept.")
+	command_alert(/datum/command_alert/enemy_comms_interception)
 /*	for(var/mob/M in player_list)
 		if(!istype(M,/mob/new_player))
 			M << sound('sound/AI/intercept.ogg')
@@ -265,9 +266,10 @@
 	if(candidates.len < recommended_enemies)
 		for(var/mob/new_player/player in players)
 			if(player.client && player.ready)
-				if(player.client.desires_role(role, display_to_user=poll)) // We don't have enough people who want to be antagonist, make a seperate list of people who don't want to be one
-					if(!jobban_isbanned(player, "Syndicate") && !jobban_isbanned(player, role)) //Nodrak/Carn: Antag Job-bans
-						drafted += player.mind
+				if(!player.mind in drafted || !player.mind in candidates) // Players were getting placed in candidates AND drafted lists.
+					if(player.client.desires_role(role, display_to_user=poll)) // We don't have enough people who want to be antagonist, make a seperate list of people who don't want to be one
+						if(!jobban_isbanned(player, "Syndicate") && !jobban_isbanned(player, role)) //Nodrak/Carn: Antag Job-bans
+							drafted += player.mind
 
 	if(restricted_jobs)
 		for(var/datum/mind/player in drafted)				// Remove people who can't be an antagonist
@@ -360,6 +362,13 @@
 			heads += player.mind
 	return heads
 
+/datum/game_mode/proc/get_assigned_head_roles()
+	var/list/roles = list()
+	for(var/mob/player in mob_list)
+		if(player.mind && (player.mind.assigned_role in command_positions))
+			roles += player.mind.assigned_role
+	return roles
+
 /*/datum/game_mode/New()
 	newscaster_announcements = pick(newscaster_standard_feeds)*/
 
@@ -428,7 +437,8 @@ proc/get_nt_opposed()
 				dudes += man
 			else if(man.client.prefs.nanotrasen_relation == "Skeptical" && prob(50))
 				dudes += man
-	if(dudes.len == 0) return null
+	if(dudes.len == 0)
+		return null
 	return pick(dudes)
 
 

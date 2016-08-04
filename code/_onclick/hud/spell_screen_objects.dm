@@ -79,7 +79,8 @@
 			S.handle_icon_updates = 1
 
 /obj/screen/movable/spell_master/proc/add_spell(var/spell/spell)
-	if(!spell) return
+	if(!spell)
+		return
 
 	if(spell.connected_button) //we have one already, for some reason
 		if(spell.connected_button in spell_objects)
@@ -156,6 +157,7 @@
 	var/obj/screen/movable/spell_master/spellmaster
 
 	var/icon/last_charged_icon
+	var/channeling_image
 
 /obj/screen/spell/Destroy()
 	..()
@@ -165,6 +167,7 @@
 		spellmaster.spell_objects -= src
 		if(spellmaster.spell_holder && spellmaster.spell_holder.client)
 			spellmaster.spell_holder.client.screen -= src
+			remove_channeling()
 	if(spellmaster && !spellmaster.spell_objects.len)
 		returnToPool(spellmaster)
 	spellmaster = null
@@ -203,9 +206,9 @@
 
 	last_charge = spell.charge_counter
 
-	overlays -= "silence"
+	overlays -= image(icon = icon, icon_state = "silence")
 	if(spell.silenced)
-		overlays += "silence"
+		overlays += image(icon = icon, icon_state = "silence")
 
 /obj/screen/spell/Click()
 	if(!usr || !spell)
@@ -214,3 +217,13 @@
 
 	spell.perform(usr)
 	update_charge(1)
+
+//Helper proc, does not remove channeling
+/obj/screen/spell/proc/add_channeling()
+	var/image/channel = image(icon = icon, loc = src, icon_state = "channeled", layer = src.layer + 1)
+	channeling_image = channel
+	spellmaster.spell_holder.client.images += channeling_image
+
+/obj/screen/spell/proc/remove_channeling()
+	spellmaster.spell_holder.client.images -= channeling_image
+	channeling_image = null

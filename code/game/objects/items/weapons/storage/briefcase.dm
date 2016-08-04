@@ -1,14 +1,15 @@
 /obj/item/weapon/storage/briefcase
 	name = "briefcase"
 	desc = "It's made of AUTHENTIC faux-leather and has a price-tag still attached. Its owner must be a real professional."
+	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/backpacks_n_bags.dmi', "right_hand" = 'icons/mob/in-hand/right/backpacks_n_bags.dmi')
 	icon_state = "briefcase"
 	flags = FPRINT
 	siemens_coefficient = 1
 	force = 8.0
 	throw_speed = 1
 	throw_range = 4
-	w_class = 4.0
-	fits_max_w_class = 3
+	w_class = W_CLASS_LARGE
+	fits_max_w_class = W_CLASS_MEDIUM
 	max_combined_w_class = 16
 	var/empty = 0
 
@@ -25,7 +26,8 @@
 
 /obj/item/weapon/storage/briefcase/New()
 	..()
-	if (empty) return
+	if (empty)
+		return
 	new /obj/item/weapon/paper/demotion_key(src)
 	new /obj/item/weapon/paper/commendation_key(src)
 
@@ -58,7 +60,8 @@
 			M.Paralyse(time)
 		else
 			M.Stun(time)
-		if(M.stat != 2)	M.stat = 1
+		if(M.stat != 2)
+			M.stat = 1
 		for(var/mob/O in viewers(M, null))
 			O.show_message(text("<span class='danger'>[] has been knocked unconscious!</span>", M), 1, "<span class='warning'>You hear someone fall.</span>", 2)
 	else
@@ -74,8 +77,8 @@
 	force = 8.0
 	throw_speed = 1
 	throw_range = 3
-	w_class = 4.0
-	fits_max_w_class = 2
+	w_class = W_CLASS_LARGE
+	fits_max_w_class = W_CLASS_SMALL
 	max_combined_w_class = 10
 
 	var/busy_hunting = 0
@@ -112,7 +115,7 @@
 		if(stored_item)
 			to_chat(user, "<span class='warning'>There's already something in the false bottom!</span>")
 			return
-		if(item.w_class > 3.0)
+		if(item.w_class > W_CLASS_MEDIUM)
 			to_chat(user, "<span class='warning'>\The [item] is too big to fit in the false bottom!</span>")
 			return
 		if(!user.drop_item(item))
@@ -120,7 +123,7 @@
 			return
 
 		stored_item = item
-		fits_max_w_class = 3.0 - stored_item.w_class
+		fits_max_w_class = W_CLASS_MEDIUM - stored_item.w_class
 		item.loc = null //null space here we go - to stop it showing up in the briefcase
 		to_chat(user, "You place \the [item] into the false bottom of the briefcase.")
 	else

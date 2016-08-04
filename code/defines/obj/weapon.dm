@@ -9,7 +9,7 @@
 	throwforce = 2.0
 	throw_speed = 1
 	throw_range = 4
-	w_class = 2
+	w_class = W_CLASS_SMALL
 	attack_verb = list("calls", "rings", "dials")
 	hitsound = 'sound/weapons/ring.ogg'
 
@@ -29,12 +29,12 @@
 	var/mob/currentUser = null
 	var/obj/item/device/radio/origradio = null
 	flags = FPRINT  | CONDUCT | ONBELT
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	item_state = "radio"
 	throw_speed = 4
 	throw_range = 20
 	m_amt = 100
-	origin_tech = "magnets=2;syndicate=3"*/
+	origin_tech = Tc_MAGNETS + "=2;" + Tc_SYNDICATE + "=3"*/
 
 /obj/item/weapon/rsp
 	name = "\improper Rapid-Seed-Producer (RSP)"
@@ -46,7 +46,7 @@
 	anchored = 0.0
 	var/matter = 0
 	var/mode = 1
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 
 /obj/item/weapon/bananapeel
 	name = "banana peel"
@@ -54,7 +54,7 @@
 	icon = 'icons/obj/items.dmi'
 	icon_state = "banana_peel"
 	item_state = "banana_peel"
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throwforce = 0
 	throw_speed = 4
 	throw_range = 20
@@ -69,7 +69,7 @@
 	icon = 'icons/obj/harvest.dmi'
 	icon_state = "corncob"
 	item_state = "corncob"
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throwforce = 0
 	throw_speed = 4
 	throw_range = 20
@@ -80,7 +80,7 @@
 	gender = PLURAL
 	icon = 'icons/obj/items.dmi'
 	icon_state = "soap"
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throwforce = 0
 	throw_speed = 4
 	throw_range = 20
@@ -104,7 +104,7 @@
 	icon = 'icons/obj/items.dmi'
 	icon_state = "c_tube"
 	throwforce = 1
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throw_speed = 4
 	throw_range = 5
 
@@ -112,14 +112,14 @@
 	name = "cane"
 	desc = "A cane used by a true gentlemen. Or a clown."
 	icon = 'icons/obj/weapons.dmi'
-	origin_tech = "materials=1"
+	origin_tech = Tc_MATERIALS + "=1"
 	icon_state = "cane"
 	item_state = "stick"
 	flags = FPRINT
 	siemens_coefficient = 1
 	force = 5.0
 	throwforce = 7.0
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	starting_materials = list(MAT_IRON = 50)
 	w_type = RECYK_MISC
 	melt_temperature = MELTPOINT_STEEL
@@ -153,7 +153,7 @@
 	var/data = ""
 	var/base_url = "http://svn.slurm.us/public/spacestation13/misc/game_kit"
 	item_state = "sheet-metal"
-	w_class = 5.0
+	w_class = W_CLASS_HUGE
 */
 
 /obj/item/weapon/legcuffs
@@ -165,8 +165,8 @@
 	flags = FPRINT
 	siemens_coefficient = 1
 	throwforce = 0
-	w_class = 3.0
-	origin_tech = "materials=1"
+	w_class = W_CLASS_MEDIUM
+	origin_tech = Tc_MATERIALS + "=1"
 	var/breakouttime = 300	//Deciseconds = 30s = 0.5 minute
 
 /obj/item/weapon/legcuffs/bolas
@@ -179,9 +179,9 @@
 	siemens_coefficient = 1
 	slot_flags = SLOT_BELT
 	throwforce = 2
-	w_class = 2
+	w_class = W_CLASS_SMALL
 	w_type = RECYK_METAL
-	origin_tech = "materials=1"
+	origin_tech = Tc_MATERIALS + "=1"
 	attack_verb = list("lashes", "bludgeons", "whips")
 	force = 4
 	breakouttime = 50 //10 seconds
@@ -197,7 +197,8 @@
 	return(OXYLOSS)
 
 /obj/item/weapon/legcuffs/bolas/throw_at(var/atom/A, throw_range, throw_speed)
-	if(!throw_range) return //divide by zero, also you throw like a girl
+	if(!throw_range)
+		return //divide by zero, also you throw like a girl
 	if(usr && !istype(thrown_from, /obj/item/mecha_parts/mecha_equipment/weapon/ballistic/missile_rack/bolas)) //if there is a user, but not a mech
 		if(istype(usr, /mob/living/carbon/human)) //if the user is human
 			var/mob/living/carbon/human/H = usr
@@ -356,7 +357,7 @@
 				update_icon()
 				return
 		if(I.w_class) //if it has a defined weight
-			if(I.w_class == 2.0 || I.w_class == 3.0) //just one is too specific, so don't change this
+			if(I.w_class == W_CLASS_SMALL || I.w_class == W_CLASS_MEDIUM) //just one is too specific, so don't change this
 				if(!weight1)
 					if(user.drop_item(I, src))
 						weight1 = I
@@ -374,10 +375,10 @@
 				else
 					user.show_message("<span class='rose'>There are already two weights on this [src]!</span>")
 					return
-			else if (I.w_class < 2.0)
+			else if (I.w_class < W_CLASS_SMALL)
 				user.show_message("<span class='rose'>\The [I] is too small to be used as a weight.</span>")
-			else if (I.w_class > 3.0)
-				user.show_message("<span class='rose'>\The [I] is [I.w_class > 4.0 ? "far " : ""] too big to be used a weight.</span>")
+			else if (I.w_class > W_CLASS_MEDIUM)
+				user.show_message("<span class='rose'>\The [I] is [I.w_class > W_CLASS_LARGE ? "far " : ""] too big to be used a weight.</span>")
 			else
 				user.show_message("<span class='rose'>There are already two weights on this [src]!</span>")
 
@@ -497,9 +498,9 @@
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/misc_tools.dmi', "right_hand" = 'icons/mob/in-hand/right/misc_tools.dmi')
 	siemens_coefficient = 0
 	throwforce = 15
-	w_class = 3
+	w_class = W_CLASS_MEDIUM
 	w_type = RECYK_METAL
-	origin_tech = "combat=5"
+	origin_tech = Tc_COMBAT + "=5"
 	attack_verb = list("rams", "bludgeons")
 	force = 15
 	throw_speed = 1
@@ -514,7 +515,7 @@
 	throwforce = 3.0
 	throw_speed = 1
 	throw_range = 5
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	flags = FPRINT
 	attack_verb = list("warns", "cautions", "smashes")
 
@@ -562,8 +563,8 @@
 					qdel(src)
 
 /obj/item/weapon/caution/proximity_sign/proc/dead_legs(mob/living/carbon/human/H as mob)
-	var/datum/organ/external/l = H.organs_by_name["l_leg"]
-	var/datum/organ/external/r = H.organs_by_name["r_leg"]
+	var/datum/organ/external/l = H.organs_by_name[LIMB_LEFT_LEG]
+	var/datum/organ/external/r = H.organs_by_name[LIMB_RIGHT_LEG]
 	if(l && !(l.status & ORGAN_DESTROYED))
 		l.status |= ORGAN_DESTROYED
 	if(r && !(r.status & ORGAN_DESTROYED))
@@ -620,13 +621,13 @@
 	slot_flags = SLOT_BELT
 	item_state = "radio"
 	throwforce = 5
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	throw_speed = 4
 	throw_range = 20
 	starting_materials = list(MAT_IRON = 100)
 	w_type = RECYK_ELECTRONIC
 	melt_temperature=MELTPOINT_SILICON
-	origin_tech = "magnets=1"
+	origin_tech = Tc_MAGNETS + "=1"
 
 /obj/item/weapon/staff
 	name = "wizards staff"
@@ -637,7 +638,7 @@
 	throwforce = 5.0
 	throw_speed = 1
 	throw_range = 5
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	flags = FPRINT
 	attack_verb = list("bludgeons", "whacks", "disciplines")
 
@@ -655,20 +656,19 @@
 	force = wielded ? 5 : 3
 	attack_verb = wielded ? list("rams into", "charges at") : list("bludgeons", "whacks", "cleans", "dusts")
 	if(user)
-		user.update_inv_l_hand()
-		user.update_inv_r_hand()
+		user.update_inv_hands()
 		if(user.mind in ticker.mode.wizards)
 			user.flying = wielded ? 1 : 0
 			if(wielded)
 				to_chat(user, "<span class='notice'>You hold \the [src] between your legs.</span>")
 				user.say("QUID 'ITCH")
-				animate(user, pixel_y = pixel_y + 10 , time = 10, loop = 1, easing = SINE_EASING)
+				animate(user, pixel_y = pixel_y + 10 * PIXEL_MULTIPLIER , time = 10, loop = 1, easing = SINE_EASING)
 			else
-				animate(user, pixel_y = pixel_y + 10 , time = 1, loop = 1)
+				animate(user, pixel_y = pixel_y + 10 * PIXEL_MULTIPLIER , time = 1, loop = 1)
 				animate(user, pixel_y = pixel_y, time = 10, loop = 1, easing = SINE_EASING)
 				animate(user)
 				if(user.lying)//aka. if they have just been stunned
-					user.pixel_y -= 6
+					user.pixel_y -= 6 * PIXEL_MULTIPLIER
 		else
 			if(wielded)
 				to_chat(user, "<span class='notice'>You hold \the [src] between your legs.</span>")
@@ -705,7 +705,7 @@
 	throwforce = 5.0
 	throw_speed = 1
 	throw_range = 5
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	flags = FPRINT
 
 /obj/item/weapon/table_parts
@@ -735,7 +735,7 @@
 	melt_temperature=MELTPOINT_STEEL
 	flags = FPRINT
 	siemens_coefficient = 1
-	
+
 /obj/item/weapon/table_parts/glass
 	name = "glass table parts"
 	desc = "Glass table parts for the spaceman with style."
@@ -780,7 +780,7 @@
 /obj/item/weapon/module
 	icon = 'icons/obj/module.dmi'
 	//icon_state = "std_module"
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	item_state = "electronic"
 	flags = FPRINT
 	siemens_coefficient = 1
@@ -819,8 +819,8 @@
 	icon_state = "meat"
 	flags = FPRINT
 	siemens_coefficient = 1
-	w_class = 1.0
-	origin_tech = "biotech=2"
+	w_class = W_CLASS_TINY
+	origin_tech = Tc_BIOTECH + "=2"
 
 /*
 /obj/item/weapon/cigarpacket
@@ -829,7 +829,7 @@
 	icon = 'icons/obj/cigarettes.dmi'
 	icon_state = "cigarpacket"
 	item_state = "cigarpacket"
-	w_class = 1
+	w_class = W_CLASS_TINY
 	throwforce = 2
 	var/cigarcount = 6
 	flags = ONBELT  */
@@ -848,7 +848,7 @@
 	icon = 'icons/obj/stock_parts.dmi'
 	icon_state = "capacitor"
 	desc = "A debug item for research."
-	origin_tech = "materials=8;programming=8;magnets=8;powerstorage=8;bluespace=8;combat=8;biotech=8;syndicate=8"
+	origin_tech = Tc_MATERIALS + "=8;" + Tc_PROGRAMMING + "=8;" + Tc_MAGNETS + "=8;" + Tc_POWERSTORAGE + "=8;" + Tc_BLUESPACE + "=8;" + Tc_COMBAT + "=8;" + Tc_BIOTECH + "=8;" + Tc_SYNDICATE + "=8"
 */
 
 /obj/item/weapon/ectoplasm
@@ -904,14 +904,18 @@ proc
         var icon{result = icon(base); temp}
 
         for(var/angle in 0 to 360 step step)
-            if(angle == 0  ) continue
-            if(angle == 360)   continue
+            if(angle == 0  )
+            	continue
+            if(angle == 360)
+            	continue
 
             temp = icon(base)
 
-            if(aa) temp.Scale(w2, h2)
+            if(aa)
+            	temp.Scale(w2, h2)
             temp.Turn(angle)
-            if(aa) temp.Scale(w,   h)
+            if(aa)
+            	temp.Scale(w,   h)
 
             result.Insert(temp, "[angle]")
 

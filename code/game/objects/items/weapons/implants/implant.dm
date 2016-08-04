@@ -197,6 +197,9 @@ Implant Specifics:<BR>"}
 					part.droplimb(1)
 			explosion(get_turf(imp_in), -1, -1, 2, 3, 3)
 			qdel(src)
+//emp proof implant for nuclear operatives
+/obj/item/weapon/implant/explosive/nuclear/emp_act(severity)
+	return
 
 /obj/item/weapon/implant/chem
 	name = "chem"
@@ -228,7 +231,8 @@ the implant may become unstable and either pre-maturely inject the subject or si
 
 
 /obj/item/weapon/implant/chem/activate(var/cause)
-	if((!cause) || (!src.imp_in))	return 0
+	if((!cause) || (!src.imp_in))
+		return 0
 	var/mob/living/carbon/R = src.imp_in
 	src.reagents.trans_to(R, cause)
 	to_chat(R, "You hear a faint *beep*.")
@@ -277,7 +281,8 @@ the implant may become unstable and either pre-maturely inject the subject or si
 
 
 /obj/item/weapon/implant/loyalty/implanted(mob/M)
-	if(!iscarbon(M))	return 0
+	if(!iscarbon(M))
+		return 0
 	var/mob/living/carbon/H = M
 	if(H.mind in ticker.mode.head_revolutionaries)
 		H.visible_message("[H] seems to resist the implant!", "You feel the corporate tendrils of Nanotrasen try to invade your mind!")
@@ -308,8 +313,10 @@ the implant may become unstable and either pre-maturely inject the subject or si
 /obj/item/weapon/implant/traitor/implanted(mob/M, mob/user)
 	var/list/implanters
 	var/ref = "\ref[user.mind]"
-	if(!iscarbon(M)) return 0
-	if(!M.mind) return 0
+	if(!iscarbon(M))
+		return 0
+	if(!M.mind)
+		return 0
 	var/mob/living/carbon/H = M
 	if(M == user)
 		to_chat(user, "<span class='notice'>You feel quite stupid for doing that.</span>")
@@ -366,7 +373,8 @@ the implant may become unstable and either pre-maturely inject the subject or si
 
 
 /obj/item/weapon/implant/adrenalin/trigger(emote, mob/source as mob)
-	if (src.uses < 1)	return 0
+	if (src.uses < 1)
+		return 0
 	if (emote == "pale")
 		src.uses--
 		to_chat(source, "<span class = 'notice'>You feel a sudden surge of energy!</span>")
@@ -402,15 +410,18 @@ the implant may become unstable and either pre-maturely inject the subject or si
 		return dat
 
 /obj/item/weapon/implant/death_alarm/process()
-	if (!implanted || timestopped) return
+	if (!implanted || timestopped)
+		return
 	var/mob/M = imp_in
 
 	if(isnull(M)) // If the mob got gibbed
 		if(loc)
-			if(loc:timestopped) return
+			if(loc:timestopped)
+				return
 		activate()
 	else if(M.stat == 2)
-		if(M.timestopped) return
+		if(M.timestopped)
+			return
 		activate("death")
 
 /obj/item/weapon/implant/death_alarm/activate(var/cause)

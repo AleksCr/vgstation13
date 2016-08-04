@@ -52,12 +52,14 @@ mob/var/tmp/last_airflow_stun = 0
 mob/proc/airflow_stun()
 	if(stat == 2 || (flags & INVULNERABLE))
 		return 0
-	if(last_airflow_stun > world.time - zas_settings.Get(/datum/ZAS_Setting/airflow_stun_cooldown))	return 0
+	if(last_airflow_stun > world.time - zas_settings.Get(/datum/ZAS_Setting/airflow_stun_cooldown))
+		return 0
 	if(!(status_flags & CANSTUN) && !(status_flags & CANWEAKEN))
 		to_chat(src, "<span class='notice'>You stay upright as the air rushes past you.</span>")
 		return 0
 
-	if(weakened <= 0) to_chat(src, "<span class='warning'>The sudden rush of air knocks you over!</span>")
+	if(weakened <= 0)
+		to_chat(src, "<span class='warning'>The sudden rush of air knocks you over!</span>")
 	SetWeakened(5)
 	last_airflow_stun = world.time
 	return
@@ -69,15 +71,19 @@ mob/living/carbon/metroid/airflow_stun()
 	return
 
 mob/living/carbon/human/airflow_stun()
-	if(last_airflow_stun > world.time - zas_settings.Get(/datum/ZAS_Setting/airflow_stun_cooldown))	return 0
-	if(locked_to || (flags & INVULNERABLE)) return 0
+	if(last_airflow_stun > world.time - zas_settings.Get(/datum/ZAS_Setting/airflow_stun_cooldown))
+		return 0
+	if(locked_to || (flags & INVULNERABLE))
+		return 0
 	if(shoes)
-		if(CheckSlip() < 1) return 0
+		if(CheckSlip() < 1)
+			return 0
 	if(!(status_flags & CANSTUN) && !(status_flags & CANWEAKEN))
 		to_chat(src, "<span class='notice'>You stay upright as the air rushes past you.</span>")
 		return 0
 
-	if(weakened <= 0) to_chat(src, "<span class='warning'>The sudden rush of air knocks you over!</span>")
+	if(weakened <= 0)
+		to_chat(src, "<span class='warning'>The sudden rush of air knocks you over!</span>")
 	SetWeakened(rand(1,5))
 	last_airflow_stun = world.time
 	return
@@ -109,11 +115,14 @@ obj/item/check_airflow_movable(n)
 	. = ..()
 	switch(w_class)
 		if(2)
-			if(n < zas_settings.Get(/datum/ZAS_Setting/airflow_lightest_pressure)) return 0
+			if(n < zas_settings.Get(/datum/ZAS_Setting/airflow_lightest_pressure))
+				return 0
 		if(3)
-			if(n < zas_settings.Get(/datum/ZAS_Setting/airflow_light_pressure)) return 0
+			if(n < zas_settings.Get(/datum/ZAS_Setting/airflow_light_pressure))
+				return 0
 		if(4,5)
-			if(n < zas_settings.Get(/datum/ZAS_Setting/airflow_medium_pressure)) return 0
+			if(n < zas_settings.Get(/datum/ZAS_Setting/airflow_medium_pressure))
+				return 0
 
 /*
 //The main airflow code. Called by zone updates.
@@ -124,7 +133,8 @@ proc/Airflow(zone/A, zone/B)
 	var/n = B.air.return_pressure() - A.air.return_pressure()
 
 	 //Don't go any further if n is lower than the lowest value needed for airflow.
-	if(abs(n) < zas_settings.Get(/datum/ZAS_Setting/airflow_lightest_pressure)) return
+	if(abs(n) < zas_settings.Get(/datum/ZAS_Setting/airflow_lightest_pressure))
+		return
 
 	//These turfs are the midway point between A and B, and will be the destination point for thrown objects.
 	var/list/connection/connections_A = A.connections
@@ -153,11 +163,13 @@ proc/Airflow(zone/A, zone/B)
 
 		if(zas_settings.Get(/datum/ZAS_Setting/airflow_push) || 1) // If enabled
 			for(var/atom/movable/M in air_sucked)
-				if(M.last_airflow > world.time - zas_settings.Get(/datum/ZAS_Setting/airflow_delay)) continue
+				if(M.last_airflow > world.time - zas_settings.Get(/datum/ZAS_Setting/airflow_delay))
+					continue
 
 				//Check for knocking people over
 				if(ismob(M) && n > zas_settings.Get(/datum/ZAS_Setting/airflow_stun_pressure))
-					if(M:status_flags & GODMODE) continue
+					if(M:status_flags & GODMODE)
+						continue
 					M:airflow_stun()
 
 				if(M.check_airflow_movable(n))
@@ -165,8 +177,10 @@ proc/Airflow(zone/A, zone/B)
 					//Check for things that are in range of the midpoint turfs.
 					var/list/close_turfs = list()
 					for(var/turf/U in connected_turfs)
-						if(M in range(U)) close_turfs += U
-					if(!close_turfs.len) continue
+						if(M in range(U))
+							close_turfs += U
+					if(!close_turfs.len)
+						continue
 
 					//If they're already being tossed, don't do it again.
 					if(!M.airflow_speed)
@@ -178,18 +192,22 @@ proc/Airflow(zone/A, zone/B)
 			//Do it again for the stuff in the other zone, making it fly away.
 			for(var/atom/movable/M in air_repelled)
 
-				if(M.last_airflow > world.time - zas_settings.Get(/datum/ZAS_Setting/airflow_delay)) continue
+				if(M.last_airflow > world.time - zas_settings.Get(/datum/ZAS_Setting/airflow_delay))
+					continue
 
 				if(ismob(M) && abs(n) > zas_settings.Get(/datum/ZAS_Setting/airflow_medium_pressure))
-					if(M:status_flags & GODMODE) continue
+					if(M:status_flags & GODMODE)
+						continue
 					M:airflow_stun()
 
 				if(M.check_airflow_movable(abs(n)))
 
 					var/list/close_turfs = list()
 					for(var/turf/U in connected_turfs)
-						if(M in range(U)) close_turfs += U
-					if(!close_turfs.len) continue
+						if(M in range(U))
+							close_turfs += U
+					if(!close_turfs.len)
+						continue
 
 					//If they're already being tossed, don't do it again.
 					if(!M.airflow_speed)
@@ -205,26 +223,31 @@ proc/AirflowSpace(zone/A)
 		var/n = A.air.return_pressure()
 		//Here, n is determined by only the pressure in the room.
 
-		if(n < zas_settings.Get(/datum/ZAS_Setting/airflow_lightest_pressure)) return
+		if(n < zas_settings.Get(/datum/ZAS_Setting/airflow_lightest_pressure))
+			return
 
 		var/list/connected_turfs = A.unsimulated_tiles //The midpoints are now all the space connections.
 		var/list/pplz = A.movables() //We only need to worry about things in the zone, not things in space.
 
 		if(zas_settings.Get(/datum/ZAS_Setting/airflow_push) || 1) // If enabled
 			for(var/atom/movable/M in pplz)
-				if(M.last_airflow > world.time - zas_settings.Get(/datum/ZAS_Setting/airflow_delay)) continue
+				if(M.last_airflow > world.time - zas_settings.Get(/datum/ZAS_Setting/airflow_delay))
+					continue
 
 				if(ismob(M) && n > zas_settings.Get(/datum/ZAS_Setting/airflow_stun_pressure))
 					var/mob/O = M
-					if(O.status_flags & GODMODE) continue
+					if(O.status_flags & GODMODE)
+						continue
 					O.airflow_stun()
 
 				if(M.check_airflow_movable(n))
 
 					var/list/close_turfs = list()
 					for(var/turf/U in connected_turfs)
-						if(M in range(U)) close_turfs += U
-					if(!close_turfs.len) continue
+						if(M in range(U))
+							close_turfs += U
+					if(!close_turfs.len)
+						continue
 
 					//If they're already being tossed, don't do it again.
 					if(!M.airflow_speed)
@@ -350,9 +373,9 @@ proc/AirflowSpace(zone/A)
 			if ((!( src.airflow_dest ) || src.loc == src.airflow_dest))
 				airflow_dest = locate(Clamp(x + xo, 1, world.maxx), Clamp(y + yo, 1, world.maxy), z)
 			if ((src.x == 1 || src.x == world.maxx || src.y == 1 || src.y == world.maxy))
-				return
+				break
 			if (!isturf(loc))
-				return
+				break
 			step_towards(src, src.airflow_dest)
 			if(ismob(src) && src:client)
 				var/mob/M = src
@@ -377,7 +400,8 @@ atom/movable/proc/airflow_hit(atom/A)
 	airflow_dest = null
 
 mob/airflow_hit(atom/A)
-	if(size == SIZE_TINY) return //Slamming into a mouse/roach doesn't make much sense
+	if(size == SIZE_TINY)
+		return //Slamming into a mouse/roach doesn't make much sense
 
 	if(!sound_override)
 		for(var/mob/M in hearers(src))
@@ -414,26 +438,26 @@ mob/living/carbon/human/airflow_hit(atom/A)
 
 	var/b_loss = airflow_speed * zas_settings.Get(/datum/ZAS_Setting/airflow_damage)
 
-	var/blocked = run_armor_check("head","melee")
-	apply_damage(b_loss/3, BRUTE, "head", blocked, 0, used_weapon = "Airflow")
+	var/blocked = run_armor_check(LIMB_HEAD,"melee")
+	apply_damage(b_loss/3, BRUTE, LIMB_HEAD, blocked, 0, used_weapon = "Airflow")
 
-	blocked = run_armor_check("chest","melee")
-	apply_damage(b_loss/3, BRUTE, "chest", blocked, 0, used_weapon = "Airflow")
+	blocked = run_armor_check(LIMB_CHEST,"melee")
+	apply_damage(b_loss/3, BRUTE, LIMB_CHEST, blocked, 0, used_weapon = "Airflow")
 
-	blocked = run_armor_check("groin","melee")
-	apply_damage(b_loss/3, BRUTE, "groin", blocked, 0, used_weapon = "Airflow")
+	blocked = run_armor_check(LIMB_GROIN,"melee")
+	apply_damage(b_loss/3, BRUTE, LIMB_GROIN, blocked, 0, used_weapon = "Airflow")
 	*/
 
 	var/b_loss = airflow_speed * zas_settings.Get(/datum/ZAS_Setting/airflow_damage)
 
-	var/head_damage = ((b_loss/3)/100) * (100 - getarmor("head","melee"))
-	apply_damage(head_damage, BRUTE, "head", 0, 0, used_weapon = "Airflow")
+	var/head_damage = ((b_loss/3)/100) * (100 - getarmor(LIMB_HEAD,"melee"))
+	apply_damage(head_damage, BRUTE, LIMB_HEAD, 0, 0, used_weapon = "Airflow")
 
-	var/chest_damage = ((b_loss/3)/100) * (100 - getarmor("chest","melee"))
-	apply_damage(chest_damage, BRUTE, "head", 0, 0, used_weapon = "Airflow")
+	var/chest_damage = ((b_loss/3)/100) * (100 - getarmor(LIMB_CHEST,"melee"))
+	apply_damage(chest_damage, BRUTE, LIMB_HEAD, 0, 0, used_weapon = "Airflow")
 
-	var/groin_damage = ((b_loss/3)/100) * (100 - getarmor("groin","melee"))
-	apply_damage(groin_damage, BRUTE, "head", 0, 0, used_weapon = "Airflow")
+	var/groin_damage = ((b_loss/3)/100) * (100 - getarmor(LIMB_GROIN,"melee"))
+	apply_damage(groin_damage, BRUTE, LIMB_HEAD, 0, 0, used_weapon = "Airflow")
 
 	if((head_damage + chest_damage + groin_damage) > 15)
 		var/turf/T = get_turf(src)

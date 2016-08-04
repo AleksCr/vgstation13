@@ -5,7 +5,8 @@
 	desc = "Cats really don't like these things."
 	density = 0
 	anchored = 1.0
-	layer = 2.3 //under pipes
+	plane = ABOVE_TURF_PLANE
+	layer = CATWALK_LAYER
 
 	canSmoothWith = "/obj/structure/catwalk=0"
 

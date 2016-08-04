@@ -62,9 +62,11 @@
 	radio_connection = radio_controller.add_object(src, frequency, RADIO_CONVEYORS)
 
 /obj/machinery/conveyor/receive_signal(datum/signal/signal)
-	if(!signal || signal.encryption) return
+	if(!signal || signal.encryption)
+		return
 
-	if(id_tag != signal.data["tag"] || !signal.data["command"]) return
+	if(id_tag != signal.data["tag"] || !signal.data["command"])
+		return
 	switch(signal.data["command"])
 		if("forward")
 			operating = 1
@@ -103,26 +105,42 @@
 		copy_radio_from_neighbors()
 
 /obj/machinery/conveyor/proc/copy_radio_from_neighbors()
+	var/obj/machinery/conveyor_switch/lever = locate() in orange(src,1)
+	if(lever && lever.id_tag)
+		id_tag = lever.id_tag
+		frequency = lever.frequency
+		spawn(5) // Need to wait for the radio_controller to wake up.
+			updateConfig()
+		return
+	//We didn't find any levers close so let's just try to copy any conveyors nearby
 	for(var/direction in cardinal)
 		var/obj/machinery/conveyor/domino = locate() in get_step(src, direction)
 		if(domino && domino.id_tag)
 			id_tag = domino.id_tag
 			frequency = domino.frequency
-			spawn(5) // Need to wait for the radio_controller to wake up.
+			spawn(5) // Yeah I copied this twice so what
 				updateConfig()
-			break
+			return
 
 /proc/conveyor_directions(var/dir, var/reverse = 0)
 	var/list/dirs = list()
 	switch(dir)
-		if(NORTH) dirs = list(NORTH, SOUTH)
-		if(SOUTH) dirs = list(SOUTH, NORTH)
-		if(EAST)  dirs = list(EAST, WEST)
-		if(WEST)  dirs = list(WEST, EAST)
-		if(NORTHEAST) dirs = list(EAST, SOUTH)
-		if(NORTHWEST) dirs = list(SOUTH, WEST)
-		if(SOUTHEAST) dirs = list(NORTH, EAST)
-		if(SOUTHWEST) dirs = list(WEST, NORTH)
+		if(NORTH)
+			dirs = list(NORTH, SOUTH)
+		if(SOUTH)
+			dirs = list(SOUTH, NORTH)
+		if(EAST)
+			dirs = list(EAST, WEST)
+		if(WEST)
+			dirs = list(WEST, EAST)
+		if(NORTHEAST)
+			dirs = list(EAST, SOUTH)
+		if(NORTHWEST)
+			dirs = list(SOUTH, WEST)
+		if(SOUTHEAST)
+			dirs = list(NORTH, EAST)
+		if(SOUTHWEST)
+			dirs = list(WEST, NORTH)
 	if(reverse)
 		dirs.Swap(1,2)
 	return dirs
@@ -225,7 +243,8 @@
 
 /obj/machinery/conveyor/multitool_topic(var/mob/user,var/list/href_list,var/obj/O)
 	. = ..()
-	if(.) return .
+	if(.)
+		return .
 	if("setdir" in href_list)
 		operating=0
 		dir=text2num(href_list["setdir"])
@@ -330,10 +349,13 @@
 	convdir = -1
 
 /obj/machinery/conveyor_switch/receive_signal(datum/signal/signal)
-	if(!signal || signal.encryption) return
-	if(src == signal.source) return
+	if(!signal || signal.encryption)
+		return
+	if(src == signal.source)
+		return
 
-	if(id_tag != signal.data["tag"] || !signal.data["command"]) return
+	if(id_tag != signal.data["tag"] || !signal.data["command"])
+		return
 	if(!convdir)
 		switch(signal.data["command"])
 			if("forward")
@@ -365,6 +387,9 @@
 
 /obj/machinery/conveyor_switch/New()
 	..()
+	if(!id_tag)
+		id_tag = "[rand(9999)]"
+		set_frequency(frequency) //I tried just assigning the ID tag during initialize(), but that didn't work somehow, probably because it makes TOO MUCH SENSE
 	update()
 	spawn(5)		// allow map load
 		updateConfig()
@@ -467,7 +492,8 @@
 
 /obj/machinery/conveyor_switch/multitool_topic(var/mob/user,var/list/href_list,var/obj/O)
 	. = ..()
-	if(.) return
+	if(.)
+		return
 	if("setconvdir" in href_list)
 		convdir = text2num(href_list["setconvdir"])
 		updateConfig()

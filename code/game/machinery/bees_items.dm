@@ -3,7 +3,7 @@
 	desc = "Place her into an apiary so she can get busy."
 	icon = 'icons/obj/seeds.dmi'
 	icon_state = "seed-bees"
-	w_class = 1
+	w_class = W_CLASS_TINY
 
 /obj/item/weapon/bee_net
 	name = "bee net"
@@ -11,7 +11,7 @@
 	icon = 'icons/obj/apiary_bees_etc.dmi'
 	icon_state = "bee_net"
 	item_state = "bee_net"
-	w_class = 3
+	w_class = W_CLASS_MEDIUM
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/beekeeping.dmi', "right_hand" = 'icons/mob/in-hand/right/beekeeping.dmi')
 	var/caught_bees = 0
 
@@ -25,7 +25,8 @@
 /obj/item/weapon/bee_net/afterattack(atom/A as mob|obj|turf|area, mob/living/user)
 	if(get_dist(A,user) > 1)
 		return
-	if(istype(A,/obj/machinery/apiary))	return
+	if(istype(A,/obj/machinery/apiary))
+		return
 	var/turf/T = get_turf(A)
 	var/caught = 0
 	for(var/mob/living/simple_animal/bee/B in T)
@@ -91,7 +92,7 @@
 	icon = 'icons/obj/apiary_bees_etc.dmi'
 	icon_state = "apiary_item"
 	item_state = "giftbag"
-	w_class = 5
+	w_class = W_CLASS_HUGE
 
 /obj/item/beezeez
 	name = "bottle of BeezEez"
@@ -101,8 +102,8 @@
 
 /obj/item/beezeez/New()
 	. = ..()
-	pixel_x = rand(-5.0, 5)
-	pixel_y = rand(-5.0, 5)
+	pixel_x = rand(-5.0, 5) * PIXEL_MULTIPLIER
+	pixel_y = rand(-5.0, 5) * PIXEL_MULTIPLIER
 
 /obj/item/weapon/reagent_containers/food/snacks/honeycomb
 	name = "honeycomb"
@@ -112,8 +113,8 @@
 /obj/item/weapon/reagent_containers/food/snacks/honeycomb/New()
 	. = ..()
 	reagents.add_reagent("honey",10)
-	reagents.add_reagent("nutriment", 0.5)
-	reagents.add_reagent("sugar", 2)
+	reagents.add_reagent(NUTRIMENT, 0.5)
+	reagents.add_reagent(SUGAR, 2)
 	bitesize = 2
 
 /datum/reagent/honey

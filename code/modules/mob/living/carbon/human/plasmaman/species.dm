@@ -2,7 +2,7 @@
 	name = "Plasmaman"
 	icobase = 'icons/mob/human_races/r_plasmaman_sb.dmi'
 	deform = 'icons/mob/human_races/r_plasmaman_pb.dmi'  // TODO: Need deform.
-	language = "Clatter"
+	known_languages = list(LANGUAGE_CLATTER)
 	attack_verb = "punches"
 	has_sweat_glands = 0
 
@@ -18,6 +18,7 @@
 	heat_level_2 = 400  // Heat damage level 2 above this point.
 	heat_level_3 = 500  // Heat damage level 3 above this point.
 	burn_mod = 0.5
+	brute_mod = 1.5
 
 	has_organ = list(
 		"heart" =    /datum/organ/internal/heart,

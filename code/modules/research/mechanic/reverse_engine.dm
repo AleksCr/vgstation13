@@ -162,11 +162,11 @@
 		return
 	var/researchtime = ( (REV_ENG_RESEARCHBASE * Tech_Difference(design)) / (scan_rating + cap_rating) )
 	busy = 1
-	overlays += "[base_state]_ani"
+	overlays += image(icon = icon, icon_state = "[base_state]_ani")
 	sleep(researchtime) //we use sleep instead of spawn because code like the queue code has to hang on this proc
 	research_queue -= design
 	busy = 0
-	overlays -= "[base_state]_ani"
+	overlays -= image(icon = icon, icon_state = "[base_state]_ani")
 	if(!(design in ready_queue))
 		ready_queue += design
 		src.visible_message("<span class='notice'>[bicon(src)] \The [src] beeps: 'Successfully researched \the [design.name].'</span>")
@@ -221,7 +221,8 @@
 	if(..())
 		return
 	if(href_list["close"])
-		if(usr.machine == src) usr.unset_machine()
+		if(usr.machine == src)
+			usr.unset_machine()
 		return 1
 	if(href_list["remove_tosearch"])
 		var/datum/design/design = research_queue[text2num(href_list["remove_tosearch"])]

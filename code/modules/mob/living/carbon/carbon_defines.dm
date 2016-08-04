@@ -23,3 +23,5 @@
 	var/hasmouth = 1 // Used for food, etc.
 
 	var/event/on_emote = new ()
+	var/base_insulation = 0
+	var/unslippable = 0 //Whether the mob can be slipped

@@ -126,6 +126,7 @@
 		if(teleatom.Move(destturf))
 			playSpecials(destturf,effectout,soundout)
 
+	teleatom.reset_inertia() //Prevent things from drifting immediately after getting teleported to space
 	destarea.Entered(teleatom)
 
 	return 1
@@ -183,7 +184,7 @@
 			teleatom.visible_message("<span class='danger'>The [teleatom] bounces off of the portal!</span>")
 		return 0
 
-	if(destination.z == 2) //centcomm z-level
+	if(destination.z == map.zCentcomm) //centcomm z-level
 		if(istype(teleatom, /obj/mecha) && (universe.name != "Supermatter Cascade"))
 			var/obj/mecha/MM = teleatom
 			to_chat(MM.occupant, "<span class='danger'>The mech would not survive the jump to a location so far away!</span>")//seriously though, why? who wrote that?

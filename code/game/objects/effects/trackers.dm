@@ -19,8 +19,8 @@
 
 /obj/effect/tracker/New()
 	. = ..()
-	absolute_X = (x * 32)
-	absolute_Y = (y * 32)
+	absolute_X = (x * WORLD_ICON_SIZE)
+	absolute_Y = (y * WORLD_ICON_SIZE)
 
 	spawn(1)
 		process_step()
@@ -41,8 +41,8 @@
 		returnToPool(src)
 		return
 
-	var/target_absolute_X = target.x * 32
-	var/target_absolute_Y = target.y * 32
+	var/target_absolute_X = target.x * WORLD_ICON_SIZE
+	var/target_absolute_Y = target.y * WORLD_ICON_SIZE
 
 	var/dx = target_absolute_X - absolute_X
 	var/dy = target_absolute_Y - absolute_Y
@@ -71,8 +71,8 @@
 
 	speed += acceleration
 
-	x = absolute_X/32
-	y = absolute_Y/32
+	x = absolute_X/WORLD_ICON_SIZE
+	y = absolute_Y/WORLD_ICON_SIZE
 	update_icon()
 
 	sleep(refresh)
@@ -80,17 +80,27 @@
 
 
 /obj/effect/tracker/update_icon()
-	pixel_x = absolute_X % 32
-	pixel_y = absolute_Y % 32
+	pixel_x = absolute_X % WORLD_ICON_SIZE
+	pixel_y = absolute_Y % WORLD_ICON_SIZE
 
 /obj/effect/tracker/cultify()
 	return
-
-/obj/effect/tracker/singuloCanEat()
-	return 0
 
 /obj/effect/tracker/singularity_act()
 	return
 
 /obj/effect/tracker/singularity_pull()
 	return
+
+/proc/make_tracker_effects(tr_source, tr_destination, var/tr_number = 10, var/custom_icon_state = "soul", var/number_of_icons = 3, var/tr_type = /obj/effect/tracker/soul)
+	spawn()
+		var/list/possible_icons = list()
+		if(custom_icon_state)
+			for(var/i = 1;i <= number_of_icons;i++)
+				possible_icons.Add("[custom_icon_state][i]")
+		for(var/i = 0;i < tr_number;i++)
+			var/obj/effect/tracker/Tr = getFromPool(tr_type, tr_source)
+			Tr.target = tr_destination
+			if(custom_icon_state)
+				Tr.icon_state = pick(possible_icons)
+			sleep(1)

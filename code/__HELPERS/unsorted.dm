@@ -8,11 +8,12 @@
 	CRASH(msg)
 
 /proc/Get_Angle(atom/movable/start,atom/movable/end)//For beams.
-	if(!start || !end) return 0
+	if(!start || !end)
+		return 0
 	var/dy
 	var/dx
-	dy=(32*end.y+end.pixel_y)-(32*start.y+start.pixel_y)
-	dx=(32*end.x+end.pixel_x)-(32*start.x+start.pixel_x)
+	dy=(WORLD_ICON_SIZE*end.y+end.pixel_y)-(WORLD_ICON_SIZE*start.y+start.pixel_y)
+	dx=(WORLD_ICON_SIZE*end.x+end.pixel_x)-(WORLD_ICON_SIZE*start.x+start.pixel_x)
 	if(!dy)
 		return (dx>=0)?90:270
 	.=arctan(dx/dy)
@@ -98,19 +99,27 @@ Turf and target are seperate in case you want to teleport some distance from a t
 
 			//Now to find a box from center location and make that our destination.
 			for(var/turf/T in block(locate(center.x+b1xerror,center.y+b1yerror,location.z), locate(center.x+b2xerror,center.y+b2yerror,location.z) ))
-				if(density&&T.density)	continue//If density was specified.
-				if(T.x>world.maxx || T.x<1)	continue//Don't want them to teleport off the map.
-				if(T.y>world.maxy || T.y<1)	continue
+				if(density&&T.density)
+					continue//If density was specified.
+				if(T.x>world.maxx || T.x<1)
+					continue//Don't want them to teleport off the map.
+				if(T.y>world.maxy || T.y<1)
+					continue
 				destination_list += T
 			if(destination_list.len)
 				destination = pick(destination_list)
-			else	return
+			else
+				return
 
 		else//Same deal here.
-			if(density&&destination.density)	return
-			if(destination.x>world.maxx || destination.x<1)	return
-			if(destination.y>world.maxy || destination.y<1)	return
-	else	return
+			if(density&&destination.density)
+				return
+			if(destination.x>world.maxx || destination.x<1)
+				return
+			if(destination.y>world.maxy || destination.y<1)
+				return
+	else
+		return
 
 	return destination
 
@@ -345,8 +354,10 @@ Turf and target are seperate in case you want to teleport some distance from a t
 /proc/select_active_ai(var/mob/user)
 	var/list/ais = active_ais()
 	if(ais.len)
-		if(user)	. = input(usr,"AI signals detected:", "AI selection") in ais
-		else		. = pick(ais)
+		if(user)
+			. = input(usr,"AI signals detected:", "AI selection") in ais
+		else
+			. = pick(ais)
 	return .
 
 /proc/get_sorted_mobs()
@@ -438,6 +449,33 @@ Turf and target are seperate in case you want to teleport some distance from a t
 //		mob_list.Add(M)
 	return moblist
 
+// Finds ALL mobs on turfs in line of sight. Similar to "in dview", but catches mobs that are not on a turf (e.g. inside a locker or such).
+/proc/get_all_mobs_in_dview(var/turf/T, var/range = world.view, var/list/ignore_types = list())
+	. = list()
+	var/list/can_see = dview(range, T)
+	for(var/mob/M in can_see)
+		if(is_type_in_list(M, ignore_types))
+			continue
+		. += M
+	for(var/mob/M in mob_list) //Got the ones in vision, now let's go for the ones not on a turf.
+		if(M.z == 0) //Mobs not on a turf will have XYZ = 0,0,0. They also won't show up in dview() so we're not checking anything twice.
+			if(is_type_in_list(M, ignore_types))
+				continue
+			if(get_turf(M) in can_see) //Checking the mob's turf now, since those are it's "true" coordinates (plus dview() did pick up on turfs, so we can check using that).
+				. += M
+
+// Finds ALL mobs in range, including those within something's contents (e.g. inside a locker or such)
+/proc/get_all_mobs_in_range(var/turf/T, var/range = world.view, var/list/ignore_types = list())
+	. = list()
+	for(var/mob/M in mob_list)
+		if(is_type_in_list(M, ignore_types))
+			continue
+		var/turf/mob_turf = get_turf(M)
+		if(!mob_turf || mob_turf.z != T.z) //because get_dist doesn't account for z levels
+			continue
+		if(get_dist(T, mob_turf) <= range) //here we are checking the distance on the mob's turf and not the mob itself, since mobs in a locker or such will have XYZ = 0,0,0
+			. += M
+
 //E = MC^2
 /proc/convert2energy(var/M)
 	var/E = M*(SPEED_OF_LIGHT_SQ)
@@ -448,12 +486,13 @@ Turf and target are seperate in case you want to teleport some distance from a t
 	var/M = E/(SPEED_OF_LIGHT_SQ)
 	return M
 
-/proc/key_name(var/whom, var/include_link = null, var/include_name = 1)
+/proc/key_name(var/whom, var/include_link = null, var/include_name = TRUE, var/more_info = FALSE)
 	var/mob/M
 	var/client/C
 	var/key
 
-	if(!whom)	return "*null*"
+	if(!whom)
+		return "*null*"
 	if(istype(whom, /client))
 		C = whom
 		M = C.mob
@@ -480,8 +519,10 @@ Turf and target are seperate in case you want to teleport some distance from a t
 			. += key
 
 		if(include_link)
-			if(C)	. += "</a>"
-			else	. += " (DC)"
+			if(C)
+				. += "</a>"
+			else
+				. += " (DC)"
 	else
 		. += "*no key*"
 
@@ -491,19 +532,14 @@ Turf and target are seperate in case you want to teleport some distance from a t
 		else if(M.name)
 			. += "/([M.name])"
 
-	return .
+	if(more_info && M)
+		. += "(<A HREF='?_src_=holder;adminplayeropts=\ref[M]'>PP</A>) (<A HREF='?_src_=holder;adminmoreinfo=\ref[M]'>?</A>)"
 
 /proc/key_name_admin(var/whom, var/include_name = 1)
 	return key_name(whom, 1, include_name)
 
-// Returns the atom sitting on the turf.
-// For example, using this on a disk, which is in a bag, on a mob, will return the mob because it's on the turf.
-/proc/get_atom_on_turf(var/atom/movable/M)
-	var/atom/loc = M
-	while(loc && loc.loc && !istype(loc.loc, /turf/))
-		loc = loc.loc
-	return loc
-
+/proc/key_name_and_info(var/whom)
+	return key_name(whom, more_info = TRUE)
 
 // Registers the on-close verb for a browse window (client/verb/.windowclose)
 // this will be called when the close-button of a window is pressed.
@@ -520,7 +556,8 @@ Turf and target are seperate in case you want to teleport some distance from a t
 // Otherwise, the user mob's machine var will be reset directly.
 //
 /proc/onclose(mob/user, windowid, var/atom/ref=null)
-	if(!user.client) return
+	if(!user.client)
+		return
 	var/param = "null"
 	if(ref)
 		param = "\ref[ref]"
@@ -559,8 +596,6 @@ Turf and target are seperate in case you want to teleport some distance from a t
 // returns the turf located at the map edge in the specified direction relative to A
 // used for mass driver
 /proc/get_edge_target_turf(var/atom/A, var/direction)
-
-
 	var/turf/target = locate(A.x, A.y, A.z)
 	if(!A || !target)
 		return 0
@@ -584,8 +619,6 @@ Turf and target are seperate in case you want to teleport some distance from a t
 // note range is non-pythagorean
 // used for disposal system
 /proc/get_ranged_target_turf(var/atom/A, var/direction, var/range)
-
-
 	var/x = A.x
 	var/y = A.y
 	if(direction & NORTH)
@@ -629,10 +662,13 @@ proc/GaussRandRound(var/sigma,var/roundto)
 	var/steps = 0
 
 	while(current != target_turf)
-		if(steps > length) return 0
-		if(current.opacity) return 0
+		if(steps > length)
+			return 0
+		if(current.opacity)
+			return 0
 		for(var/atom/A in current)
-			if(A.opacity) return 0
+			if(A.opacity)
+				return 0
 		current = get_step_towards(current, target_turf)
 		steps++
 
@@ -640,7 +676,8 @@ proc/GaussRandRound(var/sigma,var/roundto)
 
 /proc/is_blocked_turf(var/turf/T)
 	var/cant_pass = 0
-	if(T.density) cant_pass = 1
+	if(T.density)
+		cant_pass = 1
 	for(var/atom/A in T)
 		if(A.density)//&&A.anchored
 			cant_pass = 1
@@ -669,13 +706,17 @@ proc/GaussRandRound(var/sigma,var/roundto)
 			turf_last2 = get_step(turf_last2,dir_alt2)
 			breakpoint++
 
-		if(!free_tile) return get_step(ref, base_dir)
-		else return get_step_towards(ref,free_tile)
+		if(!free_tile)
+			return get_step(ref, base_dir)
+		else
+			return get_step_towards(ref,free_tile)
 
-	else return get_step(ref, base_dir)
+	else
+		return get_step(ref, base_dir)
 
 /proc/do_mob(var/mob/user , var/mob/target, var/delay = 30, var/numticks = 10) //This is quite an ugly solution but i refuse to use the old request system.
-	if(!user || !target) return 0
+	if(!user || !target)
+		return 0
 	var/user_loc = user.loc
 	var/target_loc = target.loc
 	var/holding = user.get_active_hand()
@@ -684,7 +725,9 @@ proc/GaussRandRound(var/sigma,var/roundto)
 	if(user && user.client && user.client.prefs.progress_bars)
 		if(!progbar)
 			progbar = image("icon" = 'icons/effects/doafter_icon.dmi', "loc" = target, "icon_state" = "prog_bar_0")
-			progbar.pixel_y = 32
+			progbar.plane = HUD_PLANE
+			progbar.layer = HUD_ABOVE_ITEM_LAYER
+			progbar.pixel_z = WORLD_ICON_SIZE
 		//if(!barbar)
 			//barbar = image("icon" = 'icons/effects/doafter_icon.dmi', "loc" = user, "icon_state" = "none")
 			//barbar.pixel_y = 36
@@ -699,18 +742,24 @@ proc/GaussRandRound(var/sigma,var/roundto)
 			if(progbar)
 				progbar.icon_state = "prog_bar_stopped"
 				spawn(2)
-					if(user && user.client) user.client.images -= progbar
-					if(progbar) progbar.loc = null
+					if(user && user.client)
+						user.client.images -= progbar
+					if(progbar)
+						progbar.loc = null
 			return 0
 		if ( user.loc != user_loc || target.loc != target_loc || user.get_active_hand() != holding || user.isStunned())
 			if(progbar)
 				progbar.icon_state = "prog_bar_stopped"
 				spawn(2)
-					if(user && user.client) user.client.images -= progbar
-					if(progbar) progbar.loc = null
+					if(user && user.client)
+						user.client.images -= progbar
+					if(progbar)
+						progbar.loc = null
 			return 0
-	if(user && user.client) user.client.images -= progbar
-	if(progbar) progbar.loc = null
+	if(user && user.client)
+		user.client.images -= progbar
+	if(progbar)
+		progbar.loc = null
 	return 1
 
 /proc/do_after(var/mob/user as mob, var/atom/target, var/delay as num, var/numticks = 10, var/needhand = TRUE)
@@ -728,7 +777,9 @@ proc/GaussRandRound(var/sigma,var/roundto)
 	if(user && user.client && user.client.prefs.progress_bars && target)
 		if(!progbar)
 			progbar = image("icon" = 'icons/effects/doafter_icon.dmi', "loc" = target, "icon_state" = "prog_bar_0")
-			progbar.pixel_y = 32
+			progbar.pixel_z = WORLD_ICON_SIZE
+			progbar.plane = HUD_PLANE
+			progbar.layer = HUD_ABOVE_ITEM_LAYER
 			progbar.appearance_flags = RESET_COLOR
 		//if(!barbar)
 			//barbar = image("icon" = 'icons/effects/doafter_icon.dmi', "loc" = target, "icon_state" = "none")
@@ -738,6 +789,9 @@ proc/GaussRandRound(var/sigma,var/roundto)
 		if(user && user.client && user.client.prefs.progress_bars && target)
 			if(!progbar)
 				progbar = image("icon" = 'icons/effects/doafter_icon.dmi', "loc" = target, "icon_state" = "prog_bar_0")
+				progbar.pixel_z = WORLD_ICON_SIZE
+				progbar.plane = HUD_PLANE
+				progbar.layer = HUD_ABOVE_ITEM_LAYER
 				progbar.appearance_flags = RESET_COLOR
 			//oldstate = progbar.icon_state
 			progbar.icon_state = "prog_bar_[round(((i / numticks) * 100), 10)]"
@@ -749,25 +803,33 @@ proc/GaussRandRound(var/sigma,var/roundto)
 			if(progbar)
 				progbar.icon_state = "prog_bar_stopped"
 				spawn(2)
-					if(user && user.client) user.client.images -= progbar
-					if(progbar) progbar.loc = null
+					if(user && user.client)
+						user.client.images -= progbar
+					if(progbar)
+						progbar.loc = null
 			return 0
 		if(needhand && !(user.get_active_hand() == holding))	//Sometimes you don't want the user to have to keep their active hand
 			if(progbar)
 				progbar.icon_state = "prog_bar_stopped"
 				spawn(2)
-					if(user && user.client) user.client.images -= progbar
-					if(progbar) progbar.loc = null
+					if(user && user.client)
+						user.client.images -= progbar
+					if(progbar)
+						progbar.loc = null
 			return 0
-	if(user && user.client) user.client.images -= progbar
-	if(progbar) progbar.loc = null
+	if(user && user.client)
+		user.client.images -= progbar
+	if(progbar)
+		progbar.loc = null
 	return 1
 
 //Takes: Anything that could possibly have variables and a varname to check.
 //Returns: 1 if found, 0 if not.
 /proc/hasvar(var/datum/A, var/varname)
-	if(A.vars.Find(lowertext(varname))) return 1
-	else return 0
+	if(A.vars.Find(lowertext(varname)))
+		return 1
+	else
+		return 0
 
 //Returns sortedAreas list if populated
 //else populates the list first before returning it
@@ -784,22 +846,27 @@ proc/GaussRandRound(var/sigma,var/roundto)
 //Takes: Area type as text string or as typepath OR an instance of the area.
 //Returns: A list of all areas of that type in the world.
 /proc/get_areas(var/areatype)
-	if(!areatype) return null
-	if(istext(areatype)) areatype = text2path(areatype)
+	if(!areatype)
+		return null
+	if(istext(areatype))
+		areatype = text2path(areatype)
 	if(isarea(areatype))
 		var/area/areatemp = areatype
 		areatype = areatemp.type
 
 	var/list/theareas = new/list()
 	for(var/area/N in areas)
-		if(istype(N, areatype)) theareas += N
+		if(istype(N, areatype))
+			theareas += N
 	return theareas
 
 //Takes: Area type as text string or as typepath OR an instance of the area.
 //Returns: A list of all turfs in areas of that type of that type in the world.
 /proc/get_area_turfs(var/areatype)
-	if(!areatype) return null
-	if(istext(areatype)) areatype = text2path(areatype)
+	if(!areatype)
+		return null
+	if(istext(areatype))
+		areatype = text2path(areatype)
 	if(isarea(areatype))
 		var/area/areatemp = areatype
 		areatype = areatemp.type
@@ -816,8 +883,10 @@ proc/GaussRandRound(var/sigma,var/roundto)
 //Takes: Area type as text string or as typepath OR an instance of the area.
 //Returns: A list of all atoms	(objs, turfs, mobs) in areas of that type of that type in the world.
 /proc/get_area_all_atoms(var/areatype)
-	if(!areatype) return null
-	if(istext(areatype)) areatype = text2path(areatype)
+	if(!areatype)
+		return null
+	if(istext(areatype))
+		areatype = text2path(areatype)
 	if(isarea(areatype))
 		var/area/areatemp = areatype
 		areatype = areatemp.type
@@ -879,7 +948,8 @@ proc/DuplicateObject(obj/original, var/perfectcopy = 0 , var/sameloc = 0)
 	//       Movement based on lower left corner. Tiles that do not fit
 	//		 into the new area will not be moved.
 
-	if(!A || !src) return 0
+	if(!A || !src)
+		return 0
 
 	var/list/turfs_src = get_area_turfs(src.type)
 	var/list/turfs_trg = get_area_turfs(A.type)
@@ -887,14 +957,18 @@ proc/DuplicateObject(obj/original, var/perfectcopy = 0 , var/sameloc = 0)
 	var/src_min_x = 0
 	var/src_min_y = 0
 	for (var/turf/T in turfs_src)
-		if(T.x < src_min_x || !src_min_x) src_min_x	= T.x
-		if(T.y < src_min_y || !src_min_y) src_min_y	= T.y
+		if(T.x < src_min_x || !src_min_x)
+			src_min_x	= T.x
+		if(T.y < src_min_y || !src_min_y)
+			src_min_y	= T.y
 
 	var/trg_min_x = 0
 	var/trg_min_y = 0
 	for (var/turf/T in turfs_trg)
-		if(T.x < trg_min_x || !trg_min_x) trg_min_x	= T.x
-		if(T.y < trg_min_y || !trg_min_y) trg_min_y	= T.y
+		if(T.x < trg_min_x || !trg_min_x)
+			trg_min_x	= T.x
+		if(T.y < trg_min_y || !trg_min_y)
+			trg_min_y	= T.y
 
 	var/list/refined_src = new/list()
 	for(var/turf/T in turfs_src)
@@ -980,7 +1054,7 @@ proc/DuplicateObject(obj/original, var/perfectcopy = 0 , var/sameloc = 0)
 
 //					var/area/AR = X.loc
 
-//					if(AR.lighting_use_dynamic)
+//					if(AR.dynamic_lighting)
 //						X.opacity = !X.opacity
 //						X.sd_SetOpacity(!X.opacity)			//TODO: rewrite this code so it's not messed by lighting ~Carn
 
@@ -1049,53 +1123,70 @@ proc/get_mob_with_client_list()
 
 /proc/parse_zone(zone)
 	switch(zone)
-		if ("r_hand")
+		if (LIMB_RIGHT_HAND)
 			return "right hand"
-		if ("l_hand")
+		if (LIMB_LEFT_HAND)
 			return "left hand"
-		if ("l_arm")
+		if (LIMB_LEFT_ARM)
 			return "left arm"
-		if ("r_arm")
+		if (LIMB_RIGHT_ARM)
 			return "right arm"
-		if ("l_leg")
+		if (LIMB_LEFT_LEG)
 			return "left leg"
-		if ("r_leg")
+		if (LIMB_RIGHT_LEG)
 			return "right leg"
-		if ("l_foot")
+		if (LIMB_LEFT_FOOT)
 			return "left foot"
-		if ("r_foot")
+		if (LIMB_RIGHT_FOOT)
 			return "right foot"
 		else
 			return zone
 
-/proc/get_turf(const/atom/O)
-	if (isnull(O) || isarea(O) || !istype(O))
+/*
+	get_holder_at_turf_level(): Similar to get_turf(), will return the "highest up" holder of this atom, excluding the turf.
+	Example: A fork inside a box inside a locker will return the locker. Essentially, get_just_before_turf().
+*/
+/proc/get_holder_at_turf_level(const/atom/movable/O)
+	if(!istype(O)) //atom/movable does not include areas
 		return
 	var/atom/A
-	for(A=O, A && !isturf(A), A=A.loc);  // semicolon is for the empty statement
+	for(A=O, A && !isturf(A.loc), A=A.loc);  // semicolon is for the empty statement
 	return A
 
-/proc/get(atom/loc, type)
-	while(loc)
-		if(istype(loc, type))
-			return loc
-		loc = loc.loc //<wwjnc> WE ARE THE KNIGHTS WHO SAY LOC
+/*
+	get_holder_of_type(): Returns the FIRST holder of type specified. NOT the "highest up".
+	Example: Call find_holder_of_type(A, /mob) to find the first mob holder of A.
+*/
+/proc/get_holder_of_type(const/atom/movable/O, type)
+	ASSERT(istype(O))
+	var/atom/A = O
+	while(A && !isturf(A))
+		if(istype(A, type))
+			return A
+		A = A.loc
 	return null
 
-/proc/find_holder(atom/O) //aka get_just_before_turf
-	while(O)
-		if(isturf(O.loc))
-			return O
+/*
+	is_holder_of(): Returns 1 if A is a holder of B, meaning, A is B.loc or B.loc.loc or B.loc.loc.loc etc.
+	This is essentially the same as calling (locate(B) in A), but a little clearer as to what you're doing, and locate() has been known to bug out or be extremely slow in the past.
+*/
+/proc/is_holder_of(const/atom/movable/A, const/atom/movable/B)
+	if(istype(A, /turf) || istype(B, /turf)) //Clicking on turfs is a common thing and turfs are also not /atom/movable, so it was causing the assertion to fail.
+		return 0
+	ASSERT(istype(A) && istype(B))
+	var/atom/O = B
+	while(O && !isturf(O))
+		if(O == A)
+			return 1
+		O = O.loc
+	return 0
+
+/proc/is_in_airtight_object(var/atom/O) //Shitty version of get_holder
+	while(O && !isturf(O))
+		if(O.is_airtight())
+			return 1
 		O = O.loc
 	return null
-
-/proc/find_holder_of_type(var/atom/reference,var/typepath) //Returns the first object holder of the type you specified
-	var/atom/location = reference.loc //ie /mob to find the first mob holding it
-	while(!istype(location,/turf) && !istype(location,null))
-		if(istype(location,typepath))
-			return location
-		location = location.loc
-	return 0
 
 //Quick type checks for some tools
 var/global/list/common_tools = list(
@@ -1166,16 +1257,16 @@ var/list/WALLITEMS = list(
 				//Some stuff doesn't use dir properly, so we need to check pixel instead
 				switch(dir)
 					if(SOUTH)
-						if(O.pixel_y > 10)
+						if(O.pixel_y > 10*PIXEL_MULTIPLIER)
 							return 1
 					if(NORTH)
-						if(O.pixel_y < -10)
+						if(O.pixel_y < -10*PIXEL_MULTIPLIER)
 							return 1
 					if(WEST)
-						if(O.pixel_x > 10)
+						if(O.pixel_x > 10*PIXEL_MULTIPLIER)
 							return 1
 					if(EAST)
-						if(O.pixel_x < -10)
+						if(O.pixel_x < -10*PIXEL_MULTIPLIER)
 							return 1
 
 
@@ -1183,7 +1274,7 @@ var/list/WALLITEMS = list(
 	for(var/obj/O in get_step(loc, dir))
 		for(var/item in WALLITEMS)
 			if(istype(O, text2path(item)))
-				if(abs(O.pixel_x) <= 10 && abs(O.pixel_y) <=10)
+				if(abs(O.pixel_x) <= 10*PIXEL_MULTIPLIER && abs(O.pixel_y) <=10*PIXEL_MULTIPLIER)
 					return 1
 	return 0
 
@@ -1206,23 +1297,30 @@ proc/rotate_icon(file, state, step = 1, aa = FALSE)
 	var icon{result = icon(base); temp}
 
 	for(var/angle in 0 to 360 step step)
-		if(angle == 0  ) continue
-		if(angle == 360)   continue
+		if(angle == 0  )
+			continue
+		if(angle == 360)
+			continue
 		temp = icon(base)
-		if(aa) temp.Scale(w2, h2)
+		if(aa)
+			temp.Scale(w2, h2)
 		temp.Turn(angle)
-		if(aa) temp.Scale(w,   h)
+		if(aa)
+			temp.Scale(w,   h)
 		result.Insert(temp, "[angle]")
 
 	return result
 
 /proc/has_edge(obj/O as obj)
-	if (!O) return 0
-	if(O.edge) return 1
+	if (!O)
+		return 0
+	if(O.edge)
+		return 1
 	return 0
 
 /proc/get_distant_turf(var/turf/T,var/direction,var/distance)
-	if(!T || !direction || !distance)	return
+	if(!T || !direction || !distance)
+		return
 
 	var/dest_x = T.x
 	var/dest_y = T.y
@@ -1331,10 +1429,6 @@ proc/rotate_icon(file, state, step = 1, aa = FALSE)
 	B.fingerprintshidden = A.fingerprintshidden
 	B.fingerprintslast = A.fingerprintslast
 
-/world/Error(exception/e)
-	print_runtime(e)
-	..()
-
 //Checks if any of the atoms in the turf are dense
 //Returns 1 is anything is dense, 0 otherwise
 /turf/proc/has_dense_content()
@@ -1342,6 +1436,23 @@ proc/rotate_icon(file, state, step = 1, aa = FALSE)
 		if(turf_contents.density)
 			return 1
 	return 0
+
+//Checks if there are any atoms in the turf that aren't system-only (currently only lighting overlays count)
+//Returns 1 is there's something, 0 if it finds nothing
+/turf/proc/has_contents()
+	if(!contents.len)
+		return 0
+	for(var/atom/A in contents)
+		if(!istype(A, /atom/movable/lighting_overlay))
+			return 0
+	return 1
+
+//This helper uses the method shown above to clear up the tile's contents, if any, ignoring the lighting overlays (technically all systems contents)
+//Includes an exception list if you don't want to delete some stuff
+/turf/proc/clear_contents(var/list/ignore = list())
+	for(var/atom/turf_contents in contents)
+		if(!istype(turf_contents, /atom/movable/lighting_overlay) && !is_type_in_list(turf_contents, ignore) && !(flags & INVULNERABLE))
+			qdel(turf_contents)
 
 /proc/multinum_display(var/number,var/digits)//multinum_display(42,4) = "0042"; multinum_display(-137,6) = "-000137"; multinum_display(4572,3) = "999"
 	var/result = ""
@@ -1520,3 +1631,9 @@ Game Mode config tags:
 					found_mode = GM
 					break
 	return found_mode
+
+/proc/clients_in_moblist(var/list/mob/mobs)
+	. = list()
+	for(var/mob/M in mobs)
+		if(M.client)
+			. += M.client

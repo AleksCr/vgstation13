@@ -2,6 +2,7 @@
 	faction = "hostile"
 	stop_automated_movement_when_pulled = 0
 	environment_smash = 1 //Set to 1 to break closets,tables,racks, etc; 2 for walls; 3 for rwalls
+	speed = 2
 
 	var/stance = HOSTILE_STANCE_IDLE	//Used to determine behavior
 	var/atom/target // /vg/ edit:  Removed type specification so spiders can target doors.
@@ -11,7 +12,6 @@
 	var/projectiletype
 	var/projectilesound
 	var/casingtype
-	var/move_to_delay = 2 //delay for the automated movement.
 	var/list/friends = list()
 	var/vision_range = 9 //How big of an area to search for targets in, a vision of 9 attempts to find targets as soon as they walk into screen view
 
@@ -27,6 +27,7 @@
 	var/stat_attack = 0 //Mobs with stat_attack to 1 will attempt to attack things that are unconscious, Mobs with stat_attack set to 2 will attempt to attack the dead.
 	var/stat_exclusive = 0 //Mobs with this set to 1 will exclusively attack things defined by stat_attack, stat_attack 2 means they will only attack corpses
 	var/attack_faction = null //Put a faction string here to have a mob only ever attack a specific faction
+	var/friendly_fire = 0 //If set to 1, they won't hesitate to shoot their target even if a friendly is in the way.
 
 /mob/living/simple_animal/hostile/resetVariables()
 	..("wanted_objects", "friends", args)
@@ -34,8 +35,13 @@
 	friends = list()
 
 /mob/living/simple_animal/hostile/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 	. = ..()
+	//Cooldowns
+	if(ranged)
+		ranged_cooldown--
+
 	if(istype(loc, /obj/item/device/mobcapsule))
 		return 0
 	if(!.)
@@ -67,9 +73,6 @@
 				if(!(flags & INVULNERABLE))
 					AttackTarget()
 					DestroySurroundings()
-
-		if(ranged)
-			ranged_cooldown--
 
 //////////////HOSTILE MOB TARGETTING AND AGGRESSION////////////
 
@@ -188,16 +191,16 @@
 				AttackingTarget()
 			if(canmove)
 				if(retreat_distance != null && target_distance <= retreat_distance) //If we have a retreat distance, check if we need to run from our target
-					walk_away(src,target,retreat_distance,move_to_delay)
+					walk_away(src, target, retreat_distance, speed)
 				else
-					Goto(target,move_to_delay,minimum_distance)//Otherwise, get to our minimum distance so we chase them
+					Goto(target, speed, minimum_distance)//Otherwise, get to our minimum distance so we chase them
 			return
 
 	if(target.loc != null && get_dist(src, target.loc) <= vision_range)//We can't see our target, but he's in our vision range still
 		if(FindHidden(target) && environment_smash)//Check if he tried to hide in something to lose us
 			var/atom/A = target.loc
 			if(canmove)
-				Goto(A,move_to_delay,minimum_distance)
+				Goto(A, speed, minimum_distance)
 			if(A.Adjacent(src))
 				A.attack_animal(src)
 			return
@@ -274,43 +277,64 @@
 	if(istype(H))
 		src.friends |= H.friends
 
-/mob/living/simple_animal/hostile/proc/OpenFire(var/target)
+/mob/living/simple_animal/hostile/proc/OpenFire(var/atom/ttarget)
+	set waitfor = 0
 
-
-	var/tturf = get_turf(target)
+	var/target_turf = get_turf(ttarget)
 	if(rapid)
-		spawn(1)
-			Shoot(tturf, src.loc, src)
-			if(ranged_message) visible_message("<span class='warning'><b>[src]</b> [ranged_message] at [target]!</span>", 1)
-			if(casingtype)
-				new casingtype(get_turf(src))
-		spawn(4)
-			Shoot(tturf, src.loc, src)
-			if(ranged_message) visible_message("<span class='warning'><b>[src]</b> [ranged_message] at [target]!</span>", 1)
-			if(casingtype)
-				new casingtype(get_turf(src))
-		spawn(6)
-			Shoot(tturf, src.loc, src)
-			if(ranged_message) visible_message("<span class='warning'><b>[src]</b> [ranged_message] at [target]!</span>", 1)
-			if(casingtype)
-				new casingtype(get_turf(src))
+		sleep(1)
+		TryToShoot(target_turf, ttarget)
+		sleep(4)
+		TryToShoot(target_turf, ttarget)
+		sleep(6)
+		TryToShoot(target_turf, ttarget)
 	else
-		Shoot(tturf, src.loc, src)
-		if(ranged_message) visible_message("<span class='warning'><b>[src]</b> [ranged_message] at [target]!</span>", 1)
-		if(casingtype)
-			new casingtype
-	ranged_cooldown = ranged_cooldown_cap
+		TryToShoot(target_turf, ttarget)
 	return
 
-/mob/living/simple_animal/hostile/proc/Shoot(var/target, var/start, var/user, var/bullet = 0)
-	if(target == start)
-		return
-	if(!istype(target, /turf))
-		return
+/mob/living/simple_animal/hostile/proc/TryToShoot(var/atom/target_turf, atom/target)
+	if(!target)
+		target = src.target
 
-	var/obj/item/projectile/A = new projectiletype(user:loc)
+	if(Shoot(target_turf, src.loc, src))
+		ranged_cooldown = ranged_cooldown_cap
+		if(ranged_message)
+			visible_message("<span class='warning'><b>[src]</b> [ranged_message] at [target]!</span>", 1)
+		if(casingtype)
+			new casingtype(get_turf(src))
+
+/mob/living/simple_animal/hostile/proc/Shoot(var/atom/target, var/atom/start, var/mob/user, var/bullet = 0)
+	if(target == start)
+		return 0
+	if(!istype(target, /turf))
+		return 0
+
+	//Friendly Fire check (don't bother if the mob is controlled by a player)
+	if(!friendly_fire && !ckey)
+		var/obj/item/projectile/friendlyCheck/fC = getFromPool(/obj/item/projectile/friendlyCheck,user.loc)
+		fC.current = target
+		var/turf/T = get_turf(user)
+		var/turf/U = get_turf(target)
+		fC.original = target
+		fC.target = U
+		fC.current = T
+		fC.starting = T
+		fC.yo = target.y - start.y
+		fC.xo = target.x - start.x
+
+		var/atom/potentialImpact = fC.process()
+		if(potentialImpact && !CanAttack(potentialImpact))
+			returnToPool(fC)
+			return 0
+		returnToPool(fC)
+	//Friendly Fire check - End
+
+	var/obj/item/projectile/A = new projectiletype(user.loc)
+
+	if(!A)
+		return 0
+
 	playsound(user, projectilesound, 100, 1)
-	if(!A)	return
 
 	A.current = target
 
@@ -320,12 +344,13 @@
 	A.target = U
 	A.current = T
 	A.starting = T
-	A.yo = target:y - start:y
-	A.xo = target:x - start:x
+	A.yo = target.y - start.y
+	A.xo = target.x - start.x
 	spawn()
 		A.OnFired()
 		A.process()
-	return
+
+	return 1
 
 /mob/living/simple_animal/hostile/proc/DestroySurroundings()
 	if(environment_smash)
@@ -352,3 +377,16 @@
 		return 1
 	else
 		return 0
+
+//Let players use mobs' ranged attacks
+/mob/living/simple_animal/hostile/Stat()
+	..()
+
+	if(ranged && statpanel("Status"))
+		stat(null, "Ranged Attack: [ranged_cooldown <= 0 ? "READY" : "[100 - round((ranged_cooldown / ranged_cooldown_cap) * 100)]%"]")
+
+/mob/living/simple_animal/hostile/RangedAttack(atom/A, params)
+	if(ranged && ranged_cooldown <= 0)
+		OpenFire(A)
+
+	return ..()

@@ -4,9 +4,9 @@
 	name = "Circuit Design (Cyborg Recharging Station)"
 	desc = "Allows for the construction of circuit boards used to build a Cyborg Recharging Station."
 	id = "recharge_station"
-	req_tech = list("programming" = 4, "powerstorage" = 3)
+	req_tech = list(Tc_PROGRAMMING = 4, Tc_POWERSTORAGE = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Machine Boards"
 	build_path = /obj/item/weapon/circuitboard/recharge_station
 
@@ -16,7 +16,7 @@
 	id = "photocopier"
 	req_tech = list ("powerstorage" = 2, "engineering" = 2, "programming" = 4)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Machine Boards"
 	build_path = /obj/item/weapon/circuitboard/photocopier
 
@@ -26,7 +26,7 @@
 	id = "fax"
 	req_tech = list ("bluespace" = 2, "materials" = 2)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Machine Boards"
 	build_path = /obj/item/weapon/circuitboard/fax
 
@@ -36,7 +36,7 @@
 	id="condimaster"
 	req_tech = list ("engineering" = 3, "biotech" = 4)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Machine Boards"
 	build_path = /obj/item/weapon/circuitboard/condimaster
 
@@ -46,7 +46,7 @@
 	id="snackbarmachine"
 	req_tech = list ("engineering" = 3, "biotech" = 4)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Machine Boards"
 	build_path = /obj/item/weapon/circuitboard/snackbar_machine
 
@@ -54,9 +54,9 @@
 	name = "Circuit Design (Ore Processor)"
 	desc = "Allows for the construction of circuit boards used to build an ore processor."
 	id = "smelter"
-	req_tech = list("programming" = 2, "materials" = 3, "engineering" = 3)
+	req_tech = list(Tc_PROGRAMMING = 2, Tc_MATERIALS = 3, Tc_ENGINEERING = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Machine Boards"
 	build_path = /obj/item/weapon/circuitboard/processing_unit
 
@@ -70,9 +70,9 @@
 	name = "Circuit Design (Stacking Machine)"
 	desc = "Allows for the construction of circuit boards used to build a stacking machine."
 	id = "stackingmachine"
-	req_tech = list("programming" = 2, "materials" = 3, "engineering" = 3)
+	req_tech = list(Tc_PROGRAMMING = 2, Tc_MATERIALS = 3, Tc_ENGINEERING = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Machine Boards"
 	build_path = /obj/item/weapon/circuitboard/stacking_unit
 
@@ -80,9 +80,9 @@
 	name = "Circuit Design (Vending Machine)"
 	desc = "Allows for the construction of circuit boards used to build a vending machines."
 	id = "vendomat"
-	req_tech = list("materials" = 1, "engineering" = 1, "powerstorage" = 1)
+	req_tech = list(Tc_MATERIALS = 1, Tc_ENGINEERING = 1, Tc_POWERSTORAGE = 1)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Misc"
 	build_path = /obj/item/weapon/circuitboard/vendomat
 
@@ -90,9 +90,9 @@
 	name = "Circuit Design (Recycling Sorting Machine)"
 	desc = "Allows for the construction of circuit boards used to build a recycling sorting machine"
 	id = "sortingmachine"
-	req_tech = list("materials" = 3, "engineering" = 3, "programming" = 3)
+	req_tech = list(Tc_MATERIALS = 3, Tc_ENGINEERING = 3, Tc_PROGRAMMING = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	build_path = /obj/item/weapon/circuitboard/sorting_machine/recycling
 
 /datum/design/sorting_machine/destination
@@ -105,7 +105,7 @@
 	name = "Circuit Design (Washing Machine)"
 	desc = "Allows for the construction of circuit boards used to build a washing machine."
 	id = "washingmachine"
-	req_tech = list("materials" = 1)
+	req_tech = list(Tc_MATERIALS = 1)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	build_path = /obj/item/weapon/circuitboard/washing_machine

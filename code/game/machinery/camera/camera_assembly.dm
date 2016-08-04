@@ -3,7 +3,7 @@
 	desc = "The basic construction for Nanotrasen-Always-Watching-You cameras."
 	icon = 'icons/obj/monitors.dmi'
 	icon_state = "cameracase"
-	w_class = 2
+	w_class = W_CLASS_SMALL
 	anchored = 0
 
 	starting_materials = list(MAT_IRON = 700, MAT_GLASS = 300)
@@ -133,7 +133,8 @@
 			s.use(1)
 			upgrades += new /obj/item/stack/sheet/mineral/plasma
 		else
-			if(!user.drop_item(W, src)) return
+			if(!user.drop_item(W, src))
+				return
 			upgrades += W
 		to_chat(user, "You attach the [W] into the assembly inner circuits.")
 		return

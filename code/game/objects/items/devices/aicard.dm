@@ -3,11 +3,11 @@
 	icon = 'icons/obj/pda.dmi'
 	icon_state = "aicard" // aicard-full
 	item_state = "electronic"
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	flags = FPRINT
 	slot_flags = SLOT_BELT
 	var/flush = null
-	origin_tech = "programming=4;materials=4"
+	origin_tech = Tc_PROGRAMMING + "=4;" + Tc_MATERIALS + "=4"
 
 
 /obj/item/device/aicard/attack(mob/living/silicon/ai/M as mob, mob/user as mob)
@@ -129,6 +129,8 @@
 		if(1.0)
 			qdel(src)
 		if(2.0)
-			if(prob(50)) qdel(src)
+			if(prob(50))
+				qdel(src)
 		if(3.0)
-			if(prob(25)) qdel(src)
+			if(prob(25))
+				qdel(src)

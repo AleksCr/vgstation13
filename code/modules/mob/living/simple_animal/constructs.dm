@@ -9,7 +9,7 @@
 	response_disarm = "flails at"
 	response_harm   = "punches"
 	icon_dead = "shade_dead"
-	speed = -1
+	speed = 2
 	a_intent = I_HURT
 	stop_automated_movement = 1
 	status_flags = CANPUSH
@@ -38,7 +38,8 @@
 	var/list/construct_spells = list()
 
 /mob/living/simple_animal/construct/construct_chat_check(setting)
-	if(!mind) return
+	if(!mind)
+		return
 
 	if(mind in ticker.mode.cult)
 		return 1
@@ -219,7 +220,7 @@
 	melee_damage_lower = 25
 	melee_damage_upper = 25
 	attacktext = "slashes"
-	speed = -1
+	speed = 2
 	environment_smash = 1
 	see_in_dark = 7
 	attack_sound = 'sound/weapons/rapidslice.ogg'
@@ -320,7 +321,7 @@
 	melee_damage_lower = 25
 	melee_damage_upper = 25
 	attacktext = "violently stabs"
-	speed = -1
+	speed = 2
 	environment_smash = 1
 	see_in_dark = 7
 	attack_sound = 'sound/weapons/pierce.ogg'
@@ -338,11 +339,15 @@
 ////////////////Glow//////////////////
 /mob/living/simple_animal/construct/proc/updateicon()
 	overlays = 0
-	var/overlay_layer = LIGHTING_LAYER + 1
-	if(layer != MOB_LAYER)
-		overlay_layer=TURF_LAYER+0.2
+	var/overlay_layer = ABOVE_LIGHTING_LAYER
+	var/overlay_plane = LIGHTING_PLANE
+	if(layer != MOB_LAYER) // ie it's hiding
+		overlay_layer = FLOAT_LAYER
+		overlay_plane = FLOAT_PLANE
 
-	overlays += image(icon,"glow-[icon_state]",overlay_layer)
+	var/image/glow = image(icon,"glow-[icon_state]",overlay_layer)
+	glow.plane = overlay_plane
+	overlays += glow
 
 ////////////////Powers//////////////////
 
@@ -377,98 +382,146 @@
 ////////////////HUD//////////////////////
 
 /mob/living/simple_animal/construct/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 
 	. = ..()
 	if(.)
 		if(fire)
-			if(fire_alert)							fire.icon_state = "fire1"
-			else									fire.icon_state = "fire0"
-		if(pullin)
-			if(pulling)								pullin.icon_state = "pull1"
-			else									pullin.icon_state = "pull0"
+			if(fire_alert)
+				fire.icon_state = "fire1"
+			else
+				fire.icon_state = "fire0"
+		update_pull_icon()
 
 		if(purged)
-			if(purge > 0)							purged.icon_state = "purge1"
-			else									purged.icon_state = "purge0"
+			if(purge > 0)
+				purged.icon_state = "purge1"
+			else
+				purged.icon_state = "purge0"
 
 		silence_spells(purge)
 
 /mob/living/simple_animal/construct/armoured/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 
 	..()
 	if(healths)
 		switch(health)
-			if(250 to INFINITY)		healths.icon_state = "juggernaut_health0"
-			if(208 to 249)			healths.icon_state = "juggernaut_health1"
-			if(167 to 207)			healths.icon_state = "juggernaut_health2"
-			if(125 to 166)			healths.icon_state = "juggernaut_health3"
-			if(84 to 124)			healths.icon_state = "juggernaut_health4"
-			if(42 to 83)			healths.icon_state = "juggernaut_health5"
-			if(1 to 41)				healths.icon_state = "juggernaut_health6"
-			else					healths.icon_state = "juggernaut_health7"
+			if(250 to INFINITY)
+				healths.icon_state = "juggernaut_health0"
+			if(208 to 249)
+				healths.icon_state = "juggernaut_health1"
+			if(167 to 207)
+				healths.icon_state = "juggernaut_health2"
+			if(125 to 166)
+				healths.icon_state = "juggernaut_health3"
+			if(84 to 124)
+				healths.icon_state = "juggernaut_health4"
+			if(42 to 83)
+				healths.icon_state = "juggernaut_health5"
+			if(1 to 41)
+				healths.icon_state = "juggernaut_health6"
+			else
+				healths.icon_state = "juggernaut_health7"
 
 
 /mob/living/simple_animal/construct/behemoth/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 
 	..()
 	if(healths)
 		switch(health)
-			if(750 to INFINITY)		healths.icon_state = "juggernaut_health0"
-			if(625 to 749)			healths.icon_state = "juggernaut_health1"
-			if(500 to 624)			healths.icon_state = "juggernaut_health2"
-			if(375 to 499)			healths.icon_state = "juggernaut_health3"
-			if(250 to 374)			healths.icon_state = "juggernaut_health4"
-			if(125 to 249)			healths.icon_state = "juggernaut_health5"
-			if(1 to 124)			healths.icon_state = "juggernaut_health6"
-			else					healths.icon_state = "juggernaut_health7"
+			if(750 to INFINITY)
+				healths.icon_state = "juggernaut_health0"
+			if(625 to 749)
+				healths.icon_state = "juggernaut_health1"
+			if(500 to 624)
+				healths.icon_state = "juggernaut_health2"
+			if(375 to 499)
+				healths.icon_state = "juggernaut_health3"
+			if(250 to 374)
+				healths.icon_state = "juggernaut_health4"
+			if(125 to 249)
+				healths.icon_state = "juggernaut_health5"
+			if(1 to 124)
+				healths.icon_state = "juggernaut_health6"
+			else
+				healths.icon_state = "juggernaut_health7"
 
 /mob/living/simple_animal/construct/builder/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 
 	..()
 	if(healths)
 		switch(health)
-			if(50 to INFINITY)		healths.icon_state = "artificer_health0"
-			if(42 to 49)			healths.icon_state = "artificer_health1"
-			if(34 to 41)			healths.icon_state = "artificer_health2"
-			if(26 to 33)			healths.icon_state = "artificer_health3"
-			if(18 to 25)			healths.icon_state = "artificer_health4"
-			if(10 to 17)			healths.icon_state = "artificer_health5"
-			if(1 to 9)				healths.icon_state = "artificer_health6"
-			else					healths.icon_state = "artificer_health7"
+			if(50 to INFINITY)
+				healths.icon_state = "artificer_health0"
+			if(42 to 49)
+				healths.icon_state = "artificer_health1"
+			if(34 to 41)
+				healths.icon_state = "artificer_health2"
+			if(26 to 33)
+				healths.icon_state = "artificer_health3"
+			if(18 to 25)
+				healths.icon_state = "artificer_health4"
+			if(10 to 17)
+				healths.icon_state = "artificer_health5"
+			if(1 to 9)
+				healths.icon_state = "artificer_health6"
+			else
+				healths.icon_state = "artificer_health7"
 
 
 
 /mob/living/simple_animal/construct/wraith/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 
 	..()
 	if(healths)
 		switch(health)
-			if(75 to INFINITY)		healths.icon_state = "wraith_health0"
-			if(62 to 74)			healths.icon_state = "wraith_health1"
-			if(50 to 61)			healths.icon_state = "wraith_health2"
-			if(37 to 49)			healths.icon_state = "wraith_health3"
-			if(25 to 36)			healths.icon_state = "wraith_health4"
-			if(12 to 24)			healths.icon_state = "wraith_health5"
-			if(1 to 11)				healths.icon_state = "wraith_health6"
-			else					healths.icon_state = "wraith_health7"
+			if(75 to INFINITY)
+				healths.icon_state = "wraith_health0"
+			if(62 to 74)
+				healths.icon_state = "wraith_health1"
+			if(50 to 61)
+				healths.icon_state = "wraith_health2"
+			if(37 to 49)
+				healths.icon_state = "wraith_health3"
+			if(25 to 36)
+				healths.icon_state = "wraith_health4"
+			if(12 to 24)
+				healths.icon_state = "wraith_health5"
+			if(1 to 11)
+				healths.icon_state = "wraith_health6"
+			else
+				healths.icon_state = "wraith_health7"
 
 
 /mob/living/simple_animal/construct/harvester/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 
 	..()
 	if(healths)
 		switch(health)
-			if(150 to INFINITY)		healths.icon_state = "harvester_health0"
-			if(125 to 149)			healths.icon_state = "harvester_health1"
-			if(100 to 124)			healths.icon_state = "harvester_health2"
-			if(75 to 99)			healths.icon_state = "harvester_health3"
-			if(50 to 74)			healths.icon_state = "harvester_health4"
-			if(25 to 49)			healths.icon_state = "harvester_health5"
-			if(1 to 24)				healths.icon_state = "harvester_health6"
-			else					healths.icon_state = "harvester_health7"
+			if(150 to INFINITY)
+				healths.icon_state = "harvester_health0"
+			if(125 to 149)
+				healths.icon_state = "harvester_health1"
+			if(100 to 124)
+				healths.icon_state = "harvester_health2"
+			if(75 to 99)
+				healths.icon_state = "harvester_health3"
+			if(50 to 74)
+				healths.icon_state = "harvester_health4"
+			if(25 to 49)
+				healths.icon_state = "harvester_health5"
+			if(1 to 24)
+				healths.icon_state = "harvester_health6"
+			else
+				healths.icon_state = "harvester_health7"

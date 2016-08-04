@@ -5,14 +5,15 @@
 	item_state = "happiest"
 	flags = FPRINT|MASKINTERNALS
 	body_parts_covered = FACE
-	w_class = 2
+	w_class = W_CLASS_SMALL
 	siemens_coefficient = 3.0
 	gas_transfer_coefficient = 0.90
 	unacidable = 1
 
 /obj/item/clothing/mask/happy/equipped(M as mob, wear_mask)
 	var/mob/living/carbon/human/H = M
-	if(!istype(H)) return
+	if(!istype(H))
+		return
 	if(H.wear_mask == src)
 		flick("happiest_flash", src)
 		to_chat(H, "<span class='sinister'>Your thoughts are bombarded by incessant laughter.</span>")
@@ -34,16 +35,16 @@
 	var/mob/living/carbon/human/W = wearer
 	if(W.wear_mask == src)
 		RaiseShade(W)
-	if(prob(5))
-		switch(pick(1,2,3))
-			if(1)
-				W.say(pick("I'M SO HAPPY!", "SMILE!", "ISN'T EVERYTHING SO WONDERFUL?", "EVERYONE SHOULD SMILE!"))
-			if(2)
-				var/list/laughtypes = list("funny", "disturbing", "creepy", "horrid", "bloodcurdling", "freaky", "scary", "childish", "deranged", "airy", "snorting")
-				var/laughtype = pick(laughtypes)
-				W.visible_message("[W] makes \a [laughtype] laugh.")
-			if(3)
-				W.emote(pick("laugh", "chuckle", "giggle", "grin", "smile"))
+		if(prob(5))
+			switch(pick(1,2,3))
+				if(1)
+					W.say(pick("I'M SO HAPPY!", "SMILE!", "ISN'T EVERYTHING SO WONDERFUL?", "EVERYONE SHOULD SMILE!"))
+				if(2)
+					var/list/laughtypes = list("funny", "disturbing", "creepy", "horrid", "bloodcurdling", "freaky", "scary", "childish", "deranged", "airy", "snorting")
+					var/laughtype = pick(laughtypes)
+					W.visible_message("[W] makes \a [laughtype] laugh.")
+				if(3)
+					W.emote(pick("laugh", "chuckle", "giggle", "grin", "smile"))
 
 /obj/item/clothing/mask/happy/OnMobDeath(var/mob/living/carbon/human/wearer)
 	var/mob/living/carbon/human/W = wearer
@@ -54,9 +55,12 @@
 
 /obj/item/clothing/mask/happy/proc/RaiseShade(var/mob/living/carbon/human/H)
 	for(var/mob/living/carbon/human/M in view(4, H))
-		if(!M) return
-		if(M.stat != 2) continue
-		if(M.client == null) continue
+		if(!M)
+			return
+		if(M.stat != 2)
+			continue
+		if(M.client == null)
+			continue
 		flick("happiest_flash", src)
 		var/mob/living/simple_animal/shade/S = new /mob/living/simple_animal/shade( M.loc )
 		S.name = "Shade of [M.real_name]"

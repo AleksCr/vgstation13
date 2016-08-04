@@ -10,7 +10,7 @@
 ///////////OFFHAND///////////////
 //what the mob gets when wielding something
 /obj/item/offhand
-	w_class = 5.0
+	w_class = W_CLASS_HUGE
 	icon = 'icons/obj/weapons.dmi'
 	icon_state = "offhand"
 	name = "offhand"
@@ -32,7 +32,8 @@
 	return wielding.unwield(user)
 
 /obj/item/offhand/preattack(atom/target, mob/user, proximity_flag, click_parameters)
-	if(!proximity_flag) return
+	if(!proximity_flag)
+		return
 	if(istype(target, /obj/item/weapon/storage)) //we place automatically
 		return
 	if(wielding)
@@ -62,7 +63,7 @@
 	hitsound = "sound/weapons/bloodyslice.ogg"
 	name = "fire axe"
 	desc = "Truly, the weapon of a madman. Who would think to fight fire with an axe?"
-	w_class = 4.0
+	w_class = W_CLASS_LARGE
 	sharpness = 1.2
 	force = 10
 	slot_flags = SLOT_BACK
@@ -74,17 +75,17 @@
 	item_state = "fireaxe[wielded ? 1 : 0]"
 	force = wielded ? 40 : initial(force)
 	if(user)
-		user.update_inv_l_hand()
-		user.update_inv_r_hand()
+		user.update_inv_hands()
 
 /obj/item/weapon/fireaxe/suicide_act(mob/user)
 		to_chat(viewers(user), "<span class='danger'>[user] is smashing \himself in the head with the [src.name]! It looks like \he's commit suicide!</span>")
 		return (BRUTELOSS)
 
 /obj/item/weapon/fireaxe/afterattack(atom/A as mob|obj|turf|area, mob/user as mob, proximity)
-	if(!proximity) return
+	if(!proximity)
+		return
 	..()
-	if(A && wielded && (istype(A,/obj/structure/window) || istype(A,/obj/structure/grille))) //destroys windows and grilles in one hit
+	if(A && wielded && (istype(A,/obj/structure/window))) //destroys windows and grilles in one hit
 		user.delayNextAttack(8)
 		if(istype(A,/obj/structure/window))
 			var/pdiff=performWallPressureCheck(A.loc)
@@ -109,9 +110,9 @@
 	throwforce = 5.0
 	throw_speed = 1
 	throw_range = 5
-	w_class = 2
+	w_class = W_CLASS_SMALL
 	flags = FPRINT | TWOHANDABLE
-	origin_tech = "magnets=3;syndicate=4"
+	origin_tech = Tc_MAGNETS + "=3;" + Tc_SYNDICATE + "=4"
 	attack_verb = list("attacks", "slashes", "stabs", "slices", "tears", "rips", "dices", "cuts")
 
 /obj/item/weapon/dualsaber/update_wield(mob/user)
@@ -121,8 +122,7 @@
 	force = wielded ? 30 : 3
 	w_class = wielded ? 5 : 2
 	if(user)
-		user.update_inv_l_hand()
-		user.update_inv_r_hand()
+		user.update_inv_hands()
 	playsound(get_turf(src), wielded ? 'sound/weapons/saberon.ogg' : 'sound/weapons/saberoff.ogg', 50, 1)
 	return
 
@@ -154,9 +154,9 @@
 	throwforce = 5.0
 	throw_speed = 1
 	throw_range = 5
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	flags = FPRINT | TWOHANDABLE
-	origin_tech = "magnets=3;syndicate=4"
+	origin_tech = Tc_MAGNETS + "=3;" + Tc_SYNDICATE + "=4"
 	attack_verb = list("attacks", "slashes", "stabs", "slices", "tears", "rips", "dices", "cuts")
 
 /obj/item/weapon/dualsaber/bananabunch/update_wield(mob/user)
@@ -166,8 +166,7 @@
 	force = wielded ? 30 : 3
 	w_class = wielded ? 5 : 2
 	if(user)
-		user.update_inv_l_hand()
-		user.update_inv_r_hand()
+		user.update_inv_hands()
 	playsound(get_turf(src), wielded ? 'sound/weapons/saberon.ogg' : 'sound/weapons/saberoff.ogg', 50, 1)
 	return
 
@@ -209,9 +208,9 @@
 	throw_speed = 5
 	throw_range = 10
 	sharpness = 2
-	w_class = 4.0
+	w_class = W_CLASS_LARGE
 	flags = FPRINT | TWOHANDABLE
-	origin_tech = "magnets=4;combat=5"
+	origin_tech = Tc_MAGNETS + "=4;" + Tc_COMBAT + "=5"
 
 /obj/item/weapon/katana/hfrequency/update_wield(mob/user)
 	..()
@@ -219,8 +218,7 @@
 	force = wielded ? 200 : 50
 	sharpness = wielded ? 100 : 2
 	if(user)
-		user.update_inv_l_hand()
-		user.update_inv_r_hand()
+		user.update_inv_hands()
 	return
 
 /obj/item/weapon/katana/hfrequency/IsShield()
@@ -238,7 +236,7 @@
 	name = "spear"
 	desc = "A haphazardly-constructed yet still deadly weapon of ancient design."
 	force = 10
-	w_class = 4.0
+	w_class = W_CLASS_LARGE
 	slot_flags = SLOT_BACK
 	throwforce = 15
 	flags = TWOHANDABLE
@@ -252,11 +250,11 @@
 	item_state = "[base_state][wielded ? 1 : 0]"
 
 	force = base_force
-	if(wielded) force += 8
+	if(wielded)
+		force += 8
 
 	if(user)
-		user.update_inv_l_hand()
-		user.update_inv_r_hand()
+		user.update_inv_hands()
 	return
 
 /obj/item/weapon/spear/wooden

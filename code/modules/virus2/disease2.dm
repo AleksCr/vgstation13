@@ -93,14 +93,14 @@ var/global/list/disease2_list = list()
 */
 
 	//Space antibiotics stop disease completely (temporary)
-	if(mob.reagents.has_reagent("spaceacillin"))
+	if(mob.reagents.has_reagent(SPACEACILLIN))
 		return
 
 	//Virus food speeds up disease progress
-	if(mob.reagents.has_reagent("virusfood"))
-		mob.reagents.remove_reagent("virusfood",0.1)
+	if(mob.reagents.has_reagent(VIRUSFOOD))
+		mob.reagents.remove_reagent(VIRUSFOOD,0.1)
 		if(!logged_virusfood)
-			log += "<br />[timestamp()] Virus Fed ([mob.reagents.get_reagent_amount("virusfood")]U)"
+			log += "<br />[timestamp()] Virus Fed ([mob.reagents.get_reagent_amount(VIRUSFOOD)]U)"
 			logged_virusfood=1
 		clicks += 10
 	else
@@ -239,7 +239,8 @@ proc/virus2_lesser_infection()
 	for(var/mob/living/carbon/human/G in player_list)
 		if(G.client && G.stat != DEAD)
 			candidates += G
-	if(!candidates.len)	return
+	if(!candidates.len)
+		return
 
 	candidates = shuffle(candidates)
 
@@ -251,7 +252,8 @@ proc/virus2_greater_infection()
 	for(var/mob/living/carbon/human/G in player_list)
 		if(G.client && G.stat != DEAD)
 			candidates += G
-	if(!candidates.len)	return
+	if(!candidates.len)
+		return
 
 	candidates = shuffle(candidates)
 

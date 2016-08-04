@@ -6,7 +6,7 @@
 	icon_state = "deskbell_2"
 	force = 5
 	throwforce = 5
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	throw_speed = 4
 	throw_range = 10
 	flags = FPRINT
@@ -18,7 +18,7 @@
 	w_type = RECYK_METAL
 	melt_temperature=MELTPOINT_STEEL
 	anchored = 1
-	origin_tech = "materials=1"
+	origin_tech = Tc_MATERIALS + "=1"
 
 	var/frequency = 1457
 	var/code = 0	//since no remote signaling device can set its code to 0, deskbells spawned manually(like those existing at round start) won't trigger any signaler (but they'll still trigger the PDA ringer app)
@@ -36,7 +36,8 @@
 			)
 		playsound(loc, 'sound/items/Ratchet.ogg', 50, 1)
 
-		if(wrenching)	return
+		if(wrenching)
+			return
 		wrenching = 1
 		if(do_after(user, src, 30))
 			if(src)
@@ -108,7 +109,7 @@
 /obj/item/device/deskbell/signaler
 	desc = "When calling on the radio isn't working anymore."
 	icon_state = "deskbell_2alt"
-	origin_tech = "materials=1;magnets=1"
+	origin_tech = Tc_MATERIALS + "=1;" + Tc_MAGNETS + "=1"
 
 	var/datum/radio_frequency/radio_connection
 
@@ -135,7 +136,8 @@
 			)
 		playsound(loc, 'sound/items/Ratchet.ogg', 50, 1)
 
-		if(wrenching)	return
+		if(wrenching)
+			return
 		wrenching = 1
 		if(do_after(user, src, 30))
 			if(src)
@@ -180,7 +182,8 @@
 				T.visible_message("[bicon(ring_pda)] *[src.name]*")
 
 
-		if(!radio_connection) return	//the desk bell also works like a simple send-only signaler.
+		if(!radio_connection)
+			return	//the desk bell also works like a simple send-only signaler.
 
 		var/datum/signal/signal = getFromPool(/datum/signal)
 		signal.source = src
@@ -242,7 +245,7 @@
 	desc = "An unfinished desk bell."
 	icon_state = "deskbell_0"
 	throwforce = 5
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	throw_speed = 4
 	throw_range = 10
 	flags = FPRINT

@@ -1,12 +1,12 @@
 // Reagents to log when splashing non-mobs (all mob splashes are logged automatically)
-var/list/LOGGED_SPLASH_REAGENTS = list("fuel", "thermite")
+var/list/LOGGED_SPLASH_REAGENTS = list(FUEL, THERMITE)
 
 /obj/item/weapon/reagent_containers
 	name = "Container"
 	desc = "..."
 	icon = 'icons/obj/chemical.dmi'
 	icon_state = null
-	w_class = 1
+	w_class = W_CLASS_TINY
 	var/amount_per_transfer_from_this = 5
 	var/possible_transfer_amounts = list(5,10,15,25,30)
 	var/volume = 30
@@ -38,6 +38,7 @@ var/list/LOGGED_SPLASH_REAGENTS = list("fuel", "thermite")
 	if(isturf(usr.loc))
 		if(reagents.total_volume > 10) //Beakersplashing only likes to do this sound when over 10 units
 			playsound(get_turf(src), 'sound/effects/slosh.ogg', 25, 1)
+		usr.investigation_log(I_CHEMS, "has emptied \a [src] \ref[src] containing [reagents.get_reagent_ids(1)] onto \the [usr.loc].")
 		reagents.reaction(usr.loc)
 		spawn() src.reagents.clear_reagents()
 		usr.visible_message("<span class='warning'>[usr] splashes something onto the floor!</span>",
@@ -60,7 +61,7 @@ var/list/LOGGED_SPLASH_REAGENTS = list("fuel", "thermite")
 
 
 /obj/item/weapon/reagent_containers/AltClick()
-	if(find_holder_of_type(src, /mob) == usr && possible_transfer_amounts)
+	if(is_holder_of(usr, src) && possible_transfer_amounts)
 		set_APTFT()
 		return
 	return ..()
@@ -105,7 +106,7 @@ var/list/LOGGED_SPLASH_REAGENTS = list("fuel", "thermite")
 /**
  * Transfer reagents between reagent_containers/reagent_dispensers.
  */
-/proc/transfer_sub(var/atom/source, var/atom/target, var/amount, var/mob/user)
+/proc/transfer_sub(var/atom/source, var/atom/target, var/amount, var/mob/user, var/log_transfer = FALSE)
 	// Typecheck shenanigans
 	var/source_empty
 	var/target_full
@@ -131,9 +132,11 @@ var/list/LOGGED_SPLASH_REAGENTS = list("fuel", "thermite")
 		var/obj/structure/reagent_dispensers/T = target
 		target_full = T.is_full()*/
 	else
-		if(ismob(target)) return null
+		if(ismob(target))
+			return null
 		//ASSERT(istype(target.reagents))
-		if(!istype(target.reagents)) return
+		if(!istype(target.reagents))
+			return
 		target_full = target.reagents.is_full()
 		//warning("Called transfer_sub() with a non-compatible target type ([target.type], [target], \ref[target])")
 		//return
@@ -147,7 +150,7 @@ var/list/LOGGED_SPLASH_REAGENTS = list("fuel", "thermite")
 		to_chat(user, "<span class='warning'>\The [target] is full.</span>")
 		return -1
 
-	return source.reagents.trans_to(target, amount)
+	return source.reagents.trans_to(target, amount, log_transfer = log_transfer, whodunnit = user)
 
 /**
  * Helper proc to handle reagent splashes. A negative `amount` will splash all the reagents.
@@ -161,12 +164,16 @@ var/list/LOGGED_SPLASH_REAGENTS = list("fuel", "thermite")
 	reagents.reaction(target, TOUCH)
 
 	if (amount > 0)
+		if(user)
+			user.investigation_log(I_CHEMS, "has splashed [amount]u of [reagents.get_reagent_ids()] from \a [reagents.my_atom] \ref[reagents.my_atom] onto \the [target].")
 		reagents.remove_any(amount)
 		if(user)
 			if(user.Adjacent(target))
 				user.visible_message("<span class='warning'>\The [target] has been splashed with something by [user]!</span>",
 			                     "<span class='notice'>You splash some of the solution onto \the [target].</span>")
 	else
+		if(user)
+			user.investigation_log(I_CHEMS, "has splashed [reagents.get_reagent_ids(1)] from \a [reagents.my_atom] \ref[reagents.my_atom] onto \the [target].")
 		reagents.clear_reagents()
 		if(user)
 			if(user.Adjacent(target))
@@ -205,18 +212,13 @@ var/list/LOGGED_SPLASH_REAGENTS = list("fuel", "thermite")
 		if (!container.is_open_container() && istype(container,/obj/item/weapon/reagent_containers))
 			return -1
 
-		var/list/bad_reagents = reagents.get_bad_reagent_names() // Used for logging
-		var/tx_amount = transfer_sub(src, target, amount_per_transfer_from_this, user)
-		success = tx_amount
+		success = transfer_sub(src, target, amount_per_transfer_from_this, user, log_transfer = TRUE)
+
 		if(success)
-			if (tx_amount > 0)
-				to_chat(user, "<span class='notice'>You transfer [tx_amount] units of the solution to \the [target].</span>")
+			if (success > 0)
+				to_chat(user, "<span class='notice'>You transfer [success] units of the solution to \the [target].</span>")
 
-			// Log transfers of 'bad things' (/vg/)
-			if (tx_amount > 0 && container.log_reagents && bad_reagents && bad_reagents.len > 0)
-				log_reagents(user, src, target, tx_amount, bad_reagents)
-
-			return (tx_amount)
+			return (success)
 
 	if(!success)
 		// Mob splashing
@@ -276,4 +278,5 @@ var/list/LOGGED_SPLASH_REAGENTS = list("fuel", "thermite")
 		for (var/datum/reagent/R in snack.reagents.reagent_list) //no reagents will be left behind
 			data += "[R.id]([R.volume] unit\s); " //Using IDs because SOME chemicals(I'm looking at you, chlorhydrate-beer) have the same names as other chemicals.
 		return data
-	else return "No reagents"
+	else
+		return "No reagents"

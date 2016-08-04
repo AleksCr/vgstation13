@@ -32,7 +32,7 @@
 	if(!user.Adjacent(target))
 		return
 
-	if(user.client && (target in user.client.screen) && !(user.l_hand == target || user.r_hand == target))
+	if(user.client && (target in user.client.screen) && !(user.is_holding_item(target)))
 		user.simple_message("<span class='notice'>You need to take that [target.name] off before cleaning it.</span>",
 			"<span class='notice'>You need to take that [target.name] off before destroying it.</span>")
 
@@ -46,7 +46,8 @@
 		var/list/cleanables = list()
 
 		for(var/obj/effect/decal/cleanable/CC in T)
-			if(!istype(CC) || !CC) continue
+			if(!istype(CC) || !CC)
+				continue
 			cleanables += CC
 
 		for(var/obj/effect/decal/cleanable/CC in get_turf(user)) //Get all nearby decals drawn on this wall and erase them
@@ -88,7 +89,7 @@
 	icon_state = "bike_horn"
 	item_state = "bike_horn"
 	throwforce = 3
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throw_speed = 3
 	throw_range = 15
 	attack_verb = list("HONKS")
@@ -117,7 +118,8 @@
 			"[user] honks \the [src] at you.")
 
 /obj/item/weapon/bikehorn/kick_act(mob/living/H)
-	if(..()) return 1
+	if(..())
+		return 1
 
 	honk()
 
@@ -152,7 +154,7 @@
 	icon = 'icons/obj/items.dmi'
 	icon_state = "glue0"
 
-	w_class = 1
+	w_class = W_CLASS_TINY
 
 	var/spent = 0
 

@@ -16,8 +16,8 @@
 		if(!isnull(newpotency))
 			potency = newpotency
 		..()
-		src.pixel_x = rand(-5.0, 5)
-		src.pixel_y = rand(-5.0, 5)
+		src.pixel_x = rand(-5, 5) * PIXEL_MULTIPLIER
+		src.pixel_y = rand(-5, 5) * PIXEL_MULTIPLIER
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/New()
 	..()
@@ -63,7 +63,8 @@
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/throw_impact(atom/hit_atom)
 	..()
-	if(!seed || !src) return
+	if(!seed || !src)
+		return
 	//if(seed.stinging)   			//we do NOT want to transfer reagents on throw, as it would mean plantbags full of throwable chloral injectors
 	//	stinging_apply_reagents(M)  //plus all sorts of nasty stuff like throw_impact not targeting a specific bodypart to check for protection.
 
@@ -107,15 +108,17 @@
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/Crossed(var/mob/living/carbon/M)
 	..()
-	if(!seed) return
-	if(!istype(M)) return
+	if(!seed)
+		return
+	if(!istype(M))
+		return
 	if(!M.on_foot())
 		return
 	if(seed.thorny || seed.stinging)
 		if(istype(M, /mob/living/carbon/human))
 			var/mob/living/carbon/human/H = M
 			if(!H.check_body_part_coverage(FEET))
-				var/datum/organ/external/affecting = H.get_organ(pick("l_foot", "r_foot"))
+				var/datum/organ/external/affecting = H.get_organ(pick(LIMB_LEFT_FOOT, LIMB_RIGHT_FOOT))
 				if(affecting && affecting.is_organic())
 					if(thorns_apply_damage(M, affecting))
 						to_chat(H, "<span class='danger'>You step on \the [src]'s sharp thorns!</span>")
@@ -131,14 +134,15 @@
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/pickup(mob/user)
 	..()
-	if(!seed) return
+	if(!seed)
+		return
 	if(seed.thorny || seed.stinging)
 		var/mob/living/carbon/human/H = user
 		if(!istype(H))
 			return
 		if(H.check_body_part_coverage(HANDS))
 			return
-		var/datum/organ/external/affecting = H.get_organ(pick("r_hand","l_hand"))
+		var/datum/organ/external/affecting = H.get_organ(pick(LIMB_RIGHT_HAND,LIMB_LEFT_HAND))
 		if(!affecting || !affecting.is_organic())
 			return
 		if(stinging_apply_reagents(H))
@@ -150,9 +154,9 @@
 				if(H.species && !(H.species.flags & NO_PAIN))
 					H.drop_item(src)
 
-/obj/item/weapon/reagent_containers/food/snacks/grown/On_Consume(var/mob/living/carbon/human/H)
+/obj/item/weapon/reagent_containers/food/snacks/grown/after_consume(var/mob/living/carbon/human/H)
 	if(seed.thorny && istype(H))
-		var/datum/organ/external/affecting = H.get_organ("head")
+		var/datum/organ/external/affecting = H.get_organ(LIMB_HEAD)
 		if(affecting)
 			if(thorns_apply_damage(H, affecting))
 				to_chat(H, "<span class='danger'>Your mouth is cut by \the [src]'s sharp thorns!</span>")
@@ -161,13 +165,19 @@
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/examine(mob/user)
 	..()
-	if(!seed) return
+	if(!seed)
+		return
 	var/traits = ""
-	if(seed.stinging) traits += "<span class='alert'>It's covered in tiny stingers.</span> "
-	if(seed.thorny) traits += "<span class='alert'>It's covered in sharp thorns.</span> "
-	if(seed.juicy == 2) traits += "It looks ripe and excessively juicy. "
-	if(seed.teleporting) traits += "It seems to be spatially unstable. "
-	if(traits) to_chat(user, traits)
+	if(seed.stinging)
+		traits += "<span class='alert'>It's covered in tiny stingers.</span> "
+	if(seed.thorny)
+		traits += "<span class='alert'>It's covered in sharp thorns.</span> "
+	if(seed.juicy == 2)
+		traits += "It looks ripe and excessively juicy. "
+	if(seed.teleporting)
+		traits += "It seems to be spatially unstable. "
+	if(traits)
+		to_chat(user, traits)
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/proc/splat_decal(turf/T)
 	var/obj/effect/decal/cleanable/S = getFromPool(seed.splat_type,T)
@@ -205,10 +215,18 @@
 		return 0
 	if(!seed.chems || !seed.chems.len)
 		return 0
+
+	var/list/thingsweinjected = list()
 	var/injecting = Clamp(1, 3, potency/10)
+
 	for(var/rid in seed.chems) //Only transfer reagents that the plant naturally produces, no injecting chloral into your nettles.
 		reagents.trans_id_to(H,rid,injecting)
+		thingsweinjected += "[injecting]u of [rid]"
 		. = 1
+
+	if(. && fingerprintshidden && fingerprintshidden.len)
+		H.investigation_log(I_CHEMS, "was stung by \a [src], transfering [english_list(thingsweinjected)] - all touchers: [english_list(src.fingerprintshidden)]")
+
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/proc/do_fruit_teleport(atom/hit_atom, mob/M, var/potency)	//Does this need logging?
 	var/datum/zLevel/L = get_z_level(src)
@@ -383,8 +401,6 @@
 /obj/item/weapon/reagent_containers/food/snacks/grown/glowberries
 	name = "bunch of glow-berries"
 	desc = "Nutritious!"
-	var/light_on = 1
-	var/brightness_on = 2 //luminosity when on
 	filling_color = "#D3FF9E"
 	icon_state = "glowberrypile"
 	plantname = "glowberries"
@@ -430,6 +446,13 @@
 	potency = 10
 	filling_color = "#125709"
 	plantname = "ambrosia"
+
+/obj/item/weapon/reagent_containers/food/snacks/grown/ambrosiavulgaris/cruciatus
+	plantname = "ambrosiacruciatus"
+	name = "ambrosia vulgaris branch"
+	desc = "This is a plant containing various healing chemicals."
+	icon_state = "ambrosiavulgaris"
+	potency = 10
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/attackby(var/obj/item/weapon/O as obj, var/mob/user as mob)
 	if(istype(O, /obj/item/weapon/paper))
@@ -592,6 +615,15 @@
 	potency = 10
 	plantname = "tomato"
 
+/obj/item/weapon/reagent_containers/food/snacks/grown/bluespacetomato
+	name = "tomato" //"blue-space" is applied on new(), provided it's teleporting trait hasn't been removed
+	desc = "Its juices lubricate so well, you might slip through space-time."
+	icon_state = "bluespacetomato"
+	potency = 20
+	origin_tech = "bluespace = 3"
+	filling_color = "#91F8FF"
+	plantname = "bluespacetomato"
+
 /obj/item/weapon/reagent_containers/food/snacks/grown/killertomato
 	name = "killer-tomato"
 	desc = "I say to-mah-to, you say tom-mae-to... OH GOD IT'S EATING MY LEGS!!"
@@ -745,36 +777,82 @@
 
 	to_chat(user, "<span class='notice'>You plant the glowshroom.</span>")
 
+/obj/item/weapon/reagent_containers/food/snacks/grown/mushroom/chickenshroom
+	name = "chicken-of-the-stars"
+	desc = "A variant of the Earth-native Laetiporus sulphureus, adapted by Vox traders for space. Everything tastes like chicken."
+	icon_state = "chickenshroom"
+	filling_color = "F2E33A"
+	plantname = "chickenshroom"
+
+/obj/item/weapon/reagent_containers/food/snacks/grown/garlic
+	name = "garlic"
+	desc = "Warning: Garlic may send vampires straight to the Dead Zone."
+	icon_state = "garlic"
+	filling_color = "EDEDE1"
+	plantname = "garlic"
+
+/obj/item/weapon/reagent_containers/food/snacks/grown/breadfruit
+	name = "breadfruit"
+	desc = "Starchy. Tastes about the same as biting into a sack of flour."
+	icon_state = "breadfruit"
+	filling_color = "EDEDE1"
+	plantname = "breadfruit"
+
+/obj/item/weapon/reagent_containers/food/snacks/grown/woodapple
+	name = "woodapple"
+	desc = "A hard-shelled fruit with precious juice inside. Even the shell may find use, if properly sliced."
+	slice_path = /obj/item/stack/sheet/wood
+	slices_num = 1
+	icon_state = "woodapple"
+	filling_color = "857663"
+	plantname = "woodapple"
+
+/obj/item/weapon/reagent_containers/food/snacks/grown/pitcher
+	name = "pitcher plant" //results in "slippery pitcher plant"
+	desc = "A fragile, but slippery exotic plant from tropical climates. Powerful digestive acid contained within dissolves prey."
+	icon_state = "pitcher"
+	filling_color = "7E8507"
+	plantname = "pitcher"
+
+/obj/item/weapon/reagent_containers/food/snacks/grown/aloe
+	name = "aloe vera"
+	desc = "A thorny, broad-leaf plant believed to be useful for first aid."
+	icon_state = "aloe"
+	filling_color = "77BA9F"
+	plantname = "aloe"
+
 // *************************************
 // Complex Grown Object Defines -
 // Putting these at the bottom so they don't clutter the list up. -Cheridan
 // *************************************
 
-/obj/item/weapon/reagent_containers/food/snacks/grown/bluespacetomato
-	name = "tomato" //"blue-space" is applied on new(), provided it's teleporting trait hasn't been removed
-	desc = "Its juices lubricate so well, you might slip through space-time."
-	icon_state = "bluespacetomato"
-	potency = 20
-	origin_tech = "bluespace = 3"
-	filling_color = "#91F8FF"
-	plantname = "bluespacetomato"
+/obj/item/weapon/reagent_containers/food/snacks/grown/vaporsac
+	plantname = "vaporsac"
+	name = "vapor sac fruit"
+	desc = "A thin organic film bearing seeds, held slightly aloft by internal gasses and a reservoir of chemicals."
+	icon_state = "vaporsac"
+	filling_color = "#FFFFFF"
 
-/obj/item/weapon/reagent_containers/food/snacks/grown/ambrosiavulgaris/cruciatus
-	plantname = "ambrosiacruciatus"
-	name = "ambrosia vulgaris branch"
-	desc = "This is a plant containing various healing chemicals."
-	icon_state = "ambrosiavulgaris"
-	potency = 10
-	/*New() //NO SNOWFLAKE ALLOWED
-		..()
-		spawn(5)	//So potency can be set in the proc that creates these crops
-			reagents.add_reagent("nutriment", 1)
-			reagents.add_reagent("space_drugs", 1 + round(potency/8, 1))
-			reagents.add_reagent("kelotane", 1 + round(potency/8, 1))
-			reagents.add_reagent("bicaridine", 1 + round(potency/10, 1))
-			reagents.add_reagent("toxin", 1 + round(potency/10, 1))
-			reagents.add_reagent("spiritbreaker", 10)
-			bitesize = 1+round(reagents.total_volume/2, 1)*/
+/obj/item/weapon/reagent_containers/food/snacks/grown/vaporsac/attack(mob/living/M, mob/user, def_zone, eat_override = 0)
+	pop(user)
+
+/obj/item/weapon/reagent_containers/food/snacks/grown/vaporsac/attack_animal(mob/M)
+	pop(M)
+
+/obj/item/weapon/reagent_containers/food/snacks/grown/vaporsac/attackby(obj/item/weapon/W, mob/user)
+	if(istype(W, /obj/item/device/analyzer/plant_analyzer))
+		return
+	pop(user)
+
+/obj/item/weapon/reagent_containers/food/snacks/grown/vaporsac/proc/pop(mob/popper)
+	if(popper)
+		popper.visible_message("<span class='warning'>[popper] pops the \the [src]!</span>","<span class='warning'>You pop \the [src]!</span>")
+	for(var/mob/living/carbon/C in view(1))
+		if(C.CheckSlip() < 1)
+			continue
+		C.Weaken(5)
+	playsound(get_turf(src), 'sound/effects/bang.ogg', 10, 1)
+	qdel(src)
 
 /obj/item/weapon/reagent_containers/food/snacks/grown/nofruit
 	name = "no-fruit"
@@ -811,13 +889,14 @@
 			return
 		switching = 0
 		var/N = rand(1,3)
-		switch(N)
-			if(1)
-				playsound(user, 'sound/weapons/genhit1.ogg', 50, 1)
-			if(2)
-				playsound(user, 'sound/weapons/genhit2.ogg', 50, 1)
-			if(3)
-				playsound(user, 'sound/weapons/genhit3.ogg', 50, 1)
+		if(get_turf(user))
+			switch(N)
+				if(1)
+					playsound(get_turf(user), 'sound/weapons/genhit1.ogg', 50, 1)
+				if(2)
+					playsound(get_turf(user), 'sound/weapons/genhit2.ogg', 50, 1)
+				if(3)
+					playsound(get_turf(user), 'sound/weapons/genhit3.ogg', 50, 1)
 		user.visible_message("[user] smacks \the [src] with \the [W].","You smack \the [src] with \the [W].")
 		if(src.loc == user)
 			user.drop_item(src, force_drop = 1)
@@ -835,7 +914,8 @@
 			current_path = available_fruits[counter]
 			var/obj/item/weapon/reagent_containers/food/snacks/grown/G = current_path
 			icon_state = initial(G.icon_state)
-			playsound(src, 'sound/misc/click.ogg', 50, 1)
+			if(get_turf(src))
+				playsound(get_turf(src), 'sound/misc/click.ogg', 50, 1)
 			sleep(1)
 			if(counter == available_fruits.len)
 				counter = 0

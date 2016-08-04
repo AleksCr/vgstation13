@@ -23,7 +23,8 @@ var/list/all_supply_groups = list("Supplies","Clothing","Security","Hospitality"
 /datum/supply_packs/New()
 	manifest += "<ul>"
 	for(var/path in contains)
-		if(!path)	continue
+		if(!path)
+			continue
 		var/atom/movable/AM = new path()
 		manifest += "<li>[AM.name]</li>"
 		AM.loc = null	//just to make sure they're deleted by the garbage collector
@@ -395,6 +396,66 @@ var/list/all_supply_groups = list("Supplies","Clothing","Security","Hospitality"
 	manifest += "Contains any [num_contained] of:"
 	..()
 
+/datum/supply_packs/randomised/cheap_hats
+	name = "Hat crate"
+	cost = 50
+	containername = "dusty crate"
+	num_contained = 5
+	contains = list(\
+	/obj/item/clothing/head/bandana,
+	/obj/item/clothing/head/bearpelt,
+	/obj/item/clothing/head/beaverhat,
+	/obj/item/clothing/head/beret,
+	/obj/item/clothing/head/boaterhat,
+	/obj/item/clothing/head/bowlerhat,
+	/obj/item/clothing/head/chefhat,
+	/obj/item/clothing/head/cowboy,
+	/obj/item/clothing/head/dunce_cap,
+	/obj/item/clothing/head/fedora,
+	/obj/item/clothing/head/fedora/brown,
+	/obj/item/clothing/head/fedora/white,
+	/obj/item/clothing/head/fez,
+	/obj/item/clothing/head/flatcap,
+	/obj/item/clothing/head/greenbandana,
+	/obj/item/clothing/head/hasturhood,
+	/obj/item/clothing/head/headband,
+	/obj/item/clothing/head/libertyhat,
+	/obj/item/clothing/head/mailman,
+	/obj/item/clothing/head/naziofficer,
+	/obj/item/clothing/head/panzer,
+	/obj/item/clothing/head/powdered_wig,
+	/obj/item/clothing/head/soft/mime,
+	/obj/item/clothing/head/squatter_hat,
+	/obj/item/clothing/head/that,
+	/obj/item/clothing/head/ushanka,
+	/obj/item/clothing/head/wizard/magus/fake,
+	/obj/item/clothing/head/wizard/clown/fake,
+	/obj/item/clothing/head/wizard/necro/fake
+	)
+
+/datum/supply_packs/randomised/cheap_glasses
+	name = "Glasses crate"
+	cost = 50
+	containername = "dusty crate"
+	num_contained = 5
+	contains = list(\
+	/obj/item/clothing/glasses/eyepatch,
+	/obj/item/clothing/glasses/gglasses,
+	/obj/item/clothing/glasses/kaminaglasses,
+	/obj/item/clothing/glasses/monocle,
+	/obj/item/clothing/glasses/regular,
+	/obj/item/clothing/glasses/regular/hipster,
+	/obj/item/clothing/glasses/science,
+	/obj/item/clothing/glasses/simonglasses,
+	/obj/item/clothing/glasses/sunglasses,
+	/obj/item/clothing/glasses/sunglasses/big,
+	/obj/item/clothing/glasses/sunglasses/blindfold,
+	/obj/item/clothing/glasses/sunglasses/prescription,
+	/obj/item/clothing/glasses/sunglasses/purple,
+	/obj/item/clothing/glasses/sunglasses/rockstar,
+	/obj/item/clothing/glasses/sunglasses/star,
+	)
+
 /datum/supply_packs/formal_wear
 	contains = list(/obj/item/clothing/head/that,
 					/obj/item/clothing/suit/storage/lawyer/bluejacket,
@@ -420,6 +481,7 @@ var/list/all_supply_groups = list("Supplies","Clothing","Security","Hospitality"
 					/obj/item/clothing/under/dress/dress_pink,
 					/obj/item/clothing/under/dress/dress_yellow,
 					/obj/item/clothing/under/dress/dress_saloon,
+					/obj/item/clothing/head/hairflower,
 					/obj/item/clothing/under/wedding/bride_orange,
 					/obj/item/clothing/under/wedding/bride_purple,
 					/obj/item/clothing/under/wedding/bride_blue,
@@ -496,7 +558,16 @@ var/list/all_supply_groups = list("Supplies","Clothing","Security","Hospitality"
 	containername = "Special Ops crate"
 	group = "Security"
 	hidden = 1
-
+	
+/datum/supply_packs/secway
+	name = "Secway crate"
+	contains = list(/obj/structure/bed/chair/vehicle/secway)
+	cost = 500
+	containertype = /obj/structure/closet/crate/secure/large
+	containername = "Secway crate"
+	access = access_security
+	group = "Security"
+	
 /datum/supply_packs/beanbagammo
 	name = "Beanbag shells"
 	contains = list(/obj/item/ammo_casing/shotgun/beanbag,
@@ -820,7 +891,41 @@ var/list/all_supply_groups = list("Supplies","Clothing","Security","Hospitality"
 	containertype = /obj/structure/closet/crate
 	containername = "Festivus supplies"
 	group = "Hospitality"
+	
+/datum/supply_packs/randomised/instruments
+	num_contained = 1 //number of items picked to be contained in a randomised crate
+	contains = list(/obj/item/device/instrument/violin,
+					/obj/item/device/instrument/guitar,
+					/obj/item/device/instrument/glockenspiel,
+					/obj/item/device/instrument/accordion,
+					/obj/item/device/instrument/saxophone,
+					/obj/item/device/instrument/trombone,
+					/obj/item/device/instrument/recorder,
+					/obj/item/device/instrument/harmonica,
+					/obj/structure/piano/xylophone,
+					/obj/structure/piano)
+	name = "Random instrument"
+	cost = 50
+	containertype = /obj/structure/closet/crate
+	containername = "Random instruments crate"
+	group = "Hospitality"
 
+/datum/supply_packs/bigband
+	contains = list(/obj/item/device/instrument/violin,
+					/obj/item/device/instrument/guitar,
+					/obj/item/device/instrument/glockenspiel,
+					/obj/item/device/instrument/accordion,
+					/obj/item/device/instrument/saxophone,
+					/obj/item/device/instrument/trombone,
+					/obj/item/device/instrument/recorder,
+					/obj/item/device/instrument/harmonica,
+					/obj/structure/piano/xylophone,
+					/obj/structure/piano)
+	name = "Big band instrument collection"
+	cost = 500
+	containertype = /obj/structure/largecrate
+	containername = "Big band musical instruments collection"
+	group = "Hospitality"
 
 //////ENGINEERING//////
 
@@ -1093,7 +1198,7 @@ var/list/all_supply_groups = list("Supplies","Clothing","Security","Hospitality"
 /datum/supply_packs/supermatter_shard
 	contains = list(/obj/machinery/power/supermatter/shard)
 	name = "Supermatter Shard"
-	cost = 100 //So cargo thinks twice before killing themselves with it
+	cost = 500 //So cargo thinks thrice before killing themselves with it. You're going to need a department account most likely.
 	containertype = /obj/structure/closet/crate/secure/engisec
 	containername = "Supermatter Shard Crate"
 	group = "Engineering"

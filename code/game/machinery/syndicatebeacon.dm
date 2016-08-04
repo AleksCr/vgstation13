@@ -39,7 +39,8 @@
 		onclose(user, "syndbeacon")
 
 	Topic(href, href_list)
-		if(..()) return 1
+		if(..())
+			return 1
 		if(href_list["betraitor"])
 			if(charges < 1)
 				src.updateUsrDialog()
@@ -112,6 +113,7 @@
 	density = 1
 	machine_flags = WRENCHMOVE | FIXED2WORK
 	layer = MOB_LAYER
+	plane = MOB_PLANE
 
 	light_color = LIGHT_COLOR_RED
 	light_range_on = 2

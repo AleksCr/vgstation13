@@ -103,7 +103,8 @@
 	if(hacking || emagged)
 		screen = 2
 	else if(!auth || !linkedServer || (linkedServer.stat & (NOPOWER|BROKEN)))
-		if(!linkedServer || (linkedServer.stat & (NOPOWER|BROKEN))) message = noserver
+		if(!linkedServer || (linkedServer.stat & (NOPOWER|BROKEN)))
+			message = noserver
 		screen = 0
 
 	switch(screen)
@@ -293,7 +294,8 @@
 
 		//Turn the server on/off.
 		if (href_list["active"])
-			if(auth) linkedServer.active = !linkedServer.active
+			if(auth)
+				linkedServer.active = !linkedServer.active
 		//Find a server
 		if (href_list["find"])
 			if(message_servers && message_servers.len > 1)
@@ -399,13 +401,15 @@
 					//Select Your Name
 					if("Sender")
 						customsender 	= input(usr, "Please enter the sender's name.") as text|null
+						customsender	= copytext(sanitize(customsender), 1, MAX_NAME_LEN)
 
 					//Select Receiver
 					if("Recepient")
 						//Get out list of viable PDAs
 						var/list/obj/item/device/pda/sendPDAs = list()
 						for(var/obj/item/device/pda/P in PDAs)
-							if(!P.owner || P.toff || P.hidden) continue
+							if(!P.owner || P.toff || P.hidden)
+								continue
 							sendPDAs += P
 						if(PDAs && PDAs.len > 0)
 							customrecepient = input(usr, "Select a PDA from the list.") as null|anything in sortNames(sendPDAs)
@@ -415,6 +419,7 @@
 					//Enter custom job
 					if("RecJob")
 						customjob	 	= input(usr, "Please enter the sender's job.") as text|null
+						customjob	= copytext(sanitize(customjob), 1, MAX_NAME_LEN)
 
 					//Enter message
 					if("Message")
@@ -437,7 +442,8 @@
 
 						var/obj/item/device/pda/PDARec = null
 						for (var/obj/item/device/pda/P in PDAs)
-							if (!P.owner || P.toff || P.hidden)	continue
+							if (!P.owner || P.toff || P.hidden)
+								continue
 							if(P.owner == customsender)
 								PDARec = P
 						//Sender isn't faking as someone who exists
@@ -503,5 +509,5 @@
 					if(!isnull(server.decryptkey))
 						info = "<center><h2>Daily Key Reset</h2></center><br>The new message monitor key is '[server.decryptkey]'.<br>Please keep this a secret and away from the clown.<br>If necessary, change the password to a more secure one."
 						info_links = info
-						overlays += "paper_words"
+						overlays += image(icon = icon, icon_state = "paper_words")
 						break

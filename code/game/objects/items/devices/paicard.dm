@@ -3,16 +3,16 @@
 	icon = 'icons/obj/pda.dmi'
 	icon_state = "pai"
 	item_state = "electronic"
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	flags = FPRINT
 	slot_flags = SLOT_BELT
-	origin_tech = "programming=2"
+	origin_tech = Tc_PROGRAMMING + "=2"
 	var/looking_for_personality = 0
 	var/mob/living/silicon/pai/pai
 
 /obj/item/device/paicard/New()
 	..()
-	overlays += "pai-off"
+	overlays += image(icon=icon, icon_state = "pai-off")
 
 #ifdef DEBUG_ROLESELECT
 /obj/item/device/paicard/test/New()
@@ -118,12 +118,12 @@
 
 /obj/item/device/paicard/proc/setPersonality(mob/living/silicon/pai/personality)
 	src.pai = personality
-	src.overlays += "pai-happy"
+	src.overlays += image(icon=icon, icon_state = "pai-happy")
 
 /obj/item/device/paicard/proc/removePersonality()
 	src.pai = null
 	src.overlays.len = 0
-	src.overlays += "pai-off"
+	src.overlays += image(icon=icon, icon_state = "pai-off")
 
 /obj/item/device/paicard/proc/setEmotion(var/emotion)
 	if(pai)
@@ -131,26 +131,44 @@
 		src.overlays.len = 0
 		pai.overlays.len = 0
 		switch(emotion)
-			if(1) face = "pai-happy"
-			if(2) face = "pai-cat"
-			if(3) face = "pai-extremely-happy"
-			if(4) face = "pai-face"
-			if(5) face = "pai-laugh"
-			if(6) face = "pai-off"
-			if(7) face = "pai-sad"
-			if(8) face = "pai-angry"
-			if(9) face = "pai-what"
-			if(10) face = "pai-longface"
-			if(11) face = "pai-sick"
-			if(12) face = "pai-high"
-			if(13) face = "pai-love"
-			if(14) face = "pai-electric"
-			if(15) face = "pai-pissed"
-			if(16) face = "pai-nose"
-			if(17) face = "pai-kawaii"
-			if(18) face = "pai-cry"
-		src.overlays += "[face]"
-		pai.overlays += "[face]"//we also update the mob's overlay so it appears properly on the scoreboard.
+			if(1)
+				face = "pai-happy"
+			if(2)
+				face = "pai-cat"
+			if(3)
+				face = "pai-extremely-happy"
+			if(4)
+				face = "pai-face"
+			if(5)
+				face = "pai-laugh"
+			if(6)
+				face = "pai-off"
+			if(7)
+				face = "pai-sad"
+			if(8)
+				face = "pai-angry"
+			if(9)
+				face = "pai-what"
+			if(10)
+				face = "pai-longface"
+			if(11)
+				face = "pai-sick"
+			if(12)
+				face = "pai-high"
+			if(13)
+				face = "pai-love"
+			if(14)
+				face = "pai-electric"
+			if(15)
+				face = "pai-pissed"
+			if(16)
+				face = "pai-nose"
+			if(17)
+				face = "pai-kawaii"
+			if(18)
+				face = "pai-cry"
+		src.overlays += image(icon=icon, icon_state = "[face]")
+		pai.overlays += image(icon=icon, icon_state = "[face]")//we also update the mob's overlay so it appears properly on the scoreboard.
 
 /obj/item/device/paicard/proc/alertUpdate()
 	var/turf/T = get_turf(src.loc)

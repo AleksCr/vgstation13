@@ -7,7 +7,8 @@
 		return
 
 	var/muzzled = istype(src.wear_mask, /obj/item/clothing/mask/muzzle)
-	if(m_type == 2 && muzzled) return
+	if(m_type == 2 && muzzled)
+		return
 
 	var/input
 	if(!message)
@@ -80,3 +81,9 @@
 
 			else if(M.stat == DEAD && (M.client.prefs.toggles & CHAT_DEAD)) // Show the emote to regular ghosts with deadchat toggled on
 				M.show_message(message, 2)
+
+/mob/proc/audible_cough()
+	return emote("cough", auto = 1)
+
+/mob/proc/audible_scream()
+	return emote("scream", auto = 1)

@@ -67,12 +67,12 @@ var/list/possible_changeling_IDs = list("Alpha","Beta","Gamma","Delta","Epsilon"
 
 	if(possible_changelings.len>0)
 		for(var/i = 0, i < changeling_amount, i++)
-			if(!possible_changelings.len) break
+			if(!possible_changelings.len)
+				break
 			var/datum/mind/changeling = pick(possible_changelings)
-			if(changeling.special_role)
-				possible_changelings.Remove(changeling)
-				continue
 			possible_changelings -= changeling
+			if(changeling.special_role)
+				continue
 			changelings += changeling
 			modePlayer += changelings
 		log_admin("Starting a round of changeling with [changelings.len] changelings.")
@@ -97,7 +97,8 @@ var/list/possible_changeling_IDs = list("Alpha","Beta","Gamma","Delta","Epsilon"
 		greet_changeling(changeling)
 	if(!mixed)
 		spawn (rand(waittime_l, waittime_h))
-			if(!mixed) send_intercept()
+			if(!mixed)
+				send_intercept()
 		..()
 	return
 
@@ -177,7 +178,8 @@ var/list/possible_changeling_IDs = list("Alpha","Beta","Gamma","Delta","Epsilon"
 	return 0*/
 
 /datum/game_mode/proc/grant_changeling_powers(mob/living/carbon/changeling_mob)
-	if(!istype(changeling_mob))	return
+	if(!istype(changeling_mob))
+		return
 	changeling_mob.make_changeling()
 
 /datum/game_mode/proc/auto_declare_completion_changeling()
@@ -267,8 +269,10 @@ var/list/possible_changeling_IDs = list("Alpha","Beta","Gamma","Delta","Epsilon"
 /datum/changeling/New(var/gender=FEMALE)
 	..()
 	var/honorific
-	if(gender == FEMALE)	honorific = "Ms."
-	else					honorific = "Mr."
+	if(gender == FEMALE)
+		honorific = "Ms."
+	else
+		honorific = "Mr."
 	if(possible_changeling_IDs.len)
 		changelingID = pick(possible_changeling_IDs)
 		possible_changeling_IDs -= changelingID
@@ -287,3 +291,31 @@ var/list/possible_changeling_IDs = list("Alpha","Beta","Gamma","Delta","Epsilon"
 			chosen_dna = DNA
 			break
 	return chosen_dna
+
+/datum/mind/proc/make_new_changeling(var/show_message = 1, var/generate_objectives = 1)
+	if(!ischangeling(current))
+		ticker.mode.changelings += src
+		ticker.mode.grant_changeling_powers(current)
+		special_role = "Changeling"
+		if(show_message)
+			to_chat(current, "<B><font color='red'>Your powers are awoken. A flash of memory returns to us...we are a changeling!</font></B>")
+			var/wikiroute = role_wiki[ROLE_CHANGELING]
+			to_chat(current, "<span class='info'><a HREF='?src=\ref[current];getwiki=[wikiroute]'>(Wiki Guide)</a></span>")
+		if(generate_objectives)
+			ticker.mode.forge_changeling_objectives(src)
+		return 1
+	return 0
+
+/datum/mind/proc/remove_changeling_status(var/show_message = 1)
+	if(ischangeling(current))
+		ticker.mode.changelings -= src
+		special_role = null
+		current.remove_changeling_powers()
+		current.verbs -= /datum/changeling/proc/EvolutionMenu
+		if(changeling)
+			qdel(changeling)
+			changeling = null
+		if(show_message)
+			to_chat(current, "<FONT color='red' size = 3><B>You grow weak and lose your powers! You are no longer a changeling and are stuck in your current form!</B></FONT>")
+		return 1
+	return 0

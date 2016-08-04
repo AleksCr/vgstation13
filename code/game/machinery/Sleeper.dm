@@ -105,7 +105,7 @@
 				if (src.connected.occupant)
 					if (src.connected.occupant.stat == DEAD)
 						to_chat(usr, "<span class='danger'>This person has no life for to preserve anymore. Take them to a department capable of reanimating them.</span>")
-					else if(href_list["chemical"] == "stoxin" && src.connected.sedativeblock)
+					else if(href_list["chemical"] == STOXIN && src.connected.sedativeblock)
 						if(src.connected.sedativeblock < 3)
 							to_chat(usr, "<span class='warning'>Sedative injections not yet ready. Please try again in a few seconds.</span>")
 						else //if this guy is seriously just mashing the soporific button...
@@ -119,7 +119,7 @@
 							"<span class='warning'>Sorry pal, safety procedures.</span>", \
 							"<span class='warning'>But it's not bedtime yet!</span>")]")
 						src.connected.sedativeblock++
-					else if(src.connected.occupant.health < 0 && href_list["chemical"] != "inaprovaline")
+					else if(src.connected.occupant.health < 0 && href_list["chemical"] != INAPROVALINE)
 						to_chat(usr, "<span class='danger'>This person is not in good enough condition for sleepers to be effective! Use another means of treatment, such as cryogenics!</span>")
 					else
 						src.connected.inject_chemical(usr,href_list["chemical"],text2num(href_list["amount"]))
@@ -167,7 +167,7 @@
 	var/base_icon = "sleeper"
 	var/orient = "LEFT" // "RIGHT" changes the dir suffix to "-r"
 	var/mob/living/occupant = null
-	var/available_options = list("inaprovaline" = "Inaprovaline", "stoxin" = "Soporific", "dermaline" = "Dermaline", "bicaridine" = "Bicaridine", "dexalin" = "Dexalin")
+	var/available_options = list(INAPROVALINE = "Inaprovaline", STOXIN = "Soporific", DERMALINE = "Dermaline", BICARIDINE = "Bicaridine", DEXALIN = "Dexalin")
 	var/amounts = list(5, 10)
 	var/obj/machinery/sleep_console/connected = null
 	var/sedativeblock = 0 //To prevent people from being surprisesoporific'd
@@ -212,7 +212,8 @@
 			t = get_step(get_turf(src), EAST)
 			// generate_console(get_step(get_turf(src), EAST))
 
-		if(no_console) return
+		if(no_console)
+			return
 
 		ASSERT(t)
 		var/obj/machinery/sleep_console/c = locate() in t.contents
@@ -260,11 +261,11 @@
 		T += SP.rating
 	switch(T)
 		if(0 to 5)
-			available_options = list("inaprovaline" = "Inaprovaline", "stoxin" = "Soporific", "dermaline" = "Dermaline", "bicaridine" = "Bicaridine", "dexalin" = "Dexalin")
+			available_options = list(INAPROVALINE = "Inaprovaline", STOXIN = "Soporific", DERMALINE = "Dermaline", BICARIDINE = "Bicaridine", DEXALIN = "Dexalin")
 		if(6 to 8)
-			available_options = list("inaprovaline" = "Inaprovaline", "stoxin" = "Soporific", "dermaline" = "Dermaline", "bicaridine" = "Bicaridine", "dexalin" = "Dexalin", "phalanximine" = "Phalanximine")
+			available_options = list(INAPROVALINE = "Inaprovaline", STOXIN = "Soporific", DERMALINE = "Dermaline", BICARIDINE = "Bicaridine", DEXALIN = "Dexalin", PHALANXIMINE = "Phalanximine")
 		else
-			available_options = list("inaprovaline" = "Inaprovaline", "stoxin" = "Soporific", "dermaline" = "Dermaline", "bicaridine" = "Bicaridine", "dexalin" = "Dexalin", "phalanximine" = "Phalanximine", "spaceacillin" = "Spaceacillin")
+			available_options = list(INAPROVALINE = "Inaprovaline", STOXIN = "Soporific", DERMALINE = "Dermaline", BICARIDINE = "Bicaridine", DEXALIN = "Dexalin", PHALANXIMINE = "Phalanximine", SPACEACILLIN = "Spaceacillin")
 
 
 /obj/machinery/sleeper/MouseDrop_T(atom/movable/O as mob|obj, mob/user as mob)
@@ -402,7 +403,8 @@
 	if(!istype(W, /obj/item/weapon/grab))
 		return ..()
 	var/obj/item/weapon/grab/G = W
-	if(!(ismob(G.affecting)) || G.affecting.locked_to) return
+	if(!(ismob(G.affecting)) || G.affecting.locked_to)
+		return
 	if(src.occupant)
 		to_chat(user, "<span class='notice'><B>The sleeper is already occupied!</B></span>")
 		return
@@ -481,8 +483,8 @@
 	M.Paralyse(1)
 	M.Weaken(1)
 	M.Stun(1)
-	if (M:reagents.get_reagent_amount("inaprovaline") < 5)
-		M:reagents.add_reagent("inaprovaline", 5)
+	if (M:reagents.get_reagent_amount(INAPROVALINE) < 5)
+		M:reagents.add_reagent(INAPROVALINE, 5)
 	return
 
 /obj/machinery/sleeper/proc/cook(var/cook_setting)
@@ -737,7 +739,8 @@
 				if (src.connected.occupant)
 					if ((locate(/obj/item/weapon/disk/nuclear) in get_contents_in_object(connected.occupant)) && href_list["cook"] != "Thermoregulate" )
 						to_chat(usr, "<span class='danger'>Even with the safety features turned off, \the [src] refuses to cook something inside of it!</span>")
-					else connected.cook(href_list["cook"])
+					else
+						connected.cook(href_list["cook"])
 	if (href_list["refresh"])
 		src.updateUsrDialog()
 	if(href_list["auto"])

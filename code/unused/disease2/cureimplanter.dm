@@ -8,7 +8,7 @@
 	item_state = "syringe_0"
 	throw_speed = 1
 	throw_range = 5
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 
 
 /obj/item/weapon/cureimplanter/attack(mob/target as mob, mob/user as mob)
@@ -18,7 +18,8 @@
 				O.show_message(text("<span class='danger'>[] is trying to inject [] with [src.name]!</span>", user, target), 1)
 			else
 				O.show_message("<span class='danger'>[user] is trying to inject themselves with [src.name]!</span>", 1)
-		if(!do_mob(user, target,60)) return
+		if(!do_mob(user, target,60))
+			return
 
 
 		for(var/mob/O in viewers(world.view, user))

@@ -107,8 +107,10 @@ datum/hSB
 				hsbpanel += "- <a href=\"?\ref[src];hsb=hsbobj\">Spawn Object</a><br><br>"
 			usr << browse(hsbpanel, "window=hsbpanel")
 	Topic(href, href_list)
-		if(!(src.owner == usr.ckey)) return
-		if(!usr) return //I guess this is possible if they log out or die with the panel open? It happened.
+		if(!(src.owner == usr.ckey))
+			return
+		if(!usr)
+			return //I guess this is possible if they log out or die with the panel open? It happened.
 		if(href_list["hsb"])
 			switch(href_list["hsb"])
 				if("revive")
@@ -116,7 +118,8 @@ datum/hSB
 						var/mob/living/M = usr
 						M.revive()
 				if("hsbtobj")
-					if(!admin) return
+					if(!admin)
+						return
 					if(hsboxspawn)
 						to_chat(world, "<b>Sandbox:  [usr.key] has disabled object spawning!</b>")
 						hsboxspawn = 0
@@ -133,25 +136,25 @@ datum/hSB
 						P.wear_suit.layer = initial(P.wear_suit.layer)
 						P.wear_suit = null
 					P.wear_suit = new/obj/item/clothing/suit/space/nasavoid(P)
-					P.wear_suit.layer = 20
+					P.wear_suit.hud_layerise()
 					if(P.head)
 						P.head.loc = P.loc
 						P.head.layer = initial(P.head.layer)
 						P.head = null
 					P.head = new/obj/item/clothing/head/helmet/space/nasavoid(P)
-					P.head.layer = 20
+					P.head.hud_layerise()
 					if(P.wear_mask)
 						P.wear_mask.loc = P.loc
 						P.wear_mask.layer = initial(P.wear_mask.layer)
 						P.wear_mask = null
 					P.wear_mask = new/obj/item/clothing/mask/gas(P)
-					P.wear_mask.layer = 20
+					P.wear_mask.hud_layerise()
 					if(P.back)
 						P.back.loc = P.loc
 						P.back.layer = initial(P.back.layer)
 						P.back = null
 					P.back = new/obj/item/weapon/tank/jetpack/void(P)
-					P.back.layer = 20
+					P.back.hud_layerise()
 
 					P.regenerate_icons()
 				if("hsbmetal")

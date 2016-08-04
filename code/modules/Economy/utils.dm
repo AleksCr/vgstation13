@@ -6,11 +6,20 @@
 
 /proc/get_money_account(var/account_number, var/from_z=-1)
 	for(var/obj/machinery/account_database/DB in account_DBs)
-		if(from_z > -1 && DB.z != from_z) continue
-		if((DB.stat & NOPOWER) || !DB.activated ) continue
+		if(from_z > -1 && DB.z != from_z)
+			continue
+		if((DB.stat & NOPOWER) || !DB.activated )
+			continue
 		var/datum/money_account/acct = DB.get_account(account_number)
-		if(!acct) continue
+		if(!acct)
+			continue
 		return acct
+
+// Added this proc for admin tools. Not even sure we need the above proc as it is
+/proc/get_money_account_global(account_number)
+	for(var/datum/money_account/D in all_money_accounts)
+		if(D.account_number == account_number)
+			return D
 
 
 /obj/proc/get_card_account(var/obj/item/weapon/card/I, var/mob/user=null, var/terminal_name="", var/transaction_purpose="", var/require_pin=0)

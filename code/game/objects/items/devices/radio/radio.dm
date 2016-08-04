@@ -27,7 +27,7 @@
 	slot_flags = SLOT_BELT
 	throw_speed = 2
 	throw_range = 9
-	w_class = 2
+	w_class = W_CLASS_SMALL
 	starting_materials = list(MAT_IRON = 75, MAT_GLASS = 25)
 	w_type = RECYK_ELECTRONIC
 	melt_temperature = MELTPOINT_PLASTIC
@@ -75,7 +75,7 @@
 		secure_radio_connections[channel_name] = add_radio(src, radiochannels[channel_name])
 
 /obj/item/device/radio/AltClick()
-	if(!usr.incapacitated() && find_holder_of_type(src, /mob/living) == usr)
+	if(!usr.incapacitated() && is_holder_of(usr, src))
 		attack_self(usr)
 
 /obj/item/device/radio/attack_self(mob/user as mob)
@@ -215,7 +215,7 @@
 		return
 
 	var/mob/living/silicon/ai/A = new /mob/living/silicon/ai(src, null, null, 1)
-	Broadcast_Message(connection, all_languages["Sol Common"], A,
+	Broadcast_Message(connection, all_languages[LANGUAGE_HUMAN], A,
 						0, "*garbled automated announcement*", src,
 						message, from, "Automated Announcement", from, "synthesized voice",
 						4, 0, list(1), 1459)

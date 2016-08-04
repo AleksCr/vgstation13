@@ -33,7 +33,7 @@
 	icon = 'icons/obj/pda.dmi'
 	icon_state = "pda"
 	item_state = "electronic"
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	flags = FPRINT | TABLEPASS
 	slow_flags = SLOT_BELT
 
@@ -167,9 +167,11 @@
 		src.updateSelfDialog()
 
 /obj/item/device/pda2/receive_signal(datum/signal/signal)
-	if(!signal || signal.encryption || !src.owner) return
+	if(!signal || signal.encryption || !src.owner)
+		return
 
-	if(signal.data["tag"] && signal.data["tag"] != "\ref[src]") return
+	if(signal.data["tag"] && signal.data["tag"] != "\ref[src]")
+		return
 
 	if(src.host_program)
 		src.host_program.receive_signal(signal)

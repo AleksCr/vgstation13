@@ -94,6 +94,8 @@
 	var/obj/effect/blob/resource/R = locate() in T
 	if(R)
 		R.overmind = src
+		special_blobs += R
+		update_specialblobs()
 	return
 
 /mob/camera/blob/proc/create_core()
@@ -162,6 +164,8 @@
 	var/obj/effect/blob/node/N = locate() in T
 	if(N)
 		N.overmind = src
+		special_blobs += N
+		update_specialblobs()
 	return
 
 
@@ -196,6 +200,8 @@
 	var/obj/effect/blob/factory/F = locate() in T
 	if(F)
 		F.overmind = src
+		special_blobs += F
+		update_specialblobs()
 	return
 
 
@@ -219,6 +225,30 @@
 
 	B.manual_remove = 1
 	B.Delete()
+	return
+
+/mob/camera/blob/verb/callblobs()
+	set category = "Blob"
+	set name = "Call Overminds"
+	set desc = "Prompts your fellow overminds to come at your location."
+
+	var/turf/T = get_turf(src)
+	if(!T)
+		return
+
+	to_chat(src,"<span class='notice'>You sent a call to the other overminds...</span>")
+
+	var/they_exist = 0
+	for(var/mob/camera/blob/O in blob_overminds)
+		if(O != src)
+			they_exist++
+			to_chat(O,"<span class='notice'>[src] is calling for your attention!</span> <b><a href='?src=\ref[O];blobjump=\ref[loc]'>(JUMP)</a></b>")
+
+	if(they_exist)
+		to_chat(src,"<span class='notice'>...[they_exist] overmind\s heard your call!</span>")
+	else
+		to_chat(src,"<span class='notice'>...but no one heard you!</span>")
+
 	return
 
 
@@ -273,7 +303,7 @@
 	for(var/mob/living/simple_animal/hostile/blobspore/BS in living_mob_list)
 		if(isturf(BS.loc) && get_dist(BS, T) <= 35)
 			BS.LoseTarget()
-			BS.Goto(pick(surrounding_turfs), BS.move_to_delay)
+			BS.Goto(pick(surrounding_turfs), BS.speed)
 	return
 
 /mob/camera/blob/verb/telepathy(message as text)
@@ -284,3 +314,4 @@
 	to_chat(world, "<span class='warning'>Your vision becomes cloudy, and your mind becomes clear.</span>")
 	spawn(5)
 	to_chat(world, "<span class='blob'>[message]</span>")
+	log_blobtelepathy("[key_name(usr)]: [message]")

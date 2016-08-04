@@ -7,11 +7,11 @@
 	if(stat != CONSCIOUS)
 		return
 
-	if(layer != TURF_LAYER+0.2)
-		layer = TURF_LAYER+0.2
+	if(plane != HIDING_MOB_PLANE)
+		plane = HIDING_MOB_PLANE
 		visible_message("<span class='danger'>[src] scurries to the ground !</span>", "<span class='alien'>You are now hiding.</span>")
 	else
-		layer = MOB_LAYER
+		plane = MOB_PLANE
 		visible_message("<span class='warning'>[src] slowly peeks up from the ground...</span>", "<span class='alien'>You have stopped hiding.</span>")
 
 /mob/living/carbon/alien/larva/verb/evolve()
@@ -45,7 +45,8 @@
 				new_xeno = new /mob/living/carbon/alien/humanoid/drone(loc)
 		for(var/datum/language/L in languages)
 			new_xeno.add_language(L.name)
-		if(mind)	mind.transfer_to(new_xeno)
+		if(mind)
+			mind.transfer_to(new_xeno)
 		transferImplantsTo(new_xeno)
 		transferBorers(new_xeno)
 		playsound(get_turf(src), 'sound/effects/evolve.ogg', 40, 1)

@@ -42,13 +42,14 @@
 	for(var/turf/unsimulated/mineral/diamond/M in world)
 		D = M
 		break
-	S.reagents.add_reagent("analysis_sample", 1, D.geological_data)
-	S.reagents.add_reagent("chlorine", 1, null)*/
+	S.reagents.add_reagent(ANALYSIS_SAMPLE, 1, D.geological_data)
+	S.reagents.add_reagent(CHLORINE, 1, null)*/
 
 /obj/machinery/anomaly/RefreshParts()
 	var/scancount = 0
 	for(var/obj/item/weapon/stock_parts/SP in component_parts)
-		if(istype(SP, /obj/item/weapon/stock_parts/scanning_module)) scancount += SP.rating-1
+		if(istype(SP, /obj/item/weapon/stock_parts/scanning_module))
+			scancount += SP.rating-1
 	target_scan_ticks = initial(target_scan_ticks) - scancount*4
 
 /obj/machinery/anomaly/process()
@@ -114,7 +115,8 @@
 
 //this proc should be overriden by each individual machine
 /obj/machinery/anomaly/attack_hand(var/mob/user as mob)
-	if(..()) return
+	if(..())
+		return
 	if(stat & (NOPOWER|BROKEN))
 		return
 	user.machine = src
@@ -182,7 +184,8 @@ obj/machinery/anomaly/proc/FinishScan()
 		src.visible_message("<span class='notice'>[bicon(src)] makes a low buzzing noise.</span>", 2)
 
 obj/machinery/anomaly/Topic(href, href_list)
-	if(..()) return
+	if(..())
+		return
 	usr.set_machine(src)
 	if(href_list["close"])
 		usr << browse(null, "window=anomaly")

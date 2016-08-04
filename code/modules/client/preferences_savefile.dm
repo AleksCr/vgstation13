@@ -36,7 +36,8 @@
 
 
 /datum/preferences/proc/load_path(ckey,filename="preferences.sav")
-	if(!ckey)	return
+	if(!ckey)
+		return
 	path = "data/player_saves/[copytext(ckey,1,2)]/[ckey]/[filename]"
 	savefile_version = SAVEFILE_VERSION_MAX
 
@@ -90,6 +91,9 @@
 	randomslot		=	text2num(preference_list_client["randomslot"])
 	usenanoui		=	text2num(preference_list_client["usenanoui"])
 	progress_bars	=	text2num(preference_list_client["progress_bars"])
+	space_parallax	=	text2num(preference_list_client["space_parallax"])
+	space_dust		=	text2num(preference_list_client["space_dust"])
+	parallax_speed	=	text2num(preference_list_client["parallax_speed"])
 
 	ooccolor		= 	sanitize_hexcolor(ooccolor, initial(ooccolor))
 	lastchangelog	= 	sanitize_text(lastchangelog, initial(lastchangelog))
@@ -105,14 +109,20 @@
 	special_popup	= 	sanitize_integer(special_popup, 0, 1, initial(special_popup))
 	usenanoui		= 	sanitize_integer(usenanoui, 0, 1, initial(usenanoui))
 	progress_bars	= 	sanitize_integer(progress_bars, 0, 1, initial(progress_bars))
+	space_parallax	=	sanitize_integer(space_parallax, 0, 1, initial(space_parallax))
+	space_dust		=	sanitize_integer(space_dust, 0, 1, initial(space_dust))
+	parallax_speed	=	sanitize_integer(parallax_speed, 0, 5, initial(parallax_speed))
 	return 1
 
 
 /datum/preferences/proc/load_preferences()
-	if(!path)				return 0
-	if(!fexists(path))		return 0
+	if(!path)
+		return 0
+	if(!fexists(path))
+		return 0
 	var/savefile/S = new /savefile(path)
-	if(!S)					return 0
+	if(!S)
+		return 0
 	S.cd = "/"
 
 	S["version"] >> savefile_version
@@ -165,15 +175,15 @@
 	check.Add("SELECT ckey FROM client WHERE ckey = ?", ckey)
 	if(check.Execute(db))
 		if(!check.NextRow())
-			q.Add("INSERT into client (ckey, ooc_color, lastchangelog, UI_style, default_slot, toggles, UI_style_color, UI_style_alpha, warns, warnbans, randomslot, volume, usewmp, special, usenanoui, progress_bars) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",\
-			ckey, ooccolor, lastchangelog, UI_style, default_slot, toggles, UI_style_color, UI_style_alpha, warns, warnbans, randomslot, volume, usewmp, special_popup, usenanoui, progress_bars)
+			q.Add("INSERT into client (ckey, ooc_color, lastchangelog, UI_style, default_slot, toggles, UI_style_color, UI_style_alpha, warns, warnbans, randomslot, volume, usewmp, special, usenanoui, progress_bars, space_parallax, space_dust, parallax_speed) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",\
+			ckey, ooccolor, lastchangelog, UI_style, default_slot, toggles, UI_style_color, UI_style_alpha, warns, warnbans, randomslot, volume, usewmp, special_popup, usenanoui, progress_bars, space_parallax, space_dust, parallax_speed)
 			if(!q.Execute(db))
 				message_admins("Error #: [q.Error()] - [q.ErrorMsg()]")
 				WARNING("Error #:[q.Error()] - [q.ErrorMsg()]")
 				return 0
 		else
-			q.Add("UPDATE client SET ooc_color=?,lastchangelog=?,UI_style=?,default_slot=?,toggles=?,UI_style_color=?,UI_style_alpha=?,warns=?,warnbans=?,randomslot=?,volume=?,usewmp=?,special=?,usenanoui=?,progress_bars=? WHERE ckey = ?",\
-			ooccolor, lastchangelog, UI_style, default_slot, toggles, UI_style_color, UI_style_alpha, warns, warnbans, randomslot, volume, usewmp, special_popup, usenanoui, progress_bars, ckey)
+			q.Add("UPDATE client SET ooc_color=?,lastchangelog=?,UI_style=?,default_slot=?,toggles=?,UI_style_color=?,UI_style_alpha=?,warns=?,warnbans=?,randomslot=?,volume=?,usewmp=?,special=?,usenanoui=?,progress_bars=?,space_parallax=?,space_dust=?,parallax_speed=? WHERE ckey = ?",\
+			ooccolor, lastchangelog, UI_style, default_slot, toggles, UI_style_color, UI_style_alpha, warns, warnbans, randomslot, volume, usewmp, special_popup, usenanoui, progress_bars, space_parallax, space_dust, parallax_speed, ckey)
 			if(!q.Execute(db))
 				message_admins("Error #: [q.Error()] - [q.ErrorMsg()]")
 				WARNING("Error #:[q.Error()] - [q.ErrorMsg()]")
@@ -187,9 +197,11 @@
 	return 1
 
 /datum/preferences/proc/save_preferences()
-	if(!path)				return 0
+	if(!path)
+		return 0
 	var/savefile/S = new /savefile(path)
-	if(!S)					return 0
+	if(!S)
+		return 0
 	S.cd = "/"
 
 	S["version"] << savefile_version
@@ -207,13 +219,18 @@
 	S["warnbans"]       << warnbans
 	S["randomslot"]     << randomslot
 	S["volume"]         << volume
+	S["space_parallax"] << space_parallax
+	S["space_dust"]		<< space_dust
+	S["parallax_speed"]	<< parallax_speed
 	return 1
 
 //saving volume changes
 /datum/preferences/proc/save_volume()
-	if(!path)				return 0
+	if(!path)
+		return 0
 	var/savefile/S = new /savefile(path)
-	if(!S)					return 0
+	if(!S)
+		return 0
 	S.cd = "/"
 
 	S["volume"] << volume
@@ -378,14 +395,14 @@ AND players.player_slot = ? ;"}, ckey, slot)
 	underwear			= text2num(preference_list["underwear"])
 	backbag				= text2num(preference_list["backbag"])
 
-	organ_data["l_arm"] = preference_list["l_arm"]
-	organ_data["r_arm"] = preference_list["r_arm"]
-	organ_data["l_leg"] = preference_list["l_leg"]
-	organ_data["r_leg"] = preference_list["r_leg"]
-	organ_data["l_foot"]= preference_list["l_foot"]
-	organ_data["r_foot"]= preference_list["r_foot"]
-	organ_data["l_hand"]= preference_list["l_hand"]
-	organ_data["r_hand"]= preference_list["r_hand"]
+	organ_data[LIMB_LEFT_ARM] = preference_list[LIMB_LEFT_ARM]
+	organ_data[LIMB_RIGHT_ARM] = preference_list[LIMB_RIGHT_ARM]
+	organ_data[LIMB_LEFT_LEG] = preference_list[LIMB_LEFT_LEG]
+	organ_data[LIMB_RIGHT_LEG] = preference_list[LIMB_RIGHT_LEG]
+	organ_data[LIMB_LEFT_FOOT]= preference_list[LIMB_LEFT_FOOT]
+	organ_data[LIMB_RIGHT_FOOT]= preference_list[LIMB_RIGHT_FOOT]
+	organ_data[LIMB_LEFT_HAND]= preference_list[LIMB_LEFT_HAND]
+	organ_data[LIMB_RIGHT_HAND]= preference_list[LIMB_RIGHT_HAND]
 	organ_data["heart"] = preference_list["heart"]
 	organ_data["eyes"] 	= preference_list["eyes"]
 	organ_data["lungs"] = preference_list["lungs"]
@@ -407,10 +424,14 @@ AND players.player_slot = ? ;"}, ckey, slot)
 	metadata			= sanitize_text(metadata, initial(metadata))
 	real_name			= reject_bad_name(real_name)
 
-	if(isnull(species)) species = "Human"
-	if(isnull(language)) language = "None"
-	if(isnull(nanotrasen_relation)) nanotrasen_relation = initial(nanotrasen_relation)
-	if(!real_name) real_name = random_name(gender,species)
+	if(isnull(species))
+		species = "Human"
+	if(isnull(language))
+		language = "None"
+	if(isnull(nanotrasen_relation))
+		nanotrasen_relation = initial(nanotrasen_relation)
+	if(!real_name)
+		real_name = random_name(gender,species)
 	be_random_name	= sanitize_integer(be_random_name, 0, 1, initial(be_random_name))
 	gender			= sanitize_gender(gender)
 	age				= sanitize_integer(age, AGE_MIN, AGE_MAX, initial(age))
@@ -457,11 +478,16 @@ AND players.player_slot = ? ;"}, ckey, slot)
 		WARNING("[__LINE__]: datum/preferences/load_save_sqlite has returned")
 		return 0
 
-	if(!skills) skills = list()
-	if(!used_skillpoints) used_skillpoints= 0
-	if(isnull(disabilities)) disabilities = 0
-	if(!player_alt_titles) player_alt_titles = new()
-	if(!organ_data) src.organ_data = list()
+	if(!skills)
+		skills = list()
+	if(!used_skillpoints)
+		used_skillpoints= 0
+	if(isnull(disabilities))
+		disabilities = 0
+	if(!player_alt_titles)
+		player_alt_titles = new()
+	if(!organ_data)
+		src.organ_data = list()
 
 	if(user)
 		to_chat(user, "Sucessfully loaded [real_name].")
@@ -471,7 +497,8 @@ AND players.player_slot = ? ;"}, ckey, slot)
 
 /datum/preferences/proc/load_save(dir)
 	var/savefile/S = new /savefile(path)
-	if(!S) return 0
+	if(!S)
+		return 0
 	S.cd = dir
 
 	//Character
@@ -530,10 +557,14 @@ AND players.player_slot = ? ;"}, ckey, slot)
 	//Sanitize
 	metadata		= sanitize_text(metadata, initial(metadata))
 	real_name		= reject_bad_name(real_name)
-	if(isnull(species)) species = "Human"
-	if(isnull(language)) language = "None"
-	if(isnull(nanotrasen_relation)) nanotrasen_relation = initial(nanotrasen_relation)
-	if(!real_name) real_name = random_name(gender,species)
+	if(isnull(species))
+		species = "Human"
+	if(isnull(language))
+		language = "None"
+	if(isnull(nanotrasen_relation))
+		nanotrasen_relation = initial(nanotrasen_relation)
+	if(!real_name)
+		real_name = random_name(gender,species)
 	be_random_name	= sanitize_integer(be_random_name, 0, 1, initial(be_random_name))
 	gender			= sanitize_gender(gender)
 	age				= sanitize_integer(age, AGE_MIN, AGE_MAX, initial(age))
@@ -563,11 +594,16 @@ AND players.player_slot = ? ;"}, ckey, slot)
 	job_engsec_med = sanitize_integer(job_engsec_med, 0, 65535, initial(job_engsec_med))
 	job_engsec_low = sanitize_integer(job_engsec_low, 0, 65535, initial(job_engsec_low))
 
-	if(!skills) skills = list()
-	if(!used_skillpoints) used_skillpoints= 0
-	if(isnull(disabilities)) disabilities = 0
-	if(!player_alt_titles) player_alt_titles = new()
-	if(!organ_data) src.organ_data = list()
+	if(!skills)
+		skills = list()
+	if(!used_skillpoints)
+		used_skillpoints= 0
+	if(isnull(disabilities))
+		disabilities = 0
+	if(!player_alt_titles)
+		player_alt_titles = new()
+	if(!organ_data)
+		src.organ_data = list()
 	//if(!skin_style) skin_style = "Default"
 
 
@@ -587,16 +623,20 @@ AND players.player_slot = ? ;"}, ckey, slot)
 	return 1
 
 /datum/preferences/proc/random_character()
-	if(!path)				return 0
-	if(!fexists(path))		return 0
+	if(!path)
+		return 0
+	if(!fexists(path))
+		return 0
 	var/savefile/S = new /savefile(path)
-	if(!S)					return 0
+	if(!S)
+		return 0
 	var/list/saves = list()
 	var/name
 	for(var/i=1, i<=MAX_SAVE_SLOTS, i++)
 		S.cd = "/character[i]"
 		S["real_name"] >> name
-		if(!name) continue
+		if(!name)
+			continue
 		saves.Add(S.cd)
 
 	if(!saves.len)
@@ -607,12 +647,16 @@ AND players.player_slot = ? ;"}, ckey, slot)
 	return 1
 
 /datum/preferences/proc/load_character(slot)
-	if(!path)				return 0
-	if(!fexists(path))		return 0
+	if(!path)
+		return 0
+	if(!fexists(path))
+		return 0
 	var/savefile/S = new /savefile(path)
-	if(!S)					return 0
+	if(!S)
+		return 0
 	S.cd = "/"
-	if(!slot)	slot = default_slot
+	if(!slot)
+		slot = default_slot
 	slot = sanitize_integer(slot, 1, MAX_SAVE_SLOTS, initial(default_slot))
 	if(slot != default_slot)
 		default_slot = slot
@@ -758,9 +802,11 @@ AND players.player_slot = ? ;"}, ckey, slot)
 /datum/preferences/proc/save_character()
 
 
-	if(!path)				return 0
+	if(!path)
+		return 0
 	var/savefile/S = new /savefile(path)
-	if(!S)					return 0
+	if(!S)
+		return 0
 	S.cd = "/character[default_slot]"
 
 	//Character + misc

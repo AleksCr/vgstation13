@@ -3,6 +3,7 @@
 /obj/machinery/bot
 	icon = 'icons/obj/aibots.dmi'
 	layer = MOB_LAYER
+	plane = MOB_PLANE
 	luminosity = 3
 	use_power = 0
 	var/icon_initial //To get around all that pesky hardcoding of icon states, don't put modifiers on this one
@@ -36,7 +37,8 @@
 		botcard = null
 
 /obj/machinery/bot/proc/turn_on()
-	if(stat)	return 0
+	if(stat)
+		return 0
 	on = 1
 	set_light(initial(luminosity))
 	return 1
@@ -56,7 +58,7 @@
 	if(locked)
 		locked = 0
 		emagged = 1
-		to_chat(user, "<span class='warning'>You remove [src]'s control restrictions. Swiping again will cause [src] to malfunction.</span>")
+		to_chat(user, "<span class='warning'>You remove [src]'s control restrictions. Opening up its maintenance panel and swiping again will cause [src] to malfunction.</span>")
 	if(!locked && open)
 		emagged = 2
 		to_chat(user, "<span class='warning'>You cause a malfunction in [src]'s behavioral matrix.</span>")
@@ -85,7 +87,8 @@
 /obj/machinery/bot/attack_animal(var/mob/living/simple_animal/M as mob)
 	if(flags & INVULNERABLE)
 		return
-	if(M.melee_damage_upper == 0)	return
+	if(M.melee_damage_upper == 0)
+		return
 	src.health -= M.melee_damage_upper
 	src.visible_message("<span class='danger'>[M] has [M.attacktext] [src]!</span>")
 	add_logs(M, src, "attacked", admin=0)
@@ -104,6 +107,9 @@
 			hud_user_list = med_hud_users
 	var/area/myturf = get_turf(src)
 	for(var/mob/huduser in hud_user_list)
+		if(!huduser.loc)
+			continue
+
 		var/turf/mobturf = get_turf(huduser)
 		if(mobturf.z == myturf.z)
 			huduser.show_message(declare_message,1)
@@ -112,10 +118,9 @@
 /obj/machinery/bot/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	if(flags & INVULNERABLE)
 		return
-	if(isscrewdriver(W))
-		if(!locked)
-			open = !open
-			to_chat(user, "<span class='notice'>Maintenance panel is now [src.open ? "opened" : "closed"].</span>")
+	if(!locked && (isscrewdriver(W) || iscrowbar(W)))
+		open = !open
+		to_chat(user, "<span class='notice'>Maintenance panel is now [src.open ? "opened" : "closed"].</span>")
 	else if(istype(W, /obj/item/weapon/weldingtool))
 		if(health < maxhealth)
 			if(open)

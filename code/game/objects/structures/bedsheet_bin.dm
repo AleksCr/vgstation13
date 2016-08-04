@@ -5,16 +5,18 @@ LINEN BINS
 */
 
 /obj/item/weapon/bedsheet
+	plane = ABOVE_OBJ_PLANE
+	layer = BLANKIES_LAYER
 	name = "bedsheet"
 	desc = "A surprisingly soft linen bedsheet."
 	icon = 'icons/obj/items.dmi'
-	icon_state = "sheet"
+	icon_state = "sheetwhite"
 	item_state = "bedsheet"
-	layer = 4.0
+	slot_flags = SLOT_BACK
 	throwforce = 1
 	throw_speed = 1
 	throw_range = 2
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	_color = "white"
 
 //cutting the bedsheet into rags
@@ -31,13 +33,14 @@ LINEN BINS
 	if(cut_time)
 		to_chat(user, "<span  class='notice'>You begin cutting the [src].</span>")
 		if(do_after(user, src, cut_time))
-			if(!src) return
+			if(!src)
+				return
 			to_chat(user, "<span  class='notice'>You have cut the [src] into rags.</span>")
 			var/turf/location = get_turf(src)
 			for(var/x=0; x<=8; x++)
 				var/obj/item/weapon/reagent_containers/glass/rag/S = new/obj/item/weapon/reagent_containers/glass/rag/(location)
-				S.pixel_x = rand(-5.0, 5)
-				S.pixel_y = rand(-5.0, 5)
+				S.pixel_x = rand(-5, 5) * PIXEL_MULTIPLIER
+				S.pixel_y = rand(-5, 5) * PIXEL_MULTIPLIER
 			qdel(src)
 
 //todo: hold one if possible?
@@ -45,15 +48,6 @@ LINEN BINS
 //todo: finger prints?
 //todo: more cutting tools?
 //todo: sharp thing code/game/objects/objs.dm
-
-/obj/item/weapon/bedsheet/attack_self(mob/user as mob)
-	user.drop_item(src, force_drop = 1)
-	if(layer == initial(layer))
-		layer = 5
-	else
-		layer = initial(layer)
-	add_fingerprint(user)
-	return
 
 
 /obj/item/weapon/bedsheet/blue
@@ -150,8 +144,10 @@ LINEN BINS
 
 /obj/structure/bedsheetbin/update_icon()
 	switch(amount)
-		if(0)				icon_state = "linenbin-empty"
-		if(1 to amount / 2)	icon_state = "linenbin-half"
+		if(0)
+			icon_state = "linenbin-empty"
+		if(1 to amount / 2)
+			icon_state = "linenbin-half"
 		else				icon_state = "linenbin-full"
 
 
@@ -161,7 +157,7 @@ LINEN BINS
 			sheets.Add(I)
 			amount++
 			to_chat(user, "<span class='notice'>You put \the [I] in \the [src].</span>")
-	else if(amount && !hidden && I.w_class < 4)	//make sure there's sheets to hide it among, make sure nothing else is hidden in there.
+	else if(amount && !hidden && I.w_class < W_CLASS_LARGE)	//make sure there's sheets to hide it among, make sure nothing else is hidden in there.
 		if(user.drop_item(I, src))
 			hidden = I
 			to_chat(user, "<span class='notice'>You hide [I] among the sheets.</span>")

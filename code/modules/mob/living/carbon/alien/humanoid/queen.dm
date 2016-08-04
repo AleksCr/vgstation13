@@ -9,12 +9,16 @@
 	plasma_rate = 20
 
 /mob/living/carbon/alien/humanoid/queen/movement_delay()
-	return (5 + move_delay_add + config.alien_delay) //Queens are slow as fuck
+	var/tally = 5 + move_delay_add + config.alien_delay //Queens are slow as fuck
+
+	var/turf/T = loc
+	if(istype(T))
+		tally = T.adjust_slowdown(src, tally)
+
+	return tally
 
 /mob/living/carbon/alien/humanoid/queen/New()
-	var/datum/reagents/R = new/datum/reagents(100)
-	reagents = R
-	R.my_atom = src
+	create_reagents(100)
 
 	//there should only be one queen
 	for(var/mob/living/carbon/alien/humanoid/queen/Q in living_mob_list)
@@ -82,14 +86,15 @@
 /mob/living/carbon/alien/humanoid/queen/large
 	icon = 'icons/mob/giantmobs.dmi'
 	icon_state = "queen_s"
-	pixel_x = -16
+	pixel_x = -16 * PIXEL_MULTIPLIER
 
 /mob/living/carbon/alien/humanoid/queen/large/update_icons()
 	lying_prev = lying	//so we don't update overlays for lying/standing unless our stance changes again
 	update_hud()		//TODO: remove the need for this to be here
 	overlays.len = 0
 	if(lying)
-		if(resting)					icon_state = "queen_sleep"
+		if(resting)
+			icon_state = "queen_sleep"
 		else						icon_state = "queen_l"
 		for(var/image/I in overlays_lying)
 			overlays += I

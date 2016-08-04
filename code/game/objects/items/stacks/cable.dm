@@ -20,12 +20,13 @@ var/global/list/datum/stack_recipe/cable_recipes = list ( \
 	icon_state = "coil_red"
 	gender = NEUTER
 	amount = MAXCOIL
+	restock_amount = 2
 	singular_name = "cable piece"
 	max_amount = MAXCOIL
 	_color = "red"
 	desc = "A coil of power cable."
 	throwforce = 10
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	throw_speed = 2
 	throw_range = 5
 	starting_materials = list(MAT_IRON = CC_PER_SHEET_METAL)
@@ -48,8 +49,8 @@ var/global/list/datum/stack_recipe/cable_recipes = list ( \
 	if(param_color)
 		_color = param_color
 
-	pixel_x = rand(-2,2)
-	pixel_y = rand(-2,2)
+	pixel_x = rand(-2,2) * PIXEL_MULTIPLIER
+	pixel_y = rand(-2,2) * PIXEL_MULTIPLIER
 	update_icon()
 
 ///////////////////////////////////
@@ -276,8 +277,8 @@ var/global/list/datum/stack_recipe/cable_recipes = list ( \
 	..(loc)
 	if(!amount)
 		src.amount = rand(1, 2)
-	pixel_x = rand(-2, 2)
-	pixel_y = rand(-2, 2)
+	pixel_x = rand(-2, 2) * PIXEL_MULTIPLIER
+	pixel_y = rand(-2, 2) * PIXEL_MULTIPLIER
 	update_icon()
 
 /obj/item/stack/cable_coil/yellow

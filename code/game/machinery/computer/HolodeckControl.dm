@@ -147,7 +147,7 @@
 			emagged = !emagged
 			if(emagged)
 				message_admins("[key_name_admin(usr)] overrode the holodeck's safeties")
-				log_game("[key_name(usr)] overrided the holodeck's safeties")
+				log_game("[key_name(usr)] overrode the holodeck's safeties")
 				visible_message("<span class='warning'>Warning: Holodeck safeties overriden. Please contact Nanotrasen maintenance and cease all operation if you are not source of that command.</span>")
 			else
 				message_admins("[key_name_admin(usr)] restored the holodeck's safeties")
@@ -363,7 +363,6 @@
 	icon_state = "table"
 	density = 1
 	anchored = 1.0
-	layer = 2.8
 	throwpass = 1	//You can throw objects over this, despite it's density.
 
 /obj/structure/table/holotable/attack_paw(mob/user as mob)
@@ -415,7 +414,7 @@
 	icon_state = "rwindow"
 	desc = "A window."
 	density = 1
-	layer = 3.2//Just above doors
+	layer = ABOVE_DOOR_LAYER
 	pressure_resistance = 4*ONE_ATMOSPHERE
 	anchored = 1.0
 	flags = ON_BORDER
@@ -428,7 +427,8 @@
 			if(get_dir(loc, target) == dir)
 				return !density
 		else if(mover.dir == dir) //Or are we using move code
-			if(density)	Bumped(mover)
+			if(density)
+				mover.Bump(src)
 			return !density
 	return 1
 
@@ -449,7 +449,7 @@
 	throw_speed = 1
 	throw_range = 5
 	throwforce = 0
-	w_class = 2
+	w_class = W_CLASS_SMALL
 	flags = FPRINT
 	var/active = 0
 
@@ -480,13 +480,13 @@
 	if(active)
 		force = 30
 		icon_state = "sword[_color]"
-		w_class = 4
+		w_class = W_CLASS_LARGE
 		playsound(user, 'sound/weapons/saberon.ogg', 50, 1)
 		to_chat(user, "<span class='notice'>[src] is now active.</span>")
 	else
 		force = 3
 		icon_state = "sword0"
-		w_class = 2
+		w_class = W_CLASS_SMALL
 		playsound(user, 'sound/weapons/saberoff.ogg', 50, 1)
 		to_chat(user, "<span class='notice'>[src] can now be concealed.</span>")
 	add_fingerprint(user)
@@ -500,7 +500,7 @@
 	name = "basketball"
 	item_state = "basketball"
 	desc = "Here's your chance, do your dance at the Space Jam."
-	w_class = 4 //Stops people from hiding it in their bags/pockets
+	w_class = W_CLASS_LARGE //Stops people from hiding it in their bags/pockets
 
 /obj/structure/holohoop
 	name = "basketball hoop"

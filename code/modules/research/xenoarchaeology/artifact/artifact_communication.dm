@@ -26,7 +26,8 @@
 	return //Robots HA
 
 /obj/machinery/communication/attack_hand(mob/user as mob)
-	if(..()) return 1
+	if(..())
+		return 1
 	if(contents.len)
 		var/obj/item/commstone/stone = contents[1]
 		user.put_in_hands(stone)
@@ -56,7 +57,8 @@
 	..()
 
 /obj/machinery/communication/proc/get_active_stones()
-	if((stat & NOPOWER) && !anchored) return list()
+	if((stat & NOPOWER) && !anchored)
+		return list()
 	var/list/obj/item/commstone/thestones = allstones.Copy()
 	for(var/obj/item/commstone/check in thestones)
 		if(check.loc == src)
@@ -68,7 +70,7 @@
 	desc = "You can hear small voices coming from within, they whisper through to you a soft but persistent message - 'use .y'"
 	icon = 'icons/obj/xenoarchaeology.dmi'
 	icon_state = "crystal1"
-	w_class = 2
+	w_class = W_CLASS_SMALL
 	var/obj/machinery/communication/commdevice = null
 	var/number = null
 

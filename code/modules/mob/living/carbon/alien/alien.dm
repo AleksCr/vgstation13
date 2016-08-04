@@ -18,6 +18,7 @@
 
 	var/storedPlasma = 250
 	var/max_plasma = 500
+	var/neurotoxin_cooldown = 0
 
 	var/obj/item/weapon/card/id/wear_id = null // Fix for station bounced radios -- Skie
 	var/has_fine_manipulation = 0
@@ -44,9 +45,9 @@
 		if(!hud_used.vampire_blood_display)
 			hud_used.plasma_hud()
 			//hud_used.human_hud(hud_used.ui_style)
-		hud_used.vampire_blood_display.maptext_width = 64
-		hud_used.vampire_blood_display.maptext_height = 32
-		hud_used.vampire_blood_display.maptext = "<div align='left' valign='top' style='position:relative; top:0px; left:6px'> P:<font color='#E9DAE9' size='1'>[storedPlasma]</font><br>  / <font color='#BE7DBE' size='1'>[max_plasma]</font></div>"
+		hud_used.vampire_blood_display.maptext_width = WORLD_ICON_SIZE*2
+		hud_used.vampire_blood_display.maptext_height = WORLD_ICON_SIZE
+		hud_used.vampire_blood_display.maptext = "<div align='left' valign='top' style='position:relative; top:0px; left:6px'>P:<font color='#E9DAE9' size='1'>[storedPlasma]</font><br>  / <font color='#BE7DBE' size='1'>[max_plasma]</font></div>"
 	return
 
 /*
@@ -64,6 +65,9 @@
 
 /mob/living/carbon/alien/eyecheck()
 	return 2
+
+/mob/living/carbon/alien/earprot()
+	return 1
 
 // MULEBOT SMASH
 /mob/living/carbon/alien/Crossed(var/atom/movable/AM)

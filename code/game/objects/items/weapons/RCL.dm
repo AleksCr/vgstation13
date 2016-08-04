@@ -12,10 +12,10 @@
 	throwforce = 5.0
 	throw_speed = 1
 	throw_range = 10
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	w_type = RECYK_ELECTRONIC
 	melt_temperature = MELTPOINT_PLASTIC
-	origin_tech = "engineering=2;materials=4"
+	origin_tech = Tc_ENGINEERING + "=2;" + Tc_MATERIALS + "=4"
 	var/max_amount = 90
 	var/active = 0
 	var/obj/structure/cable/last = null
@@ -32,7 +32,8 @@
 		update_icon()
 		to_chat(user, "<span class='notice'>You add the cables to the [src]. It now contains [loaded.amount].</span>")
 	else if(isscrewdriver(W))
-		if(!loaded) return
+		if(!loaded)
+			return
 		to_chat(user, "<span class='notice'>You loosen the securing screws on the side, allowing you to lower the guiding edge and retrieve the wires.</span>")
 		while(loaded.amount>30) //There are only two kinds of situations: "nodiff" (60,90), or "diff" (31-59, 61-89)
 			var/diff = loaded.amount % 30
@@ -112,8 +113,16 @@
 				last = null
 				return
 			loaded.cable_join(last,user)
-			if(is_empty(user)) return //If we've run out, display message and exit
+			if(is_empty(user))
+				return //If we've run out, display message and exit
 		else
 			last = null
 	last = loaded.turf_place(get_turf(src.loc),user,turn(user.dir,180))
 	is_empty(user) //If we've run out, display message
+
+/obj/item/weapon/rcl/pre_loaded/New() //Comes preloaded with cable, for testing stuff
+	..()
+	loaded = new()
+	loaded.max_amount = max_amount
+	loaded.amount = max_amount
+	update_icon()

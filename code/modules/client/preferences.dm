@@ -94,6 +94,9 @@ var/const/MAX_SAVE_SLOTS = 8
 	var/toggles = TOGGLES_DEFAULT
 	var/UI_style_color = "#ffffff"
 	var/UI_style_alpha = 255
+	var/space_parallax = 1
+	var/space_dust = 1
+	var/parallax_speed = 2
 	var/special_popup = 0
 
 	//character preferences
@@ -228,7 +231,7 @@ var/const/MAX_SAVE_SLOTS = 8
 	<b>Gender:</b> <a href='?_src_=prefs;preference=gender'>[gender == MALE ? "Male" : "Female"]</a><BR>
 	<b>Age:</b> <a href='?_src_=prefs;preference=age;task=input'>[age]</a>
 	</td><td valign='center'>
-	<div class='statusDisplay'><center><img src=previewicon.png height=64 width=64><img src=previewicon2.png height=64 width=64></center></div>
+	<div class='statusDisplay'><center><img src=previewicon.png class="charPreview"><img src=previewicon2.png class="charPreview"></center></div>
 	</td></tr></table>
 	<h2>Body</h2>
 	<a href='?_src_=prefs;preference=all;task=random'>Random Body</A>
@@ -274,6 +277,9 @@ var/const/MAX_SAVE_SLOTS = 8
 /datum/preferences/proc/setup_special(var/dat, var/user)
 	dat += {"<table><tr><td width='340px' height='300px' valign='top'>
 	<h2>General Settings</h2>
+	<b>Space Parallax:</b> <a href='?_src_=prefs;preference=parallax'><b>[space_parallax ? "Enabled" : "Disabled"]</b></a><br>
+	<b>Parallax Speed:</b> <a href='?_src_=prefs;preference=p_speed'><b>[parallax_speed]</b></a><br>
+	<b>Space Dust:</b> <a href='?_src_=prefs;preference=dust'><b>[space_dust ? "Yes" : "No"]</b></a><br>
 	<b>Play admin midis:</b> <a href='?_src_=prefs;preference=hear_midis'><b>[(toggles & SOUND_MIDI) ? "Yes" : "No"]</b></a><br>
 	<b>Play lobby music:</b> <a href='?_src_=prefs;preference=lobby_music'><b>[(toggles & SOUND_LOBBY) ? "Yes" : "No"]</b></a><br>
 	<b>Hear streamed media:</b> <a href='?_src_=prefs;preference=jukebox'><b>[(toggles & SOUND_STREAMING) ? "Yes" : "No"]</b></a><br>
@@ -373,12 +379,14 @@ var/const/MAX_SAVE_SLOTS = 8
 				}
 
 			function mouseUp(event,levelup,leveldown,rank){
-				if(event.button == 0){
+				if(event.button == 0)
+					{
 					//alert("left click " + levelup + " " + rank);
 					setJobPrefRedirect(1, rank);
 					return false;
 					}
-				if(event.button == 2){
+				if(event.button == 2)
+					{
 					//alert("right click " + leveldown + " " + rank);
 					setJobPrefRedirect(0, rank);
 					return false;
@@ -401,7 +409,8 @@ var/const/MAX_SAVE_SLOTS = 8
 
 	//The job before the current job. I only use this to get the previous jobs color when I'm filling in blank rows.
 	var/datum/job/lastJob
-	if (!job_master)		return
+	if (!job_master)
+		return
 	for(var/datum/job/job in job_master.occupations)
 		index += 1
 		if((index >= limit) || (job.title in splitJobs))
@@ -521,7 +530,8 @@ var/const/MAX_SAVE_SLOTS = 8
 	return
 
 /datum/preferences/proc/ShowChoices(mob/user)
-	if(!user || !user.client)	return
+	if(!user || !user.client)
+		return
 	update_preview_icon()
 	var/preview_front = fcopy_rsc(preview_icon_front)
 	var/preview_side = fcopy_rsc(preview_icon_side)
@@ -583,6 +593,7 @@ var/const/MAX_SAVE_SLOTS = 8
 	HTML += ShowDisabilityState(user,DISABILITY_FLAG_FAT,        "Obese")
 	HTML += ShowDisabilityState(user,DISABILITY_FLAG_EPILEPTIC,  "Seizures")
 	HTML += ShowDisabilityState(user,DISABILITY_FLAG_DEAF,       "Deaf")
+	HTML += ShowDisabilityState(user,DISABILITY_FLAG_BLIND,      "Blind")
 	/*HTML += ShowDisabilityState(user,DISABILITY_FLAG_COUGHING,   "Coughing")
 	HTML += ShowDisabilityState(user,DISABILITY_FLAG_TOURETTES,   "Tourettes") Still working on it! -Angelite*/
 
@@ -717,7 +728,8 @@ var/const/MAX_SAVE_SLOTS = 8
 	job_engsec_low = 0
 
 /datum/preferences/proc/GetJobDepartment(var/datum/job/job, var/level)
-	if(!job || !level)	return 0
+	if(!job || !level)
+		return 0
 	switch(job.department_flag)
 		if(CIVILIAN)
 			switch(level)
@@ -746,7 +758,8 @@ var/const/MAX_SAVE_SLOTS = 8
 	return 0
 
 /datum/preferences/proc/SetJobDepartment(var/datum/job/job, var/level)
-	if(!job || !level)	return 0
+	if(!job || !level)
+		return 0
 	switch(level)
 		if(1)//Only one of these should ever be active at once so clear them all here
 			job_civilian_high = 0
@@ -1293,47 +1306,60 @@ NOTE:  The change will take effect AFTER any current recruiting periods."}
 						flavor_text = msg
 
 				if("limbs")
-					var/limb_name = input(user, "Which limb do you want to change?") as null|anything in list("Left Leg","Right Leg","Left Arm","Right Arm","Left Foot","Right Foot","Left Hand","Right Hand")
-					if(!limb_name) return
+					var/list/limb_input = list(
+						"Left Leg [organ_data[LIMB_LEFT_LEG]]" = LIMB_LEFT_LEG,
+						"Right Leg [organ_data[LIMB_RIGHT_LEG]]" = LIMB_RIGHT_LEG,
+						"Left Arm [organ_data[LIMB_LEFT_ARM]]" = LIMB_LEFT_ARM,
+						"Right Arm [organ_data[LIMB_RIGHT_ARM]]" = LIMB_RIGHT_ARM,
+						"Left Foot [organ_data[LIMB_LEFT_FOOT]]" = LIMB_LEFT_FOOT,
+						"Right Foot [organ_data[LIMB_RIGHT_FOOT]]" = LIMB_RIGHT_FOOT,
+						"Left Hand [organ_data[LIMB_LEFT_HAND]]" = LIMB_LEFT_HAND,
+						"Right Hand [organ_data[LIMB_RIGHT_HAND]]" = LIMB_RIGHT_HAND
+						)
+
+					var/limb_name = input(user, "Which limb do you want to change?") as null|anything in limb_input
+					if(!limb_name)
+						return
 
 					var/limb = null
 					var/second_limb = null // if you try to change the arm, the hand should also change
 					var/third_limb = null  // if you try to unchange the hand, the arm should also change
 					var/valid_limb_states=list("Normal","Amputated","Prothesis")
-					switch(limb_name)
-						if("Left Leg")
-							limb = "l_leg"
-							second_limb = "l_foot"
+					switch(limb_input[limb_name])
+						if(LIMB_LEFT_LEG)
+							limb = LIMB_LEFT_LEG
+							second_limb = LIMB_LEFT_FOOT
 							valid_limb_states += "Peg Leg"
-						if("Right Leg")
-							limb = "r_leg"
-							second_limb = "r_foot"
+						if(LIMB_RIGHT_LEG)
+							limb = LIMB_RIGHT_LEG
+							second_limb = LIMB_RIGHT_FOOT
 							valid_limb_states += "Peg Leg"
-						if("Left Arm")
-							limb = "l_arm"
-							second_limb = "l_hand"
+						if(LIMB_LEFT_ARM)
+							limb = LIMB_LEFT_ARM
+							second_limb = LIMB_LEFT_HAND
 							valid_limb_states += "Wooden Prosthesis"
-						if("Right Arm")
-							limb = "r_arm"
-							second_limb = "r_hand"
+						if(LIMB_RIGHT_ARM)
+							limb = LIMB_RIGHT_ARM
+							second_limb = LIMB_RIGHT_HAND
 							valid_limb_states += "Wooden Prosthesis"
-						if("Left Foot")
-							limb = "l_foot"
-							third_limb = "l_leg"
-						if("Right Foot")
-							limb = "r_foot"
-							third_limb = "r_leg"
-						if("Left Hand")
-							limb = "l_hand"
-							third_limb = "l_arm"
+						if(LIMB_LEFT_FOOT)
+							limb = LIMB_LEFT_FOOT
+							third_limb = LIMB_LEFT_LEG
+						if(LIMB_RIGHT_FOOT)
+							limb = LIMB_RIGHT_FOOT
+							third_limb = LIMB_RIGHT_LEG
+						if(LIMB_LEFT_HAND)
+							limb = LIMB_LEFT_HAND
+							third_limb = LIMB_LEFT_ARM
 							valid_limb_states += "Hook Prosthesis"
-						if("Right Hand")
-							limb = "r_hand"
-							third_limb = "r_arm"
+						if(LIMB_RIGHT_HAND)
+							limb = LIMB_RIGHT_HAND
+							third_limb = LIMB_RIGHT_ARM
 							valid_limb_states += "Hook Prosthesis"
 
 					var/new_state = input(user, "What state do you wish the limb to be in?") as null|anything in valid_limb_states
-					if(!new_state) return
+					if(!new_state)
+						return
 
 					switch(new_state)
 						if("Normal")
@@ -1351,14 +1377,15 @@ NOTE:  The change will take effect AFTER any current recruiting periods."}
 						if("Peg Leg","Wooden Prosthesis","Hook Prosthesis")
 							organ_data[limb] = "peg"
 							if(second_limb)
-								if(limb == "l_arm" || limb == "r_arm")
+								if(limb == LIMB_LEFT_ARM || limb == LIMB_RIGHT_ARM)
 									organ_data[second_limb] = "peg"
 								else
 									organ_data[second_limb] = "amputated"
 
 				if("organs")
 					var/organ_name = input(user, "Which internal function do you want to change?") as null|anything in list("Heart", "Eyes", "Lungs", "Liver", "Kidneys")
-					if(!organ_name) return
+					if(!organ_name)
+						return
 
 					var/organ = null
 					switch(organ_name)
@@ -1374,7 +1401,8 @@ NOTE:  The change will take effect AFTER any current recruiting periods."}
 							organ = "kidneys"
 
 					var/new_state = input(user, "What state do you wish the organ to be in?") as null|anything in list("Normal","Assisted","Mechanical")
-					if(!new_state) return
+					if(!new_state)
+						return
 
 					switch(new_state)
 						if("Normal")
@@ -1386,7 +1414,8 @@ NOTE:  The change will take effect AFTER any current recruiting periods."}
 
 				if("skin_style")
 					var/skin_style_name = input(user, "Select a new skin style") as null|anything in list("default1", "default2", "default3")
-					if(!skin_style_name) return
+					if(!skin_style_name)
+						return
 
 		else
 			switch(href_list["preference"])
@@ -1414,13 +1443,24 @@ NOTE:  The change will take effect AFTER any current recruiting periods."}
 
 				if("UIcolor")
 					var/UI_style_color_new = input(user, "Choose your UI colour, dark colours are not recommended!") as color|null
-					if(!UI_style_color_new) return
+					if(!UI_style_color_new)
+						return
 					UI_style_color = UI_style_color_new
 
 				if("UIalpha")
 					var/UI_style_alpha_new = input(user, "Select a new alpha(transparency) parameter for UI, between 50 and 255") as num
-					if(!UI_style_alpha_new | !(UI_style_alpha_new <= 255 && UI_style_alpha_new >= 50)) return
+					if(!UI_style_alpha_new | !(UI_style_alpha_new <= 255 && UI_style_alpha_new >= 50))
+						return
 					UI_style_alpha = UI_style_alpha_new
+
+				if("parallax")
+					space_parallax = !space_parallax
+
+				if("dust")
+					space_dust = !space_dust
+
+				if("p_speed")
+					parallax_speed = min(max(input(user, "Enter a number between 0 and 5 included (default=2)","Parallax Speed Preferences",parallax_speed),0),5)
 
 				if("name")
 					be_random_name = !be_random_name
@@ -1564,7 +1604,8 @@ NOTE:  The change will take effect AFTER any current recruiting periods."}
 			I.mechassist()
 		else if(status == "mechanical")
 			I.mechanize()
-		else continue
+		else
+			continue
 	var/datum/species/chosen_species = all_species[species]
 	if( (disabilities & DISABILITY_FLAG_FAT) && (chosen_species.flags & CAN_BE_FAT) )
 		character.mutations += M_FAT
@@ -1575,6 +1616,8 @@ NOTE:  The change will take effect AFTER any current recruiting periods."}
 		character.disabilities|=EPILEPSY
 	if(disabilities & DISABILITY_FLAG_DEAF)
 		character.sdisabilities|=DEAF
+	if(disabilities & DISABILITY_FLAG_BLIND)
+		character.sdisabilities|=BLIND
 	/*if(disabilities & DISABILITY_FLAG_COUGHING)
 		character.sdisabilities|=COUGHING
 	if(disabilities & DISABILITY_FLAG_TOURETTES)

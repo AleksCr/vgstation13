@@ -8,10 +8,10 @@
 	icon_state = "term"
 	desc = "It's an underfloor wiring terminal for power equipment."
 	level = 1
-	layer = TURF_LAYER
+	plane = ABOVE_TURF_PLANE
 	var/obj/machinery/power/master
 	anchored = 1
-	layer = 2.6 // a bit above wires
+	layer = WIRE_TERMINAL_LAYER
 
 	holomap = TRUE
 	auto_holomap = TRUE
@@ -20,7 +20,8 @@
 /obj/machinery/power/terminal/New()
 	..()
 	var/turf/T = src.loc
-	if(level==1) hide(T.intact)
+	if(level==1)
+		hide(T.intact)
 	return
 
 

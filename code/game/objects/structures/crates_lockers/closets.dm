@@ -41,7 +41,8 @@
 	return get_turf(src)
 
 /obj/structure/closet/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
-	if(air_group || (height==0 || wall_mounted)) return 1
+	if(air_group || (height==0 || wall_mounted))
+		return 1
 	return (!density)
 
 /obj/structure/closet/proc/can_open()
@@ -202,6 +203,13 @@
 					A.ex_act(severity++)
 				qdel(src)
 
+/obj/structure/closet/shuttle_act()
+	for(var/atom/movable/AM in contents)
+		AM.forceMove(src.loc)
+		AM.shuttle_act()
+
+	..()
+
 /obj/structure/closet/bullet_act(var/obj/item/projectile/Proj)
 	health -= Proj.damage
 	..()
@@ -278,8 +286,7 @@
 			if(!WT.remove_fuel(0,user))
 				to_chat(user, "<span class='notice'>You need more welding fuel to complete this task.</span>")
 				return
-			var/obj/item/stack/sheet/metal/Met = getFromPool(/obj/item/stack/sheet/metal, get_turf(src))
-			Met.amount = 2
+			materials.makeSheets(src)
 			for(var/mob/M in viewers(src))
 				M.show_message("<span class='notice'>\The [src] has been cut apart by [user] with \the [WT].</span>", 1, "You hear welding.", 2)
 			qdel(src)
@@ -359,14 +366,21 @@
 
 			var/image/spooky_overlay
 			switch(rand(0,5))
-				if(0) spooky_overlay = image('icons/mob/animal.dmi',icon_state="hunter",dir=turn(L.dir,180))
-				if(1) spooky_overlay = image('icons/mob/animal.dmi',icon_state="zombie",dir=turn(L.dir,180))
-				if(2) spooky_overlay = image('icons/mob/horror.dmi',icon_state="horror_[pick("male","female")]",dir=turn(L.dir,180))
-				if(3) spooky_overlay = image('icons/mob/animal.dmi',icon_state="faithless",dir=turn(L.dir,180))
-				if(4) spooky_overlay = image('icons/mob/animal.dmi',icon_state="carp",dir=turn(L.dir,180))
-				if(5) spooky_overlay = image('icons/mob/animal.dmi',icon_state="skelly",dir=turn(L.dir,180))
+				if(0)
+					spooky_overlay = image('icons/mob/animal.dmi',icon_state="hunter",dir=turn(L.dir,180))
+				if(1)
+					spooky_overlay = image('icons/mob/animal.dmi',icon_state="zombie",dir=turn(L.dir,180))
+				if(2)
+					spooky_overlay = image('icons/mob/horror.dmi',icon_state="horror_[pick("male","female")]",dir=turn(L.dir,180))
+				if(3)
+					spooky_overlay = image('icons/mob/animal.dmi',icon_state="faithless",dir=turn(L.dir,180))
+				if(4)
+					spooky_overlay = image('icons/mob/animal.dmi',icon_state="carp",dir=turn(L.dir,180))
+				if(5)
+					spooky_overlay = image('icons/mob/animal.dmi',icon_state="skelly",dir=turn(L.dir,180))
 
-			if(!spooky_overlay) return
+			if(!spooky_overlay)
+				return
 
 			temp_overlay.overlays += spooky_overlay
 
@@ -412,7 +426,7 @@
 	if(!opened)
 		icon_state = icon_closed
 		if(welded)
-			overlays += "welded"
+			overlays += image(icon = icon, icon_state = "welded")
 	else
 		icon_state = icon_opened
 
@@ -421,7 +435,8 @@
 // should be independently resolved, but this is also an interesting twist.
 /obj/structure/closet/Exit(atom/movable/AM)
 	open()
-	if(AM.loc == src) return 0
+	if(AM.loc == src)
+		return 0
 	return 1
 
 /obj/structure/closet/container_resist()

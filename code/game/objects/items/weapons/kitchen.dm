@@ -18,20 +18,20 @@
  */
 /obj/item/weapon/kitchen/utensil
 	force = 5.0
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throwforce = 5.0
 	throw_speed = 3
 	throw_range = 5
 	flags = FPRINT
 	siemens_coefficient = 1
-	origin_tech = "materials=1"
+	origin_tech = Tc_MATERIALS + "=1"
 	attack_verb = list("attacks", "stabs", "pokes")
 
 /obj/item/weapon/kitchen/utensil/New()
 	. = ..()
 
 	if (prob(60))
-		src.pixel_y = rand(0, 4)
+		src.pixel_y = rand(0, 4) * PIXEL_MULTIPLIER
 
 /*
  * Spoons
@@ -70,7 +70,7 @@
 	if(!istype(M) || !istype(user))
 		return ..()
 
-	if(user.zone_sel.selecting != "eyes" && user.zone_sel.selecting != "head" && M != user && !loaded_food)
+	if(user.zone_sel.selecting != "eyes" && user.zone_sel.selecting != LIMB_HEAD && M != user && !loaded_food)
 		return ..()
 
 	if (src.loaded_food)
@@ -78,9 +78,14 @@
 		if(M == user)
 			user.visible_message("<span class='notice'>[user] eats a delicious forkful of [loaded_food_name]!</span>")
 		else
-			user.visible_message("<span class='notice'>[user] feeds [M] a delicious forkful of [loaded_food_name]!</span>")
+			user.visible_message("<span class='notice'>[user] attempts to feed [M] a delicious forkful of [loaded_food_name].</span>")
+			if(do_mob(user, M))
+				if(!loaded_food)
+					return
+
+				user.visible_message("<span class='notice'>[user] feeds [M] a delicious forkful of [loaded_food_name]!</span>")
 		reagents.reaction(M, INGEST)
-		reagents.trans_to(M.reagents, reagents.total_volume)
+		reagents.trans_to(M.reagents, reagents.total_volume, reagents.total_volume, log_transfer = TRUE, whodunnit = user)
 		overlays -= loaded_food
 		del(loaded_food)
 		loaded_food_name = null
@@ -113,15 +118,15 @@
 		var/icon/food_to_load = getFlatIcon(snack)
 		food_to_load.Scale(16,16)
 		loaded_food = image(food_to_load)
-		loaded_food.pixel_x = 8 + src.pixel_x
-		loaded_food.pixel_y = 15 + src.pixel_y
+		loaded_food.pixel_x = 8 * PIXEL_MULTIPLIER + src.pixel_x
+		loaded_food.pixel_y = 15 * PIXEL_MULTIPLIER + src.pixel_y
 		src.overlays += loaded_food
 		if(snack.reagents.total_volume > snack.bitesize)
 			snack.reagents.trans_to(src, snack.bitesize)
 		else
 			snack.reagents.trans_to(src, snack.reagents.total_volume)
 			snack.bitecount++
-			snack.On_Consume(user)
+			snack.after_consume(user)
 	return 1
 
 /obj/item/weapon/kitchen/utensil/fork/plastic
@@ -134,9 +139,10 @@
  * Knives
  */
 /obj/item/weapon/kitchen/utensil/knife
-	name = "knife"
+	name = "small knife"
 	desc = "Can cut through any food."
-	icon_state = "knife"
+	icon_state = "smallknife"
+	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/swords_axes.dmi', "right_hand" = 'icons/mob/in-hand/right/swords_axes.dmi')
 	force = 10.0
 	throwforce = 10.0
 	sharpness = 1.2
@@ -177,14 +183,14 @@
 	siemens_coefficient = 1
 	sharpness = 1.5
 	force = 10.0
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	throwforce = 6.0
 	throw_speed = 3
 	throw_range = 6
 	starting_materials = list(MAT_IRON = 12000)
 	w_type = RECYK_METAL
 	melt_temperature = MELTPOINT_STEEL
-	origin_tech = "materials=1"
+	origin_tech = Tc_MATERIALS + "=1"
 	attack_verb = list("slashes", "stabs", "slices", "tears", "rips", "dices", "cuts")
 
 /obj/item/weapon/kitchen/utensil/knife/large/attackby(obj/item/weapon/W, mob/user)
@@ -229,14 +235,14 @@
 	siemens_coefficient = 1
 	sharpness = 1.2
 	force = 15.0
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	throwforce = 8.0
 	throw_speed = 3
 	throw_range = 6
 	starting_materials = list(MAT_IRON = 12000)
 	w_type = RECYK_METAL
 	melt_temperature = MELTPOINT_STEEL
-	origin_tech = "materials=1"
+	origin_tech = Tc_MATERIALS + "=1"
 	attack_verb = list("cleaves", "slashes", "stabs", "slices", "tears", "rips", "dices", "cuts")
 
 /obj/item/weapon/kitchen/utensil/knife/large/butch/meatcleaver
@@ -266,7 +272,7 @@
 	throwforce = 10.0
 	throw_speed = 2
 	throw_range = 7
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	autoignition_temperature=AUTOIGNITION_WOOD
 	attack_verb = list("bashes", "batters", "bludgeons", "thrashes", "whacks") //I think the rollingpin attackby will end up ignoring this anyway.
 
@@ -286,7 +292,7 @@
 		M.LAssailant = user
 
 	var/t = user:zone_sel.selecting
-	if (t == "head")
+	if (t == LIMB_HEAD)
 		if(ishuman(M))
 			var/mob/living/carbon/human/H = M
 			if (H.stat < 2 && H.health < 50 && prob(90))
@@ -299,7 +305,8 @@
 					H.Paralyse(time)
 				else
 					H.Stun(time)
-				if(H.stat != 2)	H.stat = 1
+				if(H.stat != 2)
+					H.stat = 1
 				user.visible_message("<span class='danger'><B>[H] has been knocked unconscious!</B>", "<span class='warning'>You knock [H] unconscious!</span></span>")
 				return
 			else
@@ -319,16 +326,17 @@
 	force = 5 //look at us, we don't even use this var in our attack because we're so snowflake!
 	throw_speed = 1
 	throw_range = 5
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	flags = FPRINT
 	siemens_coefficient = 1
 	starting_materials = list(MAT_IRON = 3000)
 	w_type = RECYK_METAL
 	melt_temperature = MELTPOINT_STEEL
 	var/list/carrying = list() // List of things on the tray. - Doohl
-	var/max_carry = 10 // w_class = 1 -- takes up 1
-					   // w_class = 2 -- takes up 3
-					   // w_class = 3 -- takes up 5
+	var/max_carry = 10 // w_class = W_CLASS_TINY -- takes up 1
+					   // w_class = W_CLASS_SMALL -- takes up 3
+					   // w_class = W_CLASS_MEDIUM -- takes up 5
+	var/cooldown = 0	//shield bash cooldown. based on world.time
 
 /obj/item/weapon/tray/Destroy()
 	for(var/atom/thing in carrying)
@@ -355,7 +363,7 @@
 	var/mob/living/carbon/human/H = M      ///////////////////////////////////// /Let's have this ready for later.
 
 
-	if(!(user.zone_sel.selecting == ("eyes" || "head"))) //////////////hitting anything else other than the eyes
+	if(!(user.zone_sel.selecting == ("eyes" || LIMB_HEAD))) //////////////hitting anything else other than the eyes
 		if(prob(33))
 			src.add_blood(H)
 			var/turf/location = H.loc
@@ -446,18 +454,6 @@
 				M.Weaken(2)
 				return
 			return
-
-/obj/item/weapon/tray/var/cooldown = 0	//shield bash cooldown. based on world.time //why is this defined down here?
-
-/obj/item/weapon/tray/attackby(obj/item/weapon/W as obj, mob/user as mob)
-	if(istype(W, /obj/item/weapon/kitchen/rollingpin))
-		if(cooldown < world.time - 25)
-			user.visible_message("<span class='warning'>[user] bashes [src] with [W]!</span>")
-			playsound(user.loc, 'sound/effects/shieldbash.ogg', 50, 1)
-			cooldown = world.time
-	else
-		..()
-
 /*
 ===============~~~~~================================~~~~~====================
 =																			=
@@ -465,22 +461,62 @@
 =																			=
 ===============~~~~~================================~~~~~====================
 */
+/obj/item/proc/get_trayweight() //calculates weight for the purpose of trays, 0 if too big
+	if(w_class > W_CLASS_MEDIUM)
+		return 0
+	if(w_class == W_CLASS_TINY)
+		return 1
+	if(w_class == W_CLASS_SMALL)
+		return 3
+	if(w_class == W_CLASS_MEDIUM)
+		return 5
+
+/obj/item/weapon/tray/attackby(obj/item/W as obj, mob/user as mob, params)
+	if(isrobot(user) && !isMoMMI(user))
+		return
+	if(istype(W, /obj/item/weapon/kitchen/rollingpin)) //shield bash
+		if(cooldown < world.time - 25)
+			user.visible_message("<span class='warning'>[user] bashes [src] with [W]!</span>")
+			playsound(user.loc, 'sound/effects/shieldbash.ogg', 50, 1)
+			cooldown = world.time
+			return
+	if(!user.candrop)
+		return
+	var/weight = W.get_trayweight()
+	if(!weight)
+		to_chat(user, "<span class='warning'>\The [W] is too heavy!</span>")
+		return
+	if(weight + calc_carry() > max_carry)
+		to_chat(user, "<span class='warning'>The tray is carrying too much!</span>")
+		return
+	if( W == src || W.anchored || is_type_in_list(W, list(/obj/item/clothing/under, /obj/item/clothing/suit, /obj/item/projectile, /obj/item/weapon/tray, /obj/item/weapon/holder/) ) )
+		to_chat(user, "<span class='warning'>This doesn't seem like a good idea.</span>")
+		return
+	if(user.drop_item(W, user.loc))
+		W.loc = src
+		carrying.Add(W)
+		var/list/params_list = params2list(params)
+		if(params_list.len)
+			var/icon/clicked = new/icon(icon, icon_state, dir)
+			var/clamp_x = clicked.Width() / 2
+			var/clamp_y = clicked.Height() / 2
+			W.pixel_x = Clamp(text2num(params_list["icon-x"]) - clamp_x, -clamp_x, clamp_x)
+			W.pixel_y = Clamp(text2num(params_list["icon-y"]) - clamp_y, -clamp_y, clamp_y)
+		var/image/image = image(icon = null)
+		image.appearance = W.appearance
+		image.layer = W.layer + 30
+		image.plane = FLOAT_PLANE
+
+		overlays += image
+	else
+		..()
 /obj/item/weapon/tray/proc/calc_carry()
 	// calculate the weight of the items on the tray
-	var/val = 0 // value to return
+	. = 0 // value to return
 
 	for(var/obj/item/I in carrying)
-		if(I.w_class == 1.0)
-			val ++
-		else if(I.w_class == 2.0)
-			val += 3
-		else if(I.w_class == 3.0)
-			val += 5
-		else //Shouldn't happen
-			val += INFINITY
-
-	return val
-
+		. += I.get_trayweight() || INFINITY
+/* previous functionality of trays,
 /obj/item/weapon/tray/prepickup(mob/user)
 	..()
 
@@ -490,11 +526,11 @@
 	for(var/obj/item/I in loc)
 		if( I != src && !I.anchored && !is_type_in_list(I, list(/obj/item/clothing/under, /obj/item/clothing/suit, /obj/item/projectile, /obj/item/weapon/tray)) )
 			var/add = 0
-			if(I.w_class == 1.0)
+			if(I.w_class > W_CLASS_TINY)
 				add = 1
-			else if(I.w_class == 2.0)
+			else if(I.w_class == W_CLASS_SMALL)
 				add = 3
-			else if(I.w_class == 3.0)
+			else if(I.w_class > W_CLASS_MEDIUM)
 				add = 5
 			else
 				continue
@@ -507,10 +543,11 @@
 			var/image/image = image(icon = null) //image(appearance = ...) doesn't work, and neither does image().
 			image.appearance = I.appearance
 			image.layer = I.layer + 30
+			image.plane = FLOAT_PLANE
 
 			overlays += image
 			//overlays += image("icon" = I.icon, "icon_state" = I.icon_state, "layer" = 30 + I.layer)
-
+*/
 /obj/item/weapon/tray/dropped(mob/user)
 	spawn() //because throwing drops items before setting their throwing var, and a lot of other zany bullshit
 		if(throwing)
@@ -571,7 +608,7 @@
 		W.icon = 'icons/obj/kitchen.dmi'
 		W.icon_state = "forkloaded"
 		to_chat(viewers(3,user), "[user] takes a piece of omelette with his fork!")
-		reagents.remove_reagent("nutriment", 1)
+		reagents.remove_reagent(NUTRIMENT, 1)
 		if (reagents.total_volume <= 0)
 			del(src)*/
 

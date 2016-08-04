@@ -4,7 +4,7 @@
 	icon_state = "detective"
 	max_shells = 6
 	caliber = list("38" = 1, "357" = 1)
-	origin_tech = "combat=2;materials=2"
+	origin_tech = Tc_COMBAT + "=2;" + Tc_MATERIALS + "=2"
 	ammo_type = "/obj/item/ammo_casing/c38"
 	var/perfect = 0
 
@@ -27,7 +27,8 @@
 		set desc = "Click to rename your gun. If you're the detective."
 
 		var/mob/M = usr
-		if(!M.mind)	return 0
+		if(!M.mind)
+			return 0
 		if(!M.mind.assigned_role == "Detective")
 			to_chat(M, "<span class='notice'>You don't feel cool enough to name this gun, chump.</span>")
 			return 0
@@ -87,7 +88,7 @@
 	name = "mateba"
 	desc = "When you absolutely, positively need a 10mm hole in the other guy. Uses .357 ammo."	//>10mm hole >.357
 	icon_state = "mateba"
-	origin_tech = "combat=2;materials=2"
+	origin_tech = Tc_COMBAT + "=2;" + Tc_MATERIALS + "=2"
 
 
 // A gun to play Russian Roulette!
@@ -98,7 +99,7 @@
 	name = "russian revolver"
 	desc = "A Russian made revolver. Uses .357 ammo. It has six slots for ammo."
 	max_shells = 6
-	origin_tech = "combat=2;materials=2"
+	origin_tech = Tc_COMBAT + "=2;" + Tc_MATERIALS + "=2"
 	fire_delay = 1
 
 /obj/item/weapon/gun/projectile/russian/New()
@@ -112,7 +113,8 @@
 
 /obj/item/weapon/gun/projectile/russian/attackby(var/obj/item/A as obj, mob/user as mob)
 
-	if(!A) return
+	if(!A)
+		return
 
 	var/num_loaded = 0
 	if(istype(A, /obj/item/ammo_casing)) //loading rounds one by one
@@ -169,8 +171,8 @@
 			to_chat(user, "<span class='warning'>You're already doing that.</span>")
 			return
 		var/datum/organ/external/affecting = user.zone_sel.selecting
-		if(affecting == "head" || affecting == "mouth")
-			user.visible_message("<span class='danger'>[user.name] puts \the [src] [affecting == "head" ? "against their head" : "in their mouth"], ready to pull the trigger...</span>")
+		if(affecting == LIMB_HEAD || affecting == "mouth")
+			user.visible_message("<span class='danger'>[user.name] puts \the [src] [affecting == LIMB_HEAD ? "against their head" : "in their mouth"], ready to pull the trigger...</span>")
 			mouthshoot = 1
 			if(!do_after(user,src, 40))
 				user.visible_message("<span class='warning'>[user.name] chickened out.</span>")
@@ -194,7 +196,7 @@
 			playsound(user, fire_sound, 50, 1)
 			user.visible_message("<span class='danger'>[user.name] fires \the [src]!</span>", "<span class='danger'>You fire \the [src]!</span>", "You hear a [istype(in_chamber, /obj/item/projectile/beam) ? "laser blast" : "gunshot"]!")
 			if(!P.nodamage)
-				affecting = "head"
+				affecting = LIMB_HEAD
 				user.apply_damage(300, BRUTE, affecting, used_weapon = "Shot self with [src].") // You are dead, dead, dead.
 			in_chamber = null
 			loaded.Cut(1,2)

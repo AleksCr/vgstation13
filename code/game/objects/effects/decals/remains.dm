@@ -7,7 +7,6 @@
 	gender = PLURAL
 	icon = 'icons/effects/blood.dmi'
 	icon_state = "remains"
-	anchored = 1
 
 /obj/effect/decal/remains/human/attack_hand(mob/user)
 	if(icon_state == "remains")
@@ -24,7 +23,7 @@
 	icon_state = "remains_skull"
 	item_state = "skull"
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/remains.dmi', "right_hand" = 'icons/mob/in-hand/right/remains.dmi')
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	force = 5
 	throwforce = 10
 
@@ -34,7 +33,6 @@
 	gender = PLURAL
 	icon = 'icons/effects/blood.dmi'
 	icon_state = "remainsxeno"
-	anchored = 1
 
 /obj/effect/decal/remains/robot
 	name = "remains"
@@ -42,4 +40,3 @@
 	gender = PLURAL
 	icon = 'icons/mob/robots.dmi'
 	icon_state = "remainsrobot"
-	anchored = 1

@@ -10,19 +10,26 @@
 
 
 /obj/item/weapon/storage/belt/proc/can_use()
-	if(!ismob(loc)) return 0
+	if(!ismob(loc))
+		return 0
 	var/mob/M = loc
 	if(src in M.get_equipped_items())
 		return 1
 	else
 		return 0
 
+/obj/item/weapon/storage/belt/can_quick_store(var/obj/item/I)
+	return can_be_inserted(I,1)
+
+/obj/item/weapon/storage/belt/quick_store(var/obj/item/I)
+	return handle_item_insertion(I,0)
+
 /obj/item/weapon/storage/belt/utility
 	name = "tool-belt" //Carn: utility belt is nicer, but it bamboozles the text parsing.
 	desc = "It has a tag that rates it for compatibility with standard tools, device analyzers, flashlights, cables, engineering tape, small fire extinguishers, compressed matter cartridges, light replacers, and fuel cans."
 	icon_state = "utilitybelt"
 	item_state = "utility"
-	w_class = 4
+	w_class = W_CLASS_LARGE
 	storage_slots = 14
 	max_combined_w_class = 200 //This actually doesn't matter as long as it is arbitrarily high, bar will be set by storage slots
 	can_only_hold = list(
@@ -81,7 +88,7 @@
 	desc = "The ancestral belt of Many-APCs-Charging, the original chief engineer from Space Native America. It's made out of the skins of the ancient enemy of engineers, giant spiders."
 	icon_state = "utilitychief"
 	item_state = "utilitychief"
-	w_class = 4
+	w_class = W_CLASS_LARGE
 	storage_slots = 14
 	can_only_hold = list(
 		"/obj/item/weapon/crowbar",
@@ -111,8 +118,23 @@
 		"/obj/item/device/silicate_sprayer"
 		)
 
-/obj/item/weapon/storage/belt/utility/chief/New()
+/obj/item/weapon/storage/belt/utility/chief/full/New() //This is mostly for testing I guess
 	..()
+	new /obj/item/weapon/crowbar(src)
+	new /obj/item/weapon/screwdriver(src)
+	new /obj/item/weapon/weldingtool/hugetank(src)
+	new /obj/item/weapon/wirecutters(src)
+	new /obj/item/weapon/wrench(src)
+	new /obj/item/device/multitool(src)
+	new /obj/item/stack/cable_coil(src)
+	new /obj/item/stack/cable_coil(src)
+	new /obj/item/device/t_scanner(src)
+	new /obj/item/device/analyzer(src)
+	new /obj/item/weapon/solder/pre_fueled(src)
+	new /obj/item/device/silicate_sprayer(src)
+	new /obj/item/device/rcd/rpd(src)
+	new /obj/item/device/rcd/matter/engineering/pre_loaded(src)
+
 
 /obj/item/weapon/storage/belt/medical
 	name = "medical belt"
@@ -233,7 +255,7 @@
 	desc = "Can hold various mining gear like pickaxes or drills."
 	icon_state = "miningbelt"
 	item_state = "mining"
-	w_class = 4
+	w_class = W_CLASS_LARGE
 	max_combined_w_class = 28
 	can_only_hold = list(
 		"/obj/item/weapon/storage/bag/ore",
@@ -266,7 +288,7 @@
 	desc = "For the pokemo- mining master, holds your lazarus capsules."
 	icon_state = "lazarusbelt_0"
 	item_state = "lazbelt"
-	w_class = 4
+	w_class = W_CLASS_LARGE
 	max_combined_w_class = 28
 	storage_slots = 6
 	can_only_hold = list(
@@ -309,6 +331,7 @@
 		NM.faction = "lazarus \ref[user]"
 		NM.friends += user
 		MC.contained_mob = NM
+		MC.name = "lazarus capsule - [NM.name]"
 	..()
 
 /obj/item/weapon/storage/belt/thunderdome

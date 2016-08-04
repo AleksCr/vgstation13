@@ -59,7 +59,7 @@ var/global/list/unstackable_pipes = list(PIPE_LAYER_MANIFOLD)
 	icon_state = "simple"
 	item_state = "buildpipe"
 	flags = FPRINT
-	w_class = 3
+	w_class = W_CLASS_MEDIUM
 	level = 2
 
 /obj/item/pipe_spawner/New()
@@ -88,7 +88,7 @@ var/global/list/unstackable_pipes = list(PIPE_LAYER_MANIFOLD)
 	icon_state = "simple"
 	item_state = "buildpipe"
 	flags = FPRINT
-	w_class = 3
+	w_class = W_CLASS_MEDIUM
 	level = 2
 
 	var/piping_layer = PIPING_LAYER_DEFAULT
@@ -423,7 +423,6 @@ var/list/heat_pipes = list(PIPE_HE_STRAIGHT, PIPE_HE_BENT, PIPE_JUNCTION)
 
 		if(PIPE_HE_STRAIGHT, PIPE_HE_BENT)
 			P=new/obj/machinery/atmospherics/pipe/simple/heat_exchanging(loc)
-			investigation_log(I_ATMOS,"was created by [user]/([user.ckey]) at [formatJumpTo(loc)].")
 
 		if(PIPE_CONNECTOR)		// connector
 			P=new/obj/machinery/atmospherics/unary/portables_connector(loc)
@@ -436,7 +435,6 @@ var/list/heat_pipes = list(PIPE_HE_STRAIGHT, PIPE_HE_BENT, PIPE_JUNCTION)
 
 		if(PIPE_JUNCTION)
 			P=new /obj/machinery/atmospherics/pipe/simple/heat_exchanging/junction( src.loc )
-			investigation_log(I_ATMOS,"was created by [user]/([user.ckey]) at [formatJumpTo(loc)].")
 
 		if(PIPE_UVENT)		//unary vent
 			P=new /obj/machinery/atmospherics/unary/vent_pump( src.loc )
@@ -502,11 +500,11 @@ var/list/heat_pipes = list(PIPE_HE_STRAIGHT, PIPE_HE_BENT, PIPE_JUNCTION)
 			P =new /obj/machinery/atmospherics/pipe/layer_manifold(src.loc)
 
 		if(PIPE_LAYER_ADAPTER)
-			testing("src.loc = [src.loc]")
 			P =new /obj/machinery/atmospherics/pipe/layer_adapter(src.loc)
 
 	P.setPipingLayer(src.piping_layer)
 	if(P.buildFrom(usr,src))
+		investigation_log(I_ATMOS,"was created by [user]/([user.ckey]) at [formatJumpTo(loc)].")
 		playsound(get_turf(src), 'sound/items/Ratchet.ogg', 50, 1)
 		user.visible_message( \
 			"[user] fastens \the [src].", \
@@ -530,7 +528,7 @@ var/list/heat_pipes = list(PIPE_HE_STRAIGHT, PIPE_HE_BENT, PIPE_JUNCTION)
 	icon_state = "meter"
 	item_state = "buildpipe"
 	flags = FPRINT
-	w_class = 4
+	w_class = W_CLASS_LARGE
 
 	var/layer_to_make = PIPING_LAYER_DEFAULT
 
@@ -569,7 +567,7 @@ var/list/heat_pipes = list(PIPE_HE_STRAIGHT, PIPE_HE_BENT, PIPE_JUNCTION)
 	icon_state = "gsensor0"
 	item_state = "buildpipe"
 	flags = FPRINT
-	w_class = 4
+	w_class = W_CLASS_LARGE
 
 /obj/item/pipe_gsensor/attackby(var/obj/item/weapon/W as obj, var/mob/user as mob)
 	..()

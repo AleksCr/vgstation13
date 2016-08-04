@@ -56,7 +56,7 @@
 	icon_aggro = "Basilisk_alert"
 	icon_dead = "Basilisk_dead"
 	icon_gib = "syndicate_gib"
-	move_to_delay = 20
+	speed = 20
 	projectiletype = /obj/item/projectile/temp/basilisk
 	projectilesound = 'sound/weapons/pierce.ogg'
 	ranged = 1
@@ -64,7 +64,6 @@
 	ranged_cooldown_cap = 20
 	throw_message = "does nothing against the hard shell of"
 	vision_range = 2
-	speed = 3
 	maxHealth = 200
 	health = 200
 	harm_intent_damage = 5
@@ -114,7 +113,8 @@
 	var/counter
 	for(counter=0, counter<2, counter++)
 		var/obj/item/weapon/ore/diamond/D = new /obj/item/weapon/ore/diamond(src.loc)
-		D.layer = 4.1
+		D.plane = plane
+		D.layer = layer + 0.001
 	..()
 
 /mob/living/simple_animal/hostile/asteroid/goldgrub
@@ -129,7 +129,7 @@
 	vision_range = 3
 	aggro_vision_range = 9
 	idle_vision_range = 3
-	move_to_delay = 3
+	speed = 3
 	friendly = "harmlessly rolls into"
 	maxHealth = 60
 	health = 60
@@ -222,12 +222,11 @@
 	icon_dead = "Hivelord_dead"
 	icon_gib = "syndicate_gib"
 	mouse_opacity = 2
-	move_to_delay = 14
+	speed = 14
 	ranged = 1
 	vision_range = 5
 	aggro_vision_range = 9
 	idle_vision_range = 5
-	speed = 3
 	maxHealth = 75
 	health = 75
 	harm_intent_damage = 5
@@ -236,7 +235,7 @@
 	attacktext = "lashes out at"
 	throw_message = "falls right through the strange body of the"
 	ranged_cooldown = 0
-	ranged_cooldown_cap = 0
+	ranged_cooldown_cap = 1
 	environment_smash = 0
 	retreat_distance = 3
 	minimum_distance = 3
@@ -326,10 +325,9 @@
 	icon_dead = "Hivelordbrood"
 	icon_gib = "syndicate_gib"
 	mouse_opacity = 2
-	move_to_delay = 0
+	speed = 0
 	friendly = "buzzes near"
 	vision_range = 10
-	speed = 3
 	maxHealth = 1
 	health = 1
 	harm_intent_damage = 5
@@ -358,12 +356,11 @@
 	icon_dead = "Goliath_dead"
 	icon_gib = "syndicate_gib"
 	attack_sound = 'sound/weapons/heavysmash.ogg'
-	move_to_delay = 40
+	speed = 40
 	ranged = 1
 	ranged_cooldown_cap = 8
 	friendly = "wails at"
 	vision_range = 5
-	speed = 3
 	maxHealth = 300
 	health = 300
 	harm_intent_damage = 0
@@ -376,10 +373,12 @@
 
 	size = SIZE_BIG
 
-/mob/living/simple_animal/hostile/asteroid/goliath/OpenFire()
-	visible_message("<span class='warning'>The [src.name] digs its tentacles under [target.name]!</span>")
+/mob/living/simple_animal/hostile/asteroid/goliath/OpenFire(atom/ttarget)
+	if(istype(ttarget))
+		visible_message("<span class='warning'>\The [src] digs its tentacles under \the [ttarget]!</span>")
+
 	playsound(loc, 'sound/weapons/whip.ogg', 50, 1, -1)
-	var/tturf = get_turf(target)
+	var/tturf = get_turf(ttarget)
 	new /obj/effect/goliath_tentacle/original(tturf)
 	ranged_cooldown = ranged_cooldown_cap
 	return
@@ -432,8 +431,7 @@
 	desc = "Pieces of a goliath's rocky hide, these might be able to make your suit a bit more durable to attack from the local fauna."
 	icon = 'icons/obj/items.dmi'
 	icon_state = "goliath_hide"
-	w_class = 3
-	layer = 4
+	w_class = W_CLASS_MEDIUM
 
 /obj/item/asteroid/goliath_hide/afterattack(atom/target, mob/user, proximity_flag)
 	if(proximity_flag)

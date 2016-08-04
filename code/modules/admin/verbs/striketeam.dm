@@ -59,7 +59,8 @@ var/global/sent_strike_team = 0
 
 //Spawns commandos and equips them.
 	for(var/obj/effect/landmark/L in landmarks_list)
-		if(commando_number<=0)	break
+		if(commando_number<=0)
+			break
 		if (L.name == "Commando")
 			leader_selected = commando_number == 1?1:0
 
@@ -155,7 +156,7 @@ var/global/sent_strike_team = 0
 	equip_to_slot_or_del(new /obj/item/weapon/tank/emergency_oxygen/double(src), slot_s_store)
 	equip_to_slot_or_del(new /obj/item/weapon/gun/projectile/mateba(src), slot_belt)
 
-	equip_to_slot_or_del(new /obj/item/weapon/gun/energy/pulse_rifle(src), slot_r_hand)
+	put_in_hands(new /obj/item/weapon/gun/energy/pulse_rifle(src))
 
 
 	var/obj/item/weapon/implant/loyalty/L = new/obj/item/weapon/implant/loyalty(src)//Here you go Deuryn

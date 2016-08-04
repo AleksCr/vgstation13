@@ -4,12 +4,12 @@
 	icon = 'icons/obj/gun.dmi'
 	icon_state = "siren"
 	item_state = "siren"
-	origin_tech = "combat=5"
+	origin_tech = Tc_COMBAT + "=5"
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/guninhands_left.dmi', "right_hand" = 'icons/mob/in-hand/right/guninhands_right.dmi')
 	recoil = 1
 	slot_flags = SLOT_BELT
 	flags = FPRINT | NOREACT
-	w_class = 3
+	w_class = W_CLASS_MEDIUM
 	fire_delay = 1
 	fire_sound = 'sound/weapons/shotgun.ogg'
 	var/hard = 1 //When toggled on, the gun's shots will deal damage. When off, they deal no damage, but deliver five times the reagents.
@@ -21,7 +21,7 @@
 /obj/item/weapon/gun/siren/New()
 	..()
 	create_reagents(max_reagents)
-	reagents.add_reagent("water", max_reagents)
+	reagents.add_reagent(WATER, max_reagents)
 
 /obj/item/weapon/gun/siren/verb/flush_reagents()
 	set name = "Flush siren"
@@ -57,7 +57,8 @@
 		recoil = 0
 
 /obj/item/weapon/gun/siren/afterattack(atom/A as mob|obj|turf|area, mob/living/user as mob|obj, flag, params, struggle = 0)
-	if(flag)	return //we're placing gun on a table or in backpack
+	if(flag)
+		return //we're placing gun on a table or in backpack
 	if(harm_labeled >= min_harm_label)
 		to_chat(user, "<span class='warning'>A label sticks the trigger to the trigger guard!</span>")//Such a new feature, the player might not know what's wrong if it doesn't tell them.
 
@@ -82,5 +83,6 @@
 	Fire(A,user,params, "struggle" = struggle)
 
 /obj/item/weapon/gun/siren/process_chambered()
-	if(in_chamber) return 1
+	if(in_chamber)
+		return 1
 	return 0

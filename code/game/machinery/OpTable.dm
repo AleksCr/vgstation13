@@ -47,18 +47,7 @@
 		qdel(src)
 
 /obj/machinery/optable/attack_paw(mob/user as mob)
-	if ((M_HULK in usr.mutations))
-		to_chat(usr, text("<span class='notice'>You destroy the operating table.</span>"))
-		visible_message("<span class='warning'>[usr] destroys the operating table!</span>")
-		src.density = 0
-		qdel(src)
-		return
-	if (!( locate(/obj/machinery/optable, user.loc) ))
-		step(user, get_dir(user, src))
-		if (user.loc == src.loc)
-			user.layer = TURF_LAYER
-			visible_message("The monkey hides under the table!")
-	return
+	attack_hand(user)
 
 /obj/machinery/optable/attack_hand(mob/user as mob)
 	if (M_HULK in usr.mutations)
@@ -66,10 +55,10 @@
 		visible_message("<span class='warning'>[usr] destroys the operating table!</span>")
 		src.density = 0
 		qdel(src)
-	return
 
 /obj/machinery/optable/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
-	if(air_group || (height==0)) return 1
+	if(air_group || (height==0))
+		return 1
 
 	if(istype(mover) && mover.checkpass(PASSTABLE))
 		return 1
@@ -180,6 +169,7 @@
 			take_victim(W:affecting,usr)
 			returnToPool(W)
 			return
-	if(isrobot(user)) return
+	if(isrobot(user))
+		return
 	//user.drop_item(W, src.loc) why?
 	return

@@ -2,7 +2,8 @@
 	Namepick()
 
 /mob/living/silicon/hive_mainframe/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 	if (src.stat == 2)
 		return
 	else
@@ -133,7 +134,7 @@
 	src.flash.icon_state = "blank"
 	src.flash.name = "flash"
 	src.flash.screen_loc = "1,1 to 15,15"
-	src.flash.layer = 17
+	src.flash.layer = UNDER_HUD_LAYER
 	src.blind = new /obj/screen( null )
 	src.blind.icon_state = "black"
 	src.blind.name = " "

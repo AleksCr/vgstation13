@@ -11,7 +11,7 @@
 	var/currTag = 0
 	var/list/destinations  = list()
 
-	w_class = 1
+	w_class = W_CLASS_TINY
 	item_state = "electronic"
 	flags = FPRINT
 	siemens_coefficient = 1
@@ -126,7 +126,8 @@
 	return
 
 /obj/machinery/disposal/deliveryChute/Bumped(var/atom/movable/AM) //Go straight into the chute
-	if(istype(AM, /obj/item/projectile) || istype(AM, /obj/item/weapon/dummy))	return
+	if(istype(AM, /obj/item/projectile) || istype(AM, /obj/item/weapon/dummy))
+		return
 
 	if(dir != get_dir(src, AM))
 		return
@@ -201,7 +202,8 @@
 			playsound(get_turf(src), 'sound/items/Welder2.ogg', 100, 1)
 			to_chat(user, "You start slicing the floorweld off the delivery chute.")
 			if(do_after(user, src,20))
-				if(!src || !W.isOn()) return
+				if(!src || !W.isOn())
+					return
 				to_chat(user, "You sliced the floorweld off the delivery chute.")
 				var/obj/structure/disposalconstruct/C = new (src.loc)
 				C.ptype = 8 // 8 =  Delivery chute

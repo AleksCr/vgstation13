@@ -4,12 +4,12 @@
 	name = "meat"
 	desc = "A slab of meat."
 	icon_state = "meat"
-	food_flags = FOOD_MEAT
+	food_flags = FOOD_MEAT | FOOD_SKELETON_FRIENDLY
 
 	var/obj/item/poisonsacs = null //This is what will contain the poison
 	New()
 		..()
-		reagents.add_reagent("nutriment", 3)
+		reagents.add_reagent(NUTRIMENT, 3)
 		src.bitesize = 3
 
 /obj/item/weapon/reagent_containers/food/snacks/meat/Destroy()
@@ -17,9 +17,6 @@
 	if(poisonsacs)
 		qdel(poisonsacs)
 		poisonsacs = null
-
-/obj/item/weapon/reagent_containers/food/snacks/meat/attack(mob/living/M, mob/user, def_zone, eat_override = 0)
-	..(M,user,def_zone, "eat_override" = 1)
 
 /obj/item/weapon/reagent_containers/food/snacks/meat/animal //This meat spawns when an animal is butchered, and its name is set to '[animal.species_name] meat' (like "cat meat")
 	var/animal_name = "animal"
@@ -47,7 +44,7 @@
 
 /obj/item/weapon/reagent_containers/food/snacks/meat/rawchicken/New()
 	..()
-	reagents.add_reagent("nutriment", 3)
+	reagents.add_reagent(NUTRIMENT, 3)
 	bitesize = 1
 
 /obj/item/weapon/reagent_containers/food/snacks/meat/carpmeat
@@ -58,8 +55,8 @@
 		..()
 		poisonsacs = new /obj/item/weapon/reagent_containers/food/snacks/carppoisongland
 		eatverb = pick("bite","chew","choke down","gnaw","swallow","chomp")
-		reagents.add_reagent("nutriment", 3)
-		reagents.add_reagent("carpotoxin", 3)
+		reagents.add_reagent(NUTRIMENT, 3)
+		reagents.add_reagent(CARPOTOXIN, 3)
 		bitesize = 6
 
 /obj/item/weapon/reagent_containers/food/snacks/meat/carpmeat/imitation
@@ -72,7 +69,7 @@
 	icon_state = "toxicspine"
 	New()
 		..()
-		reagents.add_reagent("carpotoxin", 3)
+		reagents.add_reagent(CARPOTOXIN, 3)
 		bitesize = 3
 
 /obj/item/weapon/reagent_containers/food/snacks/meat/xenomeat
@@ -81,7 +78,7 @@
 	icon_state = "xenomeat"
 	New()
 		..()
-		reagents.add_reagent("nutriment", 3)
+		reagents.add_reagent(NUTRIMENT, 3)
 		src.bitesize = 6
 
 /obj/item/weapon/reagent_containers/food/snacks/meat/spidermeat
@@ -91,8 +88,8 @@
 	New()
 		..()
 		poisonsacs = new /obj/item/weapon/reagent_containers/food/snacks/spiderpoisongland
-		reagents.add_reagent("nutriment", 3)
-		reagents.add_reagent("toxin", 3)
+		reagents.add_reagent(NUTRIMENT, 3)
+		reagents.add_reagent(TOXIN, 3)
 		bitesize = 3
 
 /obj/item/weapon/reagent_containers/food/snacks/spiderpoisongland
@@ -101,7 +98,7 @@
 	icon_state = "toxicsac"
 	New()
 		..()
-		reagents.add_reagent("toxin", 3)
+		reagents.add_reagent(TOXIN, 3)
 		bitesize = 3
 
 /obj/item/weapon/reagent_containers/food/snacks/meat/bearmeat
@@ -110,8 +107,8 @@
 	icon_state = "bearmeat"
 	New()
 		..()
-		reagents.add_reagent("nutriment", 12)
-		reagents.add_reagent("hyperzine", 5)
+		reagents.add_reagent(NUTRIMENT, 12)
+		reagents.add_reagent(HYPERZINE, 5)
 		src.bitesize = 3
 
 /obj/item/weapon/reagent_containers/food/snacks/meat/roach
@@ -126,9 +123,9 @@
 
 	New()
 		..()
-		reagents.add_reagent("space_drugs", rand(0,8))
-		reagents.add_reagent("mindbreaker", rand(0,2))
-		reagents.add_reagent("nutriment", rand(0,8))
+		reagents.add_reagent(SPACE_DRUGS, rand(0,8))
+		reagents.add_reagent(MINDBREAKER, rand(0,2))
+		reagents.add_reagent(NUTRIMENT, rand(0,8))
 		bitesize = 5
 
 		shapeshift()
@@ -138,9 +135,10 @@
 	spawn(10)
 		shapeshift(/obj/item/weapon/storage/bible) //Turn into a bible
 
-/obj/item/weapon/reagent_containers/food/snacks/meat/mimic/spook()
-	visible_message("<span class='info'>\The [src] transforms into a pile of bones!</span>")
-	shapeshift(/obj/effect/decal/remains/human) //Turn into human remains
+/obj/item/weapon/reagent_containers/food/snacks/meat/mimic/spook(mob/dead/observer/ghost)
+	if(..(ghost, TRUE))
+		visible_message("<span class='info'>\The [src] transforms into a pile of bones!</span>")
+		shapeshift(/obj/effect/decal/remains/human) //Turn into human remains
 
 var/global/list/valid_random_food_types = existing_typesof(/obj/item/weapon/reagent_containers/food/snacks) - typesof(/obj/item/weapon/reagent_containers/food/snacks/customizable)
 
@@ -149,3 +147,9 @@ var/global/list/valid_random_food_types = existing_typesof(/obj/item/weapon/reag
 		atom_to_copy = pick(valid_random_food_types)
 
 	src.appearance = initial(atom_to_copy.appearance) //This works!
+
+/obj/item/weapon/reagent_containers/food/snacks/meat/box
+	name = "box meat"
+	desc = "I know what you're thinking, but this isn't from a mimic."
+	icon_state = "rottenmeat"
+	var/amount_cloned = 0

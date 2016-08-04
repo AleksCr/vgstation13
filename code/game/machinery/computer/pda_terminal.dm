@@ -68,7 +68,8 @@
 	return attack_hand(user)
 
 /obj/machinery/computer/pda_terminal/attack_hand(var/mob/user)
-	if(..()) return
+	if(..())
+		return
 	if(stat != 0)
 		if(pda_device)
 			to_chat(usr, "You remove \the [pda_device] from \the [src].")
@@ -103,7 +104,8 @@
 	if(..())
 		return 1
 	if(href_list["close"])
-		if(usr.machine == src) usr.unset_machine()
+		if(usr.machine == src)
+			usr.unset_machine()
 		return 1
 	switch(href_list["choice"])
 		if ("pda_device")
@@ -258,6 +260,6 @@
 	..()
 	overlays = 0
 	if(pda_device)
-		overlays += "pdaterm-full"
+		overlays += image(icon = icon, icon_state = "pdaterm-full")
 		if(stat == 0)
-			overlays += "pdaterm-light"
+			overlays += image(icon = icon, icon_state = "pdaterm-light")

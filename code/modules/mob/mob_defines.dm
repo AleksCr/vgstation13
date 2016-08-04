@@ -1,7 +1,7 @@
 
 /mob
 	density = 1
-	layer = 4.0
+	layer = MOB_LAYER
 	animate_movement = 2
 
 	w_type = RECYK_BIOLOGICAL
@@ -80,7 +80,6 @@
 	var/atom/movable/pulling = null
 	var/monkeyizing = null	//Carbon
 	var/other = 0.0
-	var/hand = null
 	var/eye_blind = null	//Carbon
 	var/eye_blurry = null	//Carbon
 	var/ear_deaf = null		//Carbon
@@ -149,8 +148,10 @@
 	var/m_int = null//Living
 	var/m_intent = "run"//Living
 	var/lastKnownIP = null
-	var/obj/item/l_hand = null//Living
-	var/obj/item/r_hand = null//Living
+
+	var/active_hand = 1 //Current active hand. Contains an index of the held_items list
+	var/list/obj/item/held_items = list(null, null) //Contains items held in hands
+
 	var/obj/item/weapon/back = null//Human/Monkey
 	var/obj/item/weapon/tank/internal = null//Human/Monkey
 	var/obj/item/weapon/storage/s_active = null//Carbon
@@ -170,8 +171,6 @@
 
 	var/coughedtime = null
 
-	var/inertia_dir = 0
-
 	var/job = null//Living
 
 	var/datum/dna/dna = null//Carbon
@@ -186,7 +185,17 @@
 	var/move_on_shuttle = 1 // Can move on the shuttle.
 	var/captured = 0 //Functionally, should give the same effect as being buckled into a chair when true.
 
-	var/movement_speed_modifier = 1
+	var/brute_damage_modifier = 1 //Affects how much weakness or resistance a particular mob has to this damage type.
+	var/burn_damage_modifier = 1 //Incoming damage for this damage type is multiplied by this var.
+	var/tox_damage_modifier = 1
+	var/oxy_damage_modifier = 1
+	var/clone_damage_modifier = 1
+	var/brain_damage_modifier = 1
+	var/hal_damage_modifier = 1
+
+	var/movement_speed_modifier = 1 //To allow on-the-fly editing of a human mob's base move speed
+	var/has_penalized_speed = 0 //does nothing, merely for checking
+	var/list/heard_by = list()
 
 //Generic list for proc holders. Only way I can see to enable certain verbs/procs. Should be modified if needed.
 	var/proc_holder_list[] = list()//Right now unused.
@@ -276,6 +285,7 @@
 	forceinvertredraw = 1
 
 	var/list/alphas = list()
+	var/spell_channeling
 
 /mob/resetVariables()
 	..("callOnFace", "pinned", "embedded", "abilities", "grabbed_by", "requests", "mapobjs", "mutations", "spell_list", "viruses", "resistances", "radar_blips", "active_genes", "attack_log", "speak_emote", args)

@@ -4,7 +4,7 @@
 	id="botany_centrifuge"
 	req_tech = list ("engineering" = 3, "biotech" = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Machine Boards"
 	build_path = /obj/item/weapon/circuitboard/botany_centrifuge
 
@@ -14,7 +14,7 @@
 	id="botany_bioballistic"
 	req_tech = list ("engineering" = 3, "biotech" = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Machine Boards"
 	build_path = /obj/item/weapon/circuitboard/botany_bioballistic
 
@@ -22,9 +22,9 @@
 	name = "Circuit Design (Biogenerator)"
 	desc = "Allows for the construction of circuit boards used to build a Biogenerator."
 	id = "biogenerator"
-	req_tech = list("programming" = 3,"engineering" = 2, "biotech" = 3)
+	req_tech = list(Tc_PROGRAMMING = 3, Tc_ENGINEERING = 2, Tc_BIOTECH = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Machine Boards"
 	build_path = /obj/item/weapon/circuitboard/biogenerator
 
@@ -32,9 +32,9 @@
 	name = "Circuit Design (Seed Extractor)"
 	desc = "Allows for the construction of circuit boards used to build a Seed Extractor."
 	id = "seed_extractor"
-	req_tech = list("programming" = 3,"engineering" = 2, "biotech" = 3)
+	req_tech = list(Tc_PROGRAMMING = 3, Tc_ENGINEERING = 2, Tc_BIOTECH = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Machine Boards"
 	build_path = /obj/item/weapon/circuitboard/seed_extractor
 
@@ -42,8 +42,8 @@
 	name = "Circuit Design (Hydroponics Tray)"
 	desc = "Allows for the construction of circuit boards used to build a Hydroponics Tray."
 	id = "hydroponics"
-	req_tech = list("programming" = 3,"engineering" = 2,"biotech" = 3,"powerstorage" = 2)
+	req_tech = list(Tc_PROGRAMMING = 3, Tc_ENGINEERING = 2, Tc_BIOTECH = 3, Tc_POWERSTORAGE = 2)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Machine Boards"
 	build_path = /obj/item/weapon/circuitboard/hydroponics

@@ -43,7 +43,8 @@ Obviously, requires DNA2.
 	return 0
 
 /datum/dna/gene/basic/grant_spell/hulk/OnMobLife(var/mob/living/carbon/human/M)
-	if(!istype(M)) return
+	if(!istype(M))
+		return
 	if(M_HULK in M.mutations)
 		var/timeleft=M.hulk_time - world.time
 		if(M.health <= 25 || timeleft <= 0)
@@ -121,6 +122,23 @@ Obviously, requires DNA2.
 		return 0
 	return ..(M,flags)
 
+// NOIR
+
+/obj/screen/plane_master/noir_master
+	plane = NOIR_BLOOD_PLANE
+	color = list(1,0,0,0,
+				 0,1,0,0,
+				 0,0,1,0,
+				 0,0,0,1)
+	appearance_flags = NO_CLIENT_COLOR|PLANE_MASTER
+
+/obj/screen/plane_master/noir_dummy
+	// this avoids a bug which means plane masters which have nothing to control get angry and mess with the other plane masters out of spite
+	appearance_flags = 0
+	plane = NOIR_BLOOD_PLANE
+
+var/noir_master = list(new /obj/screen/plane_master/noir_master(),new /obj/screen/plane_master/noir_dummy())
+
 /datum/dna/gene/basic/noir
 	name="Noir"
 	desc = "In recent years, there's been a real push towards 'Detective Noir' movies, but since the last black and white camera was lost many centuries ago, Scientists had to develop a way to turn any movie noir."
@@ -136,7 +154,9 @@ Obviously, requires DNA2.
 /datum/dna/gene/basic/noir/activate(var/mob/M)
 	..()
 	M.update_colour()
+	M.client.screen += noir_master
 
 /datum/dna/gene/basic/noir/deactivate(var/mob/M,var/connected,var/flags)
 	if(..())
 		M.update_colour()
+		M.client.screen -= noir_master

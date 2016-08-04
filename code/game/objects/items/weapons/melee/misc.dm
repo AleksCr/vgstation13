@@ -9,8 +9,8 @@
 	slot_flags = SLOT_BELT
 	force = 10
 	throwforce = 7
-	w_class = 3
-	origin_tech = "combat=4"
+	w_class = W_CLASS_MEDIUM
+	origin_tech = Tc_COMBAT + "=4"
 	attack_verb = list("flogs", "whips", "lashes", "disciplines")
 
 	suicide_act(mob/user)
@@ -23,8 +23,8 @@
 	icon_state = "morningstar"
 	item_state = "morningstar"
 	hitsound = 'sound/weapons/heavysmash.ogg'
-	w_class = 4
-	origin_tech = "combat=4"
+	w_class = W_CLASS_LARGE
+	origin_tech = Tc_COMBAT + "=4"
 	attack_verb = list("bashes", "smashes", "pulverizes")
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/swords_axes.dmi', "right_hand" = 'icons/mob/in-hand/right/swords_axes.dmi')
 

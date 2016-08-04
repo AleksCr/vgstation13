@@ -59,31 +59,33 @@
 	..()
 	// Set up wordfilter
 	filter = new
-	filter.addPickReplacement("\b(asshole|comdom|shitter|shitler|retard|dipshit|dipshit|greyshirt|nigger|security|shitcurity)", list(
+	filter.addPickReplacement("\\b(asshole|comdom|shitter|shitler|retard|dipshit|dipshit|greyshirt|nigger|security|shitcurity)",
+	list(
 		"honker",
 		"fun police",
 		"unfun",
 	))
 	// HELP THEY'RE KILLING ME
 	// FINALLY THEY'RE TICKLING ME
-	var/tickle_prefixes="\b(kill+|murder|beat|wound|hurt|harm)"
+	var/tickle_prefixes="\\b(kill+|murder|beat|wound|hurt|harm)"
 	filter.addReplacement("[tickle_prefixes]ing","tickling")
 	filter.addReplacement("[tickle_prefixes]ed", "tickled")
 	filter.addReplacement(tickle_prefixes,       "tickle")
 
-	filter.addReplacement("^h\[aei\]lp.*","END THE SHOW")
 	filter.addReplacement("h\[aei\]lp\\s+me","end my show")
 	filter.addReplacement("h\[aei\]lp\\s+him","end his show")
 	filter.addReplacement("h\[aei\]lp\\s+her","end her show")
 	filter.addReplacement("h\[aei\]lp\\s+them","end their show")
 	filter.addReplacement("h\[aei\]lp\\s+(\[^\\s\]+)","end $1's show")
+	filter.addReplacement("^h\[aei\]lp.*","END THE SHOW")
 
 /*
 	var/stance = CLOWN_STANCE_IDLE	//Used to determine behavior
 	var/mob/living/target_mob
 
 /mob/living/simple_animal/hostile/retaliate/cluwne/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 	if(client || stat || stat==DEAD)
 		return //Lets not force players or dead/incap cluwnes to move
 	..()
@@ -105,7 +107,8 @@
 		if(!stat)
 			switch(stance)
 				if(CLOWN_STANCE_IDLE)
-					if (src.hostile == 0) return
+					if (src.hostile == 0)
+						return
 					for(var/atom/A in view(7,src))
 						if(iscluwne(A))
 							continue
@@ -292,11 +295,13 @@
 		to_chat(src, "<span class='warning'>You have a seizure!</span>")
 		Paralyse(10)
 
-/mob/living/simple_animal/hostile/retaliate/cluwne/emote(var/act)
-	if(timestopped) return //under effects of time magick
-	var/message=pick("quietly sobs into a dirty handkerchief","cries into [gender==MALE?"his":"her"] hands","bawls like a cow")
-	message = "<B>[src]</B> [message]"
-	return ..(message)
+/mob/living/simple_animal/hostile/retaliate/cluwne/emote(var/act, var/type, var/message, var/auto)
+	if(timestopped)
+		return //under effects of time magick
+
+	var/msg = pick("quietly sobs into a dirty handkerchief","cries into [gender==MALE?"his":"her"] hands","bawls like a cow")
+	msg = "<B>[src]</B> [msg]"
+	return ..(msg)
 
 /mob/living/simple_animal/hostile/retaliate/cluwne/Move(NewLoc, Dir = 0, step_x = 0, step_y = 0)
 	. = ..(NewLoc, Dir, step_x, step_y)
@@ -325,7 +330,7 @@
 	health = 100
 	size = 1
 
-	speed = -1
+	speed = 2
 	turns_per_move = 1
 
 	melee_damage_type = "BRAIN"

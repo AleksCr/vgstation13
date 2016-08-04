@@ -15,13 +15,13 @@
 /obj/item/device/encryptionkey/syndicate
 	icon_state = "cypherkey"
 	channels = list("Syndicate" = 1)
-	origin_tech = "syndicate=3"
+	origin_tech = Tc_SYNDICATE + "=3"
 	syndie = 1//Signifies that it de-crypts Syndicate transmissions
 
 /obj/item/device/encryptionkey/binary
 	icon_state = "cypherkey"
 	translate_binary = 1
-	origin_tech = "syndicate=3"
+	origin_tech = Tc_SYNDICATE + "=3"
 
 /obj/item/device/encryptionkey/headset_sec
 	name = "Security Radio Encryption Key"
@@ -74,7 +74,11 @@
 /obj/item/device/encryptionkey/syndicate/hacked
 	name = "Standard Encryption Key"
 	desc = "An encryption key for a radio headset.  Has no special codes in it. Looks more sophisticated than usual."
-	channels = list("Command" = 0, "Security" = 0, "Engineering" = 0, "Science" = 0, "Medical" = 0, "Supply" = 0)
+	channels = list("Command" = 0, "Security" = 0, "Engineering" = 0, "Science" = 0, "Medical" = 0, "Supply" = 0, "Service" = 0)
+
+/obj/item/device/encryptionkey/syndicate/hacked/full
+	desc = "An encryption key for a radio headset.  Has no special codes in it. Looks way more sophisticated than usual."
+	channels = list("Command" = 0, "Security" = 0, "Engineering" = 0, "Science" = 0, "Medical" = 0, "Supply" = 0, "Service" = 0, "Deathsquad" = 0, "Response Team" = 0)
 
 /obj/item/device/encryptionkey/heads/rd
 	name = "Research Director's Encryption Key"

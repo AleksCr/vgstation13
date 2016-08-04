@@ -144,7 +144,7 @@ steam.start() -- spawns the effect
 	icon_state = "sparks"
 	anchored = 1
 
-	var/inertia_dir = 0
+	var/move_dir = 0
 	var/energy = 0
 
 /obj/effect/effect/sparks/New(var/travel_dir)
@@ -154,7 +154,7 @@ steam.start() -- spawns the effect
 		T.hotspot_expose(1000, 100, surfaces = 1)
 
 /obj/effect/effect/sparks/proc/start(var/travel_dir, var/max_energy=3)
-	inertia_dir=travel_dir
+	move_dir=travel_dir
 	energy=rand(1,max_energy)
 	processing_objects.Add(src)
 	var/turf/T = loc
@@ -183,7 +183,7 @@ steam.start() -- spawns the effect
 		returnToPool(src)
 		return
 	else
-		step(src,inertia_dir)
+		step(src,move_dir)
 	energy--
 
 /datum/effect/effect/system/spark_spread/set_up(var/n = 3, var/use_cardinals = 0, loca)
@@ -229,8 +229,8 @@ steam.start() -- spawns the effect
 
 	//Remove this bit to use the old smoke
 	icon = 'icons/effects/96x96.dmi'
-	pixel_x = -32
-	pixel_y = -32
+	pixel_x = -WORLD_ICON_SIZE
+	pixel_y = -WORLD_ICON_SIZE
 
 /obj/effect/effect/smoke/New()
 	. = ..()
@@ -274,12 +274,13 @@ steam.start() -- spawns the effect
 	M.adjustOxyLoss(1)
 	if (M.coughedtime != 1)
 		M.coughedtime = 1
-		M.emote("cough")
+		M.audible_cough()
 		spawn ( 20 )
 			M.coughedtime = 0
 
 /obj/effect/effect/smoke/bad/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
-	if(air_group || (height==0)) return 1
+	if(air_group || (height==0))
+		return 1
 	if(istype(mover, /obj/item/projectile/beam))
 		var/obj/item/projectile/beam/B = mover
 		B.damage = (B.damage/2)
@@ -303,7 +304,7 @@ steam.start() -- spawns the effect
 	M:sleeping += 1
 	if (M.coughedtime != 1)
 		M.coughedtime = 1
-		M.emote("cough")
+		M.audible_cough()
 		spawn ( 20 )
 			M.coughedtime = 0
 /////////////////////////////////////////////
@@ -376,7 +377,8 @@ steam.start() -- spawns the effect
 				sleep(10)
 				step(smoke,direction)
 			spawn(smoke.time_to_live*0.75+rand(10,30))
-				if (smoke) qdel(smoke)
+				if (smoke)
+					qdel(smoke)
 				src.total_smoke--
 
 
@@ -407,7 +409,7 @@ steam.start() -- spawns the effect
 /obj/effect/effect/smoke/chem/Move()
 	..()
 	for(var/atom/A in view(2, src))
-		if(reagents.has_reagent("radium")||reagents.has_reagent("uranium")||reagents.has_reagent("carbon")||reagents.has_reagent("thermite"))//Prevents unholy radium spam by reducing the number of 'greenglows' down to something reasonable -Sieve
+		if(reagents.has_reagent(RADIUM)||reagents.has_reagent(URANIUM)||reagents.has_reagent(CARBON)||reagents.has_reagent(THERMITE))//Prevents unholy radium spam by reducing the number of 'greenglows' down to something reasonable -Sieve
 			if(prob(5))
 				reagents.reaction(A)
 		else
@@ -443,27 +445,6 @@ steam.start() -- spawns the effect
 			location = get_turf(loca)
 		if(direct)
 			direction = direct
-
-		var/contained = ""
-		for(var/reagent in carry.reagent_list)
-			contained += " [reagent] "
-		if(contained)
-			contained = "\[[contained]\]"
-		var/area/A = get_area(location)
-
-		var/where = "[A.name] | [location.x], [location.y]"
-		var/whereLink = "<A HREF='?_src_=holder;adminplayerobservecoodjump=1;X=[location.x];Y=[location.y];Z=[location.z]'>[where]</a>"
-
-		if(carry.my_atom.fingerprintslast)
-			var/mob/M = get_mob_by_key(carry.my_atom.fingerprintslast)
-			var/more = ""
-			if(M)
-				more = "(<A HREF='?_src_=holder;adminmoreinfo=\ref[M]'>?</a>)"
-			message_admins("A chemical smoke reaction has taken place in ([whereLink])[contained]. Last associated key is [carry.my_atom.fingerprintslast][more].", 0, 1)
-			log_game("A chemical smoke reaction has taken place in ([where])[contained]. Last associated key is [carry.my_atom.fingerprintslast].")
-		else
-			message_admins("A chemical smoke reaction has taken place in ([whereLink]). No associated key.", 0, 1)
-			log_game("A chemical smoke reaction has taken place in ([where])[contained]. No associated key.")
 
 	start()
 		var/i = 0
@@ -512,7 +493,7 @@ steam.start() -- spawns the effect
 		number = n
 		cardinals = c
 
-		chemholder.reagents.add_reagent("space_drugs", rand(1,10))
+		chemholder.reagents.add_reagent(SPACE_DRUGS, rand(1,10))
 
 		if(istype(loca, /turf/))
 			location = loca
@@ -640,8 +621,10 @@ steam.start() -- spawns the effect
 					I.icon_state = "blank"
 					II.icon_state = "blank"
 					spawn( 20 )
-						if(I) returnToPool(I)
-						if(II) returnToPool(II)
+						if(I)
+							returnToPool(I)
+						if(II)
+							returnToPool(II)
 
 			spawn(2)
 				if(src.on)
@@ -677,7 +660,8 @@ steam.start() -- spawns the effect
 					src.oldposition = get_turf(holder)
 					I.dir = src.holder.dir
 					spawn(10)
-						if(I) qdel(I)
+						if(I)
+							qdel(I)
 						src.number--
 					spawn(2)
 						if(src.on)
@@ -705,7 +689,7 @@ steam.start() -- spawns the effect
 	opacity = 0
 	anchored = 1
 	density = 0
-	layer = OBJ_LAYER + 0.9
+	layer = ABOVE_HUMAN_PLANE
 	var/amount = 3
 	var/expand = 1
 	animate_movement = 0
@@ -748,7 +732,7 @@ steam.start() -- spawns the effect
 		icon += ccolor
 	var/savedtemp
 	//playsound(src, 'sound/effects/bubbles2.ogg', 80, 1, -3)
-	if(reagents.has_reagent("water"))
+	if(reagents.has_reagent(WATER))
 		var/turf/simulated/T = get_turf(src)
 		var/datum/gas_mixture/old_air = T.return_air()
 		savedtemp = old_air.temperature
@@ -884,7 +868,7 @@ steam.start() -- spawns the effect
 					for(var/id in carried_reagents)
 						F.reagents.add_reagent(id,1)
 				else
-					F.reagents.add_reagent("water", 1)
+					F.reagents.add_reagent(WATER, 1)
 
 // wall formed by metal foams
 // dense and opaque, but easy to break
@@ -952,7 +936,8 @@ steam.start() -- spawns the effect
 		to_chat(user, "<span class='notice'>You hit \the [src] to no effect.</span>")
 
 /obj/structure/foamedmetal/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
-	if(air_group) return 0
+	if(air_group)
+		return 0
 	return !density
 
 
@@ -1108,4 +1093,5 @@ steam.start() -- spawns the effect
 			else if (round(amount/2) > 0)
 				dmglevel = 3
 
-			if(dmglevel<4) holder.ex_act(dmglevel)
+			if(dmglevel<4)
+				holder.ex_act(dmglevel)

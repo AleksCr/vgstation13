@@ -2,10 +2,11 @@
 	name = "energy"
 	icon_state = "spark"
 	damage = 0
-	layer = 13
+	layer = PROJECTILE_LAYER
 	damage_type = BURN
 	flag = "energy"
 	fire_sound = 'sound/weapons/Taser.ogg'
+	plane = EFFECTS_PLANE
 
 
 /obj/item/projectile/energy/electrode
@@ -16,6 +17,7 @@
 	weaken = 10
 	stutter = 10
 	hitsound = 'sound/weapons/taserhit.ogg'
+
 /*/vg/ EDIT
 	agony = 40
 	damage_type = HALLOSS

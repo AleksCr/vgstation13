@@ -6,13 +6,13 @@
 	item_state = null
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/guninhands_left.dmi', "right_hand" = 'icons/mob/in-hand/right/guninhands_right.dmi')
 	max_shells = 5
-	w_class = 4.0
+	w_class = W_CLASS_LARGE
 	force = 10
 	flags = FPRINT
 	siemens_coefficient = 1
 	slot_flags = SLOT_BACK
 	caliber = list("7.62x55" = 1)
-	origin_tech = "combat=4;materials=2"
+	origin_tech = Tc_COMBAT + "=4;" + Tc_MATERIALS + "=2"
 	ammo_type ="/obj/item/ammo_casing/a762x55"
 	var/recentpump = 0 // to prevent spammage
 	var/pumped = 0
@@ -25,7 +25,8 @@
 		return 0
 
 /obj/item/weapon/gun/projectile/nagant/attack_self(mob/living/user as mob)
-	if(recentpump)	return
+	if(recentpump)
+		return
 	pump(user)
 	recentpump = 1
 	spawn(10)
@@ -83,11 +84,12 @@
 	icon_state = "obrez"
 	item_state = null
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/guninhands_left.dmi', "right_hand" = 'icons/mob/in-hand/right/guninhands_right.dmi')
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	slot_flags = SLOT_BELT
 
 /obj/item/weapon/gun/projectile/nagant/obrez/afterattack(atom/A as mob|obj|turf|area, mob/living/user as mob|obj, flag, params, struggle = 0)
-	if(flag)	return //we're placing gun on a table or in backpack
+	if(flag)
+		return //we're placing gun on a table or in backpack
 	if(current_shell && current_shell.BB)
 		//explosion(src.loc,-1,1,2)
 		var/datum/effect/effect/system/spark_spread/sparks = new /datum/effect/effect/system/spark_spread()

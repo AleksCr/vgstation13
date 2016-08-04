@@ -32,7 +32,8 @@
 	playsound(D.loc, 'sound/items/poster_being_created.ogg', 100, 1)
 
 
-	if(!D)	return
+	if(!D)
+		return
 
 	if(do_after(user, on_wall, 17))//Let's check if everything is still there
 		to_chat(user, "<span class='notice'>You place the poster!</span>")
@@ -113,7 +114,7 @@ obj/structure/sign/poster/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	if(prob(70))
 		to_chat(H, "<span class='userdanger'>Ouch! That hurts!</span>")
 
-		H.apply_damage(rand(5,7), BRUTE, pick("r_leg", "l_leg", "r_foot", "l_foot"))
+		H.apply_damage(rand(5,7), BRUTE, pick(LIMB_RIGHT_LEG, LIMB_LEFT_LEG, LIMB_RIGHT_FOOT, LIMB_LEFT_FOOT))
 
 
 /datum/poster

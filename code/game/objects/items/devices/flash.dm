@@ -4,18 +4,19 @@
 	icon_state = "flash"
 	item_state = "flash"
 	throwforce = 5
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throw_speed = 4
 	throw_range = 10
 	flags = FPRINT
 	siemens_coefficient = 1
-	origin_tech = "magnets=2;combat=1"
+	origin_tech = Tc_MAGNETS + "=2;" + Tc_COMBAT + "=1"
 	min_harm_label = 15 //Multiple layers?
 	harm_label_examine = list("<span class='info'>A label is on the bulb, but doesn't cover it.</span>", "<span class='warning'>A label covers the bulb!</span>")
 
 	var/times_used = 0 //Number of times it's been used.
 	var/broken = 0     //Is the flash burnt out?
 	var/last_used = 0 //last world.time it was used.
+	var/limited_conversions = 0 // for revsquad
 
 /obj/item/device/flash/proc/clown_check(var/mob/user)
 	if(user && (M_CLUMSY in user.mutations) && prob(50))
@@ -90,19 +91,27 @@
 					if(Subject.stat != DEAD)
 						Subject.mind_initialize() // give them a mind datum if they don't have one
 
-						var/result = ticker.mode.add_revolutionary(Subject.mind)
+						var/is_revsquad = istype(ticker.mode, /datum/game_mode/revsquad)
+						if(!is_revsquad || (is_revsquad && limited_conversions))
+							var/result = ticker.mode.add_revolutionary(Subject.mind)
 
-						if(result == 1)
-							log_admin("[key_name(user)] has converted [key_name(Subject)] to the revolution at [formatLocation(Subject.loc)]")
-							Subject.mind.has_been_rev = TRUE
-						else if(result == -1 || Subject.mind.has_been_rev) // command positions or has been rev before (according to old code you cannot attempt to rev people that has been deconverted, can be remove)
-							to_chat(user, "<span class=\"warning\">This mind seems resistant to the flash!</span>")
-						else if(result == -2) // rev jobbanned
-							to_chat(user, "<span class=\"warning\">This mind seems resistant to the flash! (OOC INFO: REVOLUTIONARY JOBBANNED)</span>")
-						else if(result == -3) // loyalty implanted
-							to_chat(user, "<span class=\"warning\">Something seems to be blocking the flash!</span>")
+							if(result == 1)
+								log_admin("[key_name(user)] has converted [key_name(Subject)] to the revolution at [formatLocation(Subject.loc)]")
+								Subject.mind.has_been_rev = TRUE
+								if(is_revsquad)
+									limited_conversions--
+									if(limited_conversions <= 0)
+										to_chat(user, "<span class='warning'>The bulb has burnt out!</span>")
+										broken = 1
+										icon_state = "flashburnt"
+							else if(result == ADD_REVOLUTIONARY_FAIL_IS_COMMAND || Subject.mind.has_been_rev) // command positions or has been rev before (according to old code you cannot attempt to rev people that has been deconverted, can be remove)
+								to_chat(user, "<span class='warning'>This mind seems resistant to the flash!</span>")
+							else if(result == ADD_REVOLUTIONARY_FAIL_IS_JOBBANNED) // rev jobbanned
+								to_chat(user, "<span class='warning'>This mind seems resistant to the flash! (OOC INFO: REVOLUTIONARY JOBBANNED)</span>")
+							else if(result == ADD_REVOLUTIONARY_FAIL_IS_IMPLANTED) // loyalty implanted
+								to_chat(user, "<span class='warning'>Something seems to be blocking the flash!</span>")
 					else
-						to_chat(user, "<span class=\"warning\">This mind is so vacant that it is not susceptible to influence!</span>")
+						to_chat(user, "<span class='warning'>This mind is so vacant that it is not susceptible to influence!</span>")
 		else
 			flashfail = TRUE
 	else if(issilicon(M))
@@ -125,14 +134,15 @@
 		M.flash_eyes(affect_silicon = 1)
 
 		if(!issilicon(M))
-			user.visible_message("<span class=\"disarm\">[user] blinds [M] with the flash!</span>")
+			user.visible_message("<span class='disarm'>[user] blinds [M] with the flash!</span>")
 		else
-			user.visible_message("<span class=\"warning\">[user] overloads [M]'s sensors with the flash!</span>")
+			user.visible_message("<span class='warning'>[user] overloads [M]'s sensors with the flash!</span>")
 	else
-		user.visible_message("<span class=\"notice\">[user] fails to blind [M] with the flash!</span>")
+		user.visible_message("<span class='notice'>[user] fails to blind [M] with the flash!</span>")
 
 /obj/item/device/flash/attack_self(mob/living/carbon/user as mob, flag = 0, emp = 0)
-	if(!user || !clown_check(user)) 	return
+	if(!user || !clown_check(user))
+		return
 	if(broken)
 		user.show_message("<span class='warning'>The [src.name] is broken</span>", 2)
 		return
@@ -153,7 +163,8 @@
 			user.show_message("<span class='warning'>*click* *click*</span>", 2)
 			return
 	playsound(get_turf(src), 'sound/weapons/flash.ogg', 100, 1)
-	if(harm_labeled >= min_harm_label)	return //Act as if the flash was activated except the useful part.
+	if(harm_labeled >= min_harm_label)
+		return //Act as if the flash was activated except the useful part.
 	flick("flash2", src)
 	if(user && isrobot(user))
 		spawn(0)
@@ -188,7 +199,8 @@
 	return
 
 /obj/item/device/flash/emp_act(severity)
-	if(broken)	return
+	if(broken)
+		return
 	flash_recharge()
 	switch(times_used)
 		if(0 to 5)
@@ -217,7 +229,7 @@
 	name = "synthetic flash"
 	desc = "When a problem arises, SCIENCE is the solution."
 	icon_state = "sflash"
-	origin_tech = "magnets=2;combat=1"
+	origin_tech = Tc_MAGNETS + "=2;" + Tc_COMBAT + "=1"
 
 /obj/item/device/flash/synthetic/attack(mob/living/M as mob, mob/user as mob)
 	..()
@@ -232,3 +244,7 @@
 		broken = 1
 		to_chat(user, "<span class='warning'>The bulb has burnt out!</span>")
 		icon_state = "flashburnt"
+
+/obj/item/device/flash/revsquad/New(var/uses = 1)
+	..()
+	limited_conversions = uses

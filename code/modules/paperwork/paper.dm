@@ -9,11 +9,11 @@
 	icon = 'icons/obj/bureaucracy.dmi'
 	icon_state = "paper"
 	throwforce = 0
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	w_type = RECYK_WOOD
 	throw_range = 1
 	throw_speed = 1
-	layer = 3.9
+	layer = ABOVE_DOOR_LAYER
 	pressure_resistance = 1
 	attack_verb = list("slaps")
 	autoignition_temperature = AUTOIGNITION_PAPER
@@ -34,8 +34,8 @@
 
 /obj/item/weapon/paper/New()
 	..()
-	pixel_y = rand(-8, 8)
-	pixel_x = rand(-9, 9)
+	pixel_y = rand(-8, 8) * PIXEL_MULTIPLIER
+	pixel_x = rand(-9, 9) * PIXEL_MULTIPLIER
 	spawn(2)
 		update_icon()
 		updateinfolinks()
@@ -299,8 +299,8 @@
 		stamps += (stamps=="" ? "<HR>" : "<BR>") + "<i>This [src.name] has been stamped with the [P.name].</i>"
 
 		var/image/stampoverlay = image('icons/obj/bureaucracy.dmi')
-		stampoverlay.pixel_x = rand(-2, 2)
-		stampoverlay.pixel_y = rand(-3, 2)
+		stampoverlay.pixel_x = rand(-2, 2) * PIXEL_MULTIPLIER
+		stampoverlay.pixel_y = rand(-3, 2) * PIXEL_MULTIPLIER
 		stampoverlay.icon_state = "paper_[P.icon_state]"
 
 		if(!stamped)
@@ -334,7 +334,7 @@
 			if(G.max_heat_protection_temperature)
 				prot = (G.max_heat_protection_temperature > src.autoignition_temperature)
 		if(!prot && (M_CLUMSY in H.mutations) && prob(50)) //only fail if human
-			H.apply_damage(10,BURN,(pick("l_hand", "r_hand")))
+			H.apply_damage(10,BURN,(pick(LIMB_LEFT_HAND, LIMB_RIGHT_HAND)))
 			user.drop_hands()
 			user.visible_message( \
 				"<span class='notice'>[user] tries to burn the [src.name], but burns \his hand trying!</span>", \
@@ -367,15 +367,17 @@ var/global/list/paper_folding_results = list ( \
 	set name = "Fold paper"
 	set src in usr
 
-	if (!canfold(usr)) return
-	. = paper_folding_results[(input("What do you want to make the paper into?", "Paper Folding") as null|anything in paper_folding_results)]
-	if (. == null) return
-	if (!canfold(usr)) return //second check in case some chucklefuck moves the paper or falls down while the menu is open
+	if (!canfold(usr))
+		return
+	var/foldtype = paper_folding_results[input("What do you want to make the paper into?", "Paper Folding") as null|anything in paper_folding_results]
+	if (!foldtype)
+		return
+	if (!canfold(usr))
+		return //second check in case some chucklefuck moves the paper or falls down while the menu is open
 
 	usr.drop_item(src, force_drop = 1)	//Drop the original paper to free our hand and call proper inventory handling code
-	var/obj/item/weapon/p_folded/P = new .(get_turf(usr)) 	//Let's make a new item
-	P.unfolded = src										//that unfolds into the original paper
-	src.loc = P												//and also contains it, for good measure.
+	var/obj/item/weapon/p_folded/P = new foldtype(get_turf(src), unfolds_into = src) //Let's make a new item that unfolds into the original paper
+	src.forceMove(P)	//and also contains it, for good measure.
 	usr.put_in_hands(P)
 	P.pixel_y = src.pixel_y
 	P.pixel_x = src.pixel_x
@@ -383,7 +385,7 @@ var/global/list/paper_folding_results = list ( \
 		P.color = "#9A9A9A"
 		P.nano = 1
 	usr.visible_message("<span class='notice'>[usr] folds \the [src.name] into a [P.name].</span>", "<span class='notice'>You fold \the [src.name] into a [P.name].</span>")
-	P.add_fingerprint(usr)
+	transfer_fingerprints(src, P)
 	return
 
 /obj/item/weapon/paper/proc/canfold(mob/user)
@@ -392,7 +394,7 @@ var/global/list/paper_folding_results = list ( \
 	if(user.stat || user.restrained())
 		to_chat(user, "<span class='notice'>You can't do that while restrained.</span>")
 		return 0
-	if(user.l_hand != src && user.r_hand != src)
+	if(!user.is_holding_item(src))
 		to_chat(user, "<span class='notice'>You'll need [src] in your hands to do that.</span>")
 		return 0
 	return 1
@@ -471,4 +473,8 @@ var/global/list/paper_folding_results = list ( \
 
 /obj/item/weapon/paper/voxresearch/voxresearchescape
 	name = "paper- 'Recent Attack'"
-	info = "We still do not know who were responsible for the recent attack and escape of several test subjects.  The initial investigation points to the Syndicate but we cannot say for sure at this time.  This has violated our contract with REDACTED and REDACTED.  We may have to close the facility. "	
+	info = "We still do not know who were responsible for the recent attack and escape of several test subjects.  The initial investigation points to the Syndicate but we cannot say for sure at this time.  This has violated our contract with REDACTED and REDACTED.  We may have to close the facility. "
+
+/obj/item/weapon/paper/outoforder
+	name = "paper- 'OUT OF ORDER'"
+	info = "<B>OUT OF ORDER</B>"

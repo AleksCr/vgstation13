@@ -4,24 +4,24 @@
 	desc = "Optical Meson Scanner with prescription lenses."
 	prescription = 1
 	eyeprot = -1
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED, GREY_SHAPED)
 
 /obj/item/clothing/glasses/science
 	name = "Science Goggles"
 	desc = "nothing"
 	icon_state = "purple"
 	item_state = "glasses"
-	origin_tech = "materials=1"
+	origin_tech = Tc_MATERIALS + "=1"
 
 /obj/item/clothing/glasses/night
 	name = "Night Vision Goggles"
 	desc = "You can totally see in the dark now!."
 	icon_state = "night"
 	item_state = "glasses"
-	origin_tech = "magnets=2"
+	origin_tech = Tc_MAGNETS + "=2"
 	see_invisible = SEE_INVISIBLE_OBSERVER_NOLIGHTING
 	see_in_dark = 8
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED, GREY_SHAPED)
 	eyeprot = -1
 
 /obj/item/clothing/glasses/eyepatch
@@ -36,7 +36,7 @@
 	desc = "Such a dapper eyepiece!"
 	icon_state = "monocle"
 	item_state = "headset" // lol
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED)
 	min_harm_label = 3
 	harm_label_examine = list("<span class='info'>A tiny label is on the lens.</span>","<span class='warning'>A label covers the lens!</span>")
 /obj/item/clothing/glasses/monocle/harm_label_update()
@@ -57,6 +57,7 @@
 	S.Crossed()
 
 	qdel(src)
+	return SPECIAL_ATTACK_FAILED
 
 /obj/item/clothing/glasses/regular/hipster
 	name = "Prescription Glasses"
@@ -75,10 +76,10 @@
 	name = "sunglasses"
 	icon_state = "sun"
 	item_state = "sunglasses"
-	origin_tech = "combat=2"
+	origin_tech = Tc_COMBAT + "=2"
 	darkness_view = -1
 	eyeprot = 1
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED, GREY_SHAPED)
 
 /obj/item/clothing/glasses/sunglasses/kick_act(mob/living/carbon/human/H)
 	H.visible_message("<span class='danger'>[H] stomps on \the [src], crushing them!</span>", "<span class='danger'>You crush \the [src] under your foot.</span>")
@@ -88,26 +89,42 @@
 	S.Crossed()
 
 	qdel(src)
+	return SPECIAL_ATTACK_FAILED
+
+/obj/item/clothing/glasses/sunglasses/purple
+	desc = "Strangely ancient technology used to help provide rudimentary eye cover. Enhanced shielding blocks many flashes, and the colored lenses let you see the world in purple."
+	name = "purple sunglasses"
+	icon_state = "sun_purple"
+
+/obj/item/clothing/glasses/sunglasses/star
+	name = "star-shaped sunglasses"
+	desc = "Novelty sunglasses, both lenses are in the shape of a star."
+	icon_state = "sun_star"
+
+/obj/item/clothing/glasses/sunglasses/rockstar
+	name = "red star-shaped sunglasses"
+	desc = "Novelty sunglasses with a fancy silver frame and two red-tinted star-shaped lenses. You should probably stomp on them and get a pair of normal ones."
+	icon_state = "sun_star_silver"
 
 /obj/item/clothing/glasses/virussunglasses
 	desc = "Strangely ancient technology used to help provide rudimentary eye cover. Enhanced shielding blocks many flashes."
 	name = "sunglasses"
 	icon_state = "sun"
 	item_state = "sunglasses"
-	origin_tech = "combat=2"
+	origin_tech = Tc_COMBAT + "=2"
 	darkness_view = -1
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED)
 
 /obj/item/clothing/glasses/welding
 	name = "welding goggles"
 	desc = "Protects the eyes from welders, approved by the mad scientist association."
 	icon_state = "welding-g"
 	item_state = "welding-g"
-	origin_tech = "engineering=1;materials=2"
+	origin_tech = Tc_ENGINEERING + "=1;" + Tc_MATERIALS + "=2"
 	action_button_name = "Toggle Welding Goggles"
 	var/up = 0
 	eyeprot = 3
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED, GREY_SHAPED)
 
 /obj/item/clothing/glasses/welding/attack_self()
 	toggle()
@@ -143,7 +160,7 @@
 	desc = "Welding goggles made from more expensive materials, strangely smells like potatoes. Allows for better vision than normal goggles.."
 	icon_state = "rwelding-g"
 	item_state = "rwelding-g"
-	origin_tech = "engineering=3;materials=3"
+	origin_tech = Tc_ENGINEERING + "=3;" + Tc_MATERIALS + "=3"
 
 /obj/item/clothing/glasses/sunglasses/blindfold
 	name = "blindfold"
@@ -153,19 +170,19 @@
 	see_invisible = SEE_INVISIBLE_LIVING
 	vision_flags = BLIND
 	eyeprot = 4 //What you can't see can't burn your eyes out
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED)
 	min_harm_label = 0
 
 /obj/item/clothing/glasses/sunglasses/prescription
 	name = "prescription sunglasses"
 	prescription = 1
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED, GREY_SHAPED)
 
 /obj/item/clothing/glasses/sunglasses/big
 	desc = "Strangely ancient technology used to help provide rudimentary eye cover. Larger than average enhanced shielding blocks many flashes."
 	icon_state = "bigsunglasses"
 	item_state = "bigsunglasses"
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED)
 	min_harm_label = 15
 
 /obj/item/clothing/glasses/sunglasses/sechud
@@ -173,7 +190,7 @@
 	desc = "Sunglasses with a HUD."
 	icon_state = "sunhud"
 	var/obj/item/clothing/glasses/hud/security/hud = null
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED, GREY_SHAPED)
 
 	New()
 		..()
@@ -185,7 +202,7 @@
 	desc = "Thermals in the shape of glasses."
 	icon_state = "thermal"
 	item_state = "glasses"
-	origin_tech = "magnets=3"
+	origin_tech = Tc_MAGNETS + "=3"
 	vision_flags = SEE_MOBS
 	see_invisible = SEE_INVISIBLE_MINIMUM
 	invisa_view = 2
@@ -207,8 +224,8 @@
 	name = "Optical Meson Scanner"
 	desc = "Used for seeing walls, floors, and stuff through anything."
 	icon_state = "meson"
-	origin_tech = "magnets=3;syndicate=4"
-	species_fit = list("Vox")
+	origin_tech = Tc_MAGNETS + "=3;" + Tc_SYNDICATE + "=4"
+	species_fit = list(VOX_SHAPED)
 
 /obj/item/clothing/glasses/thermal/monocle
 	name = "Thermonocle"
@@ -249,7 +266,7 @@
 	desc = "A set of implantable lenses designed to augment your vision"
 	icon_state = "thermalimplants"
 	item_state = "syringe_kit"
-	species_fit = list("Vox")
+	species_fit = list(VOX_SHAPED)
 
 /obj/item/clothing/glasses/simonglasses
 	name = "Simon's Glasses"

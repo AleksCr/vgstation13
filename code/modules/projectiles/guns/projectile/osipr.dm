@@ -9,11 +9,11 @@
 	icon_state = "osipr"
 	item_state = "osipr"
 	slot_flags = SLOT_BELT
-	origin_tech = "materials=5;combat=5;magnets=4;powerstorage=3"
+	origin_tech = Tc_MATERIALS + "=5;" + Tc_COMBAT + "=5;" + Tc_MAGNETS + "=4;" + Tc_POWERSTORAGE + "=3"
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/guns_experimental.dmi', "right_hand" = 'icons/mob/in-hand/right/guns_experimental.dmi')
 	recoil = 1
 	fire_delay = 0
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	fire_sound = 'sound/weapons/osipr_fire.ogg'
 	var/obj/item/energy_magazine/osipr/magazine = null
 	var/energy_balls = 2
@@ -37,16 +37,19 @@
 	to_chat(user, "<span class='info'>Has [energy_balls] dark energy core\s remaining.</span>")
 
 /obj/item/weapon/gun/osipr/process_chambered()
-	if(in_chamber) return 1
+	if(in_chamber)
+		return 1
 	switch(mode)
 		if(OSIPR_PRIMARY_FIRE)
-			if(!magazine || !magazine.bullets) return 0
+			if(!magazine || !magazine.bullets)
+				return 0
 			magazine.bullets--
 			update_icon()
 			in_chamber = new magazine.bullet_type()
 			return 1
 		if(OSIPR_SECONDARY_FIRE)
-			if(!energy_balls) return 0
+			if(!energy_balls)
+				return 0
 			energy_balls--
 			in_chamber = new/obj/item/projectile/energy/osipr()
 			return 1
@@ -78,7 +81,7 @@
 		..()
 
 /obj/item/weapon/gun/osipr/attack_hand(mob/user)
-	if(((src == user.r_hand) || (src == user.l_hand)) && magazine)
+	if((user.is_holding_item(src)) && magazine)
 		magazine.update_icon()
 		user.put_in_hands(magazine)
 		magazine = null
@@ -119,7 +122,7 @@
 	flags = FPRINT
 	force = 1
 	throwforce = 1
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	var/bullets = 10
 	var/max_bullets = 10
 	var/caliber = "osipr"	//base icon name
@@ -127,8 +130,8 @@
 
 /obj/item/energy_magazine/New()
 	..()
-	pixel_x = rand(-10.0, 10)
-	pixel_y = rand(-10.0, 10)
+	pixel_x = rand(-10.0, 10) * PIXEL_MULTIPLIER
+	pixel_y = rand(-10.0, 10) * PIXEL_MULTIPLIER
 	update_icon()
 
 /obj/item/energy_magazine/examine(mob/user)
@@ -145,7 +148,7 @@
 	name = "pulse magazine"
 	desc = "Primary ammo for OSIPR. Can be replenished by a recharger."
 	icon_state = "osipr-magfull"
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	bullets = 30
 	max_bullets = 30
 	caliber = "osipr"
@@ -162,9 +165,9 @@
 	flags = FPRINT
 	force = 1
 	throwforce = 1
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 
 /obj/item/osipr_core/New()
 	..()
-	pixel_x = rand(-10.0, 10)
-	pixel_y = rand(-10.0, 10)
+	pixel_x = rand(-10, 10) * PIXEL_MULTIPLIER
+	pixel_y = rand(-10, 10) * PIXEL_MULTIPLIER

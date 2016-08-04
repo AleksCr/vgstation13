@@ -11,7 +11,7 @@
 	icon_state = "spiderling"
 	icon_living = "spiderling"
 
-	layer = 2.7
+	layer = HIDING_MOB_PLANE
 	density = 0
 
 	var/amount_grown = 0
@@ -23,7 +23,7 @@
 	vision_range = 3
 	aggro_vision_range = 9
 	idle_vision_range = 3
-	move_to_delay = 3
+	speed = 3
 	friendly = "harmlessly skitters into"
 	maxHealth = 12
 	health = 12
@@ -42,8 +42,8 @@
 
 /mob/living/simple_animal/hostile/giant_spider/spiderling/New()
 	..()
-	pixel_x = rand(6,-6)
-	pixel_y = rand(6,-6)
+	pixel_x = rand(6,-6) * PIXEL_MULTIPLIER
+	pixel_y = rand(6,-6) * PIXEL_MULTIPLIER
 	//75% chance to grow up
 	if(prob(75))
 		amount_grown = 1
@@ -71,7 +71,8 @@
 	stance = HOSTILE_STANCE_IDLE
 
 /mob/living/simple_animal/hostile/giant_spider/spiderling/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 	if(travelling_in_vent)
 		if(istype(src.loc, /turf))
 			travelling_in_vent = 0
@@ -140,7 +141,7 @@
 	//ventcrawl!
 	if(!v.welded)
 		entry_vent = v
-		Goto(get_turf(v),move_to_delay)
+		Goto(get_turf(v), speed)
 
 //Virologist's little friend!
 /mob/living/simple_animal/hostile/giant_spider/spiderling/salk

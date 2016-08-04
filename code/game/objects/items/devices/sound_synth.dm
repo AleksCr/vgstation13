@@ -3,7 +3,7 @@
 	desc = "A device that is able to create sounds."
 	icon_state = "soundsynth"
 	item_state = "radio"
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	flags = FPRINT
 	siemens_coefficient = 1
 
@@ -40,7 +40,8 @@
 	set category = "Object"
 	set name = "Select Sound Playback"
 	var/thesoundthatwewant = input("Pick a sound:", null) as null|anything in sound_list
-	if(!thesoundthatwewant) return
+	if(!thesoundthatwewant)
+		return
 	to_chat(usr, "Sound playback set to: [thesoundthatwewant]!")
 	var/list/assblast = params2list(sound_list[thesoundthatwewant])
 	selected_sound = assblast["selected_sound"]

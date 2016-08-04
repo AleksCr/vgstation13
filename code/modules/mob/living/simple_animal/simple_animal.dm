@@ -82,6 +82,12 @@ var/global/list/animal_count = list() //Stores types, and amount of animals of t
 	var/supernatural = 0
 	var/purge = 0
 
+	//For those that we want to just pop back up a little while after they're killed
+	var/canRegenerate = 0 //If 1, it qualifies for regeneration
+	var/isRegenerating = 0 //To stop life calling the proc multiple times
+	var/minRegenTime = 0
+	var/maxRegenTime = 0
+
 	universal_speak = 1
 	universal_understand = 1
 
@@ -101,7 +107,8 @@ var/global/list/animal_count = list() //Stores types, and amount of animals of t
 
 /mob/living/simple_animal/rejuvenate(animation = 0)
 	var/turf/T = get_turf(src)
-	if(animation) T.turf_animation('icons/effects/64x64.dmi',"rejuvinate",-16,0,MOB_LAYER+1,'sound/effects/rejuvinate.ogg')
+	if(animation)
+		T.turf_animation('icons/effects/64x64.dmi',"rejuvinate",-16,0,MOB_LAYER+1,'sound/effects/rejuvinate.ogg',anim_plane = EFFECTS_PLANE)
 	src.health = src.maxHealth
 	return 1
 /mob/living/simple_animal/New()
@@ -131,7 +138,8 @@ var/global/list/animal_count = list() //Stores types, and amount of animals of t
 	Move(dest)
 
 /mob/living/simple_animal/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 	..()
 
 	//Health
@@ -142,6 +150,8 @@ var/global/list/animal_count = list() //Stores types, and amount of animals of t
 			stat = CONSCIOUS
 			density = 1
 			update_canmove()
+		if(canRegenerate && !isRegenerating)
+			src.delayedRegen()
 		return 0
 
 
@@ -160,15 +170,36 @@ var/global/list/animal_count = list() //Stores types, and amount of animals of t
 	if(paralysis)
 		AdjustParalysis(-1)
 
+	//Eyes
+	if(sdisabilities & BLIND)	//disabled-blind, doesn't get better on its own
+		blinded = 1
+	else if(eye_blind)			//blindness, heals slowly over time
+		eye_blind = max(eye_blind-1,0)
+		blinded = 1
+	else if(eye_blurry)	//blurry eyes heal slowly
+		eye_blurry = max(eye_blurry-1, 0)
+
+	//Ears
+	if(sdisabilities & DEAF)	//disabled-deaf, doesn't get better on its own
+		ear_deaf = max(ear_deaf, 1)
+	else if(ear_deaf)			//deafness, heals slowly over time
+		ear_deaf = max(ear_deaf-1, 0)
+	else if(ear_damage < 25)	//ear damage heals slowly under this threshold.
+		ear_damage = max(ear_damage-0.05, 0)
+
+	confused = max(0, confused - 1)
+
 	if(purge)
 		purge -= 1
+
+	isRegenerating = 0
 
 	//Movement
 	if((!client||deny_client_move) && !stop_automated_movement && wander && !anchored && (ckey == null) && !(flags & INVULNERABLE))
 		if(isturf(src.loc) && canmove)		//This is so it only moves if it's not inside a closet, gentics machine, etc.
 			turns_since_move++
 			if(turns_since_move >= turns_per_move)
-				if(!(stop_automated_movement_when_pulled && pulledby)) //Soma animals don't move when pulled
+				if(!(stop_automated_movement_when_pulled && pulledby)) //Some animals don't move when pulled
 					var/destination = get_step(src, pick(cardinal))
 					wander_move(destination)
 					turns_since_move = 0
@@ -303,8 +334,9 @@ var/global/list/animal_count = list() //Stores types, and amount of animals of t
 			return "[emote], [text]"
 	return "says, [text]";
 
-/mob/living/simple_animal/emote(var/act, var/type, var/desc)
-	if(timestopped) return //under effects of time magick
+/mob/living/simple_animal/emote(var/act, var/type, var/desc, var/auto)
+	if(timestopped)
+		return //under effects of time magick
 	if(stat)
 		return
 	if(act == "scream")
@@ -332,7 +364,8 @@ var/global/list/animal_count = list() //Stores types, and amount of animals of t
 		updatehealth()
 
 /mob/living/simple_animal/bullet_act(var/obj/item/projectile/Proj)
-	if(!Proj)	return
+	if(!Proj)
+		return
 	// FUCK mice. - N3X
 	if(ismouse(src) && (Proj.stun+Proj.weaken+Proj.paralyze+Proj.agony)>5)
 		var/mob/living/simple_animal/mouse/M=src
@@ -450,9 +483,11 @@ var/global/list/animal_count = list() //Stores types, and amount of animals of t
 		to_chat(M, "You cannot attack people before the game has started.")
 		return
 
-	if(M.Victim) return // can't attack while eating!
+	if(M.Victim)
+		return // can't attack while eating!
 
 	visible_message("<span class='danger'>[M.name] glomps [src]!</span>")
+	add_logs(M, src, "glomped on", 0)
 
 	var/damage = rand(1, 3)
 
@@ -514,11 +549,12 @@ var/global/list/animal_count = list() //Stores types, and amount of animals of t
 			tally = 1
 		tally *= purge
 
-	if(istype(loc,/turf/simulated/floor))
-		var/turf/simulated/floor/T = loc
+	var/turf/T = loc
+	if(istype(T))
+		tally = T.adjust_slowdown(src, tally)
 
-		if(T.material=="phazon")
-			return -1 // Phazon floors make us go fast
+		if(tally == -1)
+			return tally
 
 	return tally+config.animal_delay
 
@@ -686,20 +722,30 @@ var/global/list/animal_count = list() //Stores types, and amount of animals of t
 	src.faction = from.faction
 
 /mob/living/simple_animal/say_understands(var/mob/other,var/datum/language/speaking = null)
-	if(other) other = other.GetSource()
+	if(other)
+		other = other.GetSource()
 	if(issilicon(other))
 		return 1
 	return ..()
 
 /mob/living/simple_animal/proc/reagent_act(id, method, volume)
-	if(isDead()) return
+	if(isDead())
+		return
 
 	switch(id)
-		if("sacid")
+		if(SACID)
 			if(!supernatural)
 				adjustBruteLoss(volume * 0.5)
-		if("pacid")
+		if(PACID)
 			if(!supernatural)
 				adjustBruteLoss(volume * 0.5)
+
+/mob/living/simple_animal/proc/delayedRegen()
+	set waitfor = 0
+	isRegenerating = 1
+	sleep(rand(minRegenTime, maxRegenTime)) //Don't want it being predictable
+	src.resurrect()
+	src.revive()
+	visible_message("<span class='warning'>[src] appears to wake from the dead, having healed all wounds.</span>")
 
 /datum/locking_category/simple_animal

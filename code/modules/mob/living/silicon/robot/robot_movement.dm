@@ -2,8 +2,10 @@
 	if(module)
 		for(var/obj/item/weapon/tank/jetpack/J in module.modules)
 			if(J && istype(J, /obj/item/weapon/tank/jetpack))
-				if(J.allow_thrust(0.01))	return 1
-	if(..())	return 1
+				if(J.allow_thrust(0.01))
+					return 1
+	if(..())
+		return 1
 	return 0
 
  //No longer needed, but I'll leave it here incase we plan to re-use it.
@@ -15,11 +17,12 @@
 	if(module_active && istype(module_active,/obj/item/borg/combat/mobility))
 		tally-=3 // JESUS FUCKING CHRIST WHY
 
-	if(istype(loc,/turf/simulated/floor))
-		var/turf/simulated/floor/T = loc
+	var/turf/T = loc
+	if(istype(T))
+		tally = T.adjust_slowdown(src, tally)
 
-		if(T.material=="phazon")
-			return -1 // Phazon floors make us go fast
+		if(tally == -1)
+			return tally
 
 	return tally+config.robot_delay
 

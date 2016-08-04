@@ -14,7 +14,7 @@
 	mymob.flash.icon_state = "blank"
 	mymob.flash.name = "flash"
 	mymob.flash.screen_loc = ui_entire_screen
-	mymob.flash.layer = 17
+	mymob.flash.layer = UNDER_HUD_LAYER
 
 	mymob.client.reset_screen()
 
@@ -56,32 +56,13 @@
 	mymob.flash.icon_state = "blank"
 	mymob.flash.name = "flash"
 	mymob.flash.screen_loc = ui_entire_screen
-	mymob.flash.layer = 17
+	mymob.flash.layer = UNDER_HUD_LAYER
 
 	mymob.client.reset_screen()
 
 	mymob.client.screen += list(mymob.fire, mymob.healths, mymob.pullin, mymob.oxygen, mymob.toxin, mymob.flash)
 
 /datum/hud/proc/brain_hud(ui_style = 'icons/mob/screen1_Midnight.dmi')
-
-/datum/hud/proc/blob_hud(ui_style = 'icons/mob/screen1_Midnight.dmi')
-
-
-	blobpwrdisplay = getFromPool(/obj/screen)
-	blobpwrdisplay.name = "blob power"
-	blobpwrdisplay.icon_state = "block"
-	blobpwrdisplay.screen_loc = ui_health
-	blobpwrdisplay.layer = 20
-
-	blobhealthdisplay = getFromPool(/obj/screen)
-	blobhealthdisplay.name = "blob health"
-	blobhealthdisplay.icon_state = "block"
-	blobhealthdisplay.screen_loc = ui_internal
-	blobhealthdisplay.layer = 20
-
-	mymob.client.reset_screen()
-
-	mymob.client.screen += list(blobpwrdisplay, blobhealthdisplay)
 
 /datum/hud/proc/shade_hud()
 
@@ -114,11 +95,22 @@
 	mymob.flash.icon_state = "blank"
 	mymob.flash.name = "flash"
 	mymob.flash.screen_loc = ui_entire_screen
-	mymob.flash.layer = 17
+	mymob.flash.layer = UNDER_HUD_LAYER
 
 	mymob.client.reset_screen()
 
 	mymob.client.screen += list(mymob.healths, mymob.pullin, mymob.zone_sel, mymob.purged, mymob.flash)
+
+/datum/hud/proc/borer_hud()
+
+	mymob.zone_sel = getFromPool(/obj/screen/zone_sel)
+	mymob.zone_sel.icon = 'icons/mob/screen1_shade.dmi'
+	mymob.zone_sel.overlays.len = 0
+	mymob.zone_sel.overlays += image('icons/mob/zone_sel.dmi', "[mymob.zone_sel.selecting]")
+
+	mymob.client.reset_screen()
+
+	mymob.client.screen += list(mymob.zone_sel)
 
 /datum/hud/proc/construct_hud()
 	var/constructtype
@@ -137,7 +129,7 @@
 	mymob.flash.icon_state = "blank"
 	mymob.flash.name = "flash"
 	mymob.flash.screen_loc = ui_entire_screen
-	mymob.flash.layer = 17
+	mymob.flash.layer = UNDER_HUD_LAYER
 
 	if(constructtype)
 		mymob.fire = getFromPool(/obj/screen)
@@ -179,8 +171,7 @@
 	vampire_blood_display = getFromPool(/obj/screen)
 	vampire_blood_display.name = "Vampire Blood"
 	vampire_blood_display.icon_state = "dark128"
-	vampire_blood_display.screen_loc = "EAST-1:28,CENTER+2:15"
-	vampire_blood_display.layer = 20
+	vampire_blood_display.screen_loc = "EAST-1:[28*PIXEL_MULTIPLIER],CENTER+2:[15*PIXEL_MULTIPLIER]"
 
 	mymob.client.screen += list(vampire_blood_display)
 
@@ -188,7 +179,6 @@
 	vampire_blood_display = getFromPool(/obj/screen)
 	vampire_blood_display.name = "Changeling Chems"
 	vampire_blood_display.icon_state = "dark128"
-	vampire_blood_display.screen_loc = "EAST-1:28,CENTER+2:15"
-	vampire_blood_display.layer = 20
+	vampire_blood_display.screen_loc = "EAST-1:[28*PIXEL_MULTIPLIER],CENTER+2:[15*PIXEL_MULTIPLIER]"
 
 	mymob.client.screen += list(vampire_blood_display)

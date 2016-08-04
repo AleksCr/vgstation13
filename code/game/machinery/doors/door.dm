@@ -4,9 +4,6 @@
 #define HEADBUTT_PROBABILITY 40
 #define BRAINLOSS_FOR_HEADBUTT 60
 
-#define DOOR_LAYER		2.7
-#define DOOR_CLOSED_MOD	0.3 //how much the layer is increased when the door is closed
-
 var/list/all_doors = list()
 /obj/machinery/door
 	name = "door"
@@ -16,10 +13,10 @@ var/list/all_doors = list()
 	anchored = 1
 	opacity = 1
 	density = 1
-	layer = DOOR_LAYER
+	layer = OPEN_DOOR_LAYER
 	penetration_dampening = 10
-	var/base_layer = DOOR_LAYER
-
+	var/open_layer = OPEN_DOOR_LAYER
+	var/closed_layer = CLOSED_DOOR_LAYER
 	var/secondsElectrified = 0
 	var/visible = 1
 	var/operating = 0
@@ -118,16 +115,12 @@ var/list/all_doors = list()
 		playsound(src.loc, 'sound/machines/denied.ogg', 50, 1)
 		door_animate("deny")
 
-	return
-
 /obj/machinery/door/attack_ai(mob/user as mob)
 	add_hiddenprint(user)
 	attack_hand(user)
-	return
 
 /obj/machinery/door/attack_paw(mob/user as mob)
 	attack_hand(user)
-	return
 
 /obj/machinery/door/attack_hand(mob/user as mob)
 	if (prob(HEADBUTT_PROBABILITY) && density && ishuman(user))
@@ -141,7 +134,7 @@ var/list/all_doors = list()
 				visible_message("<span class='warning'>[user] headbutts the airlock.</span>")
 				H.Stun(8)
 				H.Weaken(5)
-				var/datum/organ/external/O = H.get_organ("head")
+				var/datum/organ/external/O = H.get_organ(LIMB_HEAD)
 
 				// TODO: analyze the called proc
 				if(O.take_damage(10, 0))
@@ -158,7 +151,6 @@ var/list/all_doors = list()
 
 	add_fingerprint(user)
 	attackby(null, user)
-	return
 
 
 /obj/machinery/door/attackby(obj/item/I as obj, mob/user as mob)
@@ -198,7 +190,6 @@ var/list/all_doors = list()
 			flick("[prefix]door_closing", src)
 
 	sleep(animation_delay)
-	return
 
 /obj/machinery/door/update_icon()
 	if(!density)
@@ -207,53 +198,23 @@ var/list/all_doors = list()
 		icon_state = "[prefix]door_closed"
 
 	sleep(animation_delay_2)
-	return
 
-/*
+
 /obj/machinery/door/proc/open()
-	if (!density || operating || jammed)
+	if(!density)
+		return 1
+	if(operating > 0)
 		return
-
-	operating = 1
-
-	door_animate("opening")
-
-	if (!istype(type, /obj/machinery/door/firedoor))
-		layer = 2.7
-	else
-		layer = 2.6
-
-	density = 0
-	update_icon()
-	opacity = 0
-
-	// TODO: analyze this proc
-	update_nearby_tiles()
-
-	operating = 0
-
-	// TODO: re-logic later
-	if (autoclose && normalspeed)
-		spawn(150)
-			autoclose()
-	else if (autoclose && !normalspeed)
-		spawn(5)
-			autoclose()
-
-	return
-*/
-
-/obj/machinery/door/proc/open()
-	if(!density)		return 1
-	if(operating > 0)	return
-	if(!ticker)			return 0
-	if(!operating)		operating = 1
+	if(!ticker)
+		return 0
+	if(!operating)
+		operating = 1
 
 	door_animate("opening")
-	src.set_opacity(0)
+	set_opacity(0)
 	sleep(10)
-	src.layer = base_layer
-	src.density = 0
+	layer = open_layer
+	density = 0
 	explosion_resistance = 0
 	update_icon()
 	set_opacity(0)
@@ -277,7 +238,7 @@ var/list/all_doors = list()
 	operating = 1
 	door_animate("closing")
 
-	layer = base_layer + DOOR_CLOSED_MOD
+	layer = closed_layer
 
 	density = 1
 	update_icon()
@@ -303,22 +264,21 @@ var/list/all_doors = list()
 
 	if(density)
 		// above most items if closed
-		layer = base_layer + DOOR_CLOSED_MOD
+		layer = closed_layer
 
 		explosion_resistance = initial(explosion_resistance)
 	else
-		// under all objects if opened. 2.7 due to tables being at 2.6
-		layer = base_layer
+		layer = open_layer
 
 		explosion_resistance = 0
 
 	if(width > 1)
 		if(dir in list(EAST, WEST))
-			bound_width = width * world.icon_size
-			bound_height = world.icon_size
+			bound_width = width * WORLD_ICON_SIZE
+			bound_height = WORLD_ICON_SIZE
 		else
-			bound_width = world.icon_size
-			bound_height = width * world.icon_size
+			bound_width = WORLD_ICON_SIZE
+			bound_height = width * WORLD_ICON_SIZE
 
 	update_nearby_tiles()
 
@@ -335,10 +295,19 @@ var/list/all_doors = list()
 	..()
 
 /obj/machinery/door/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
-	if(air_group) return 0
-	if(istype(mover) && mover.checkpass(PASSGLASS))
-		return !opacity
+	if(air_group)
+		return 0
+	if(istype(mover))
+		if(mover.checkpass(PASSGLASS))
+			return !opacity
+		if(mover.checkpass(PASSDOOR))
+			return 1
 	return !density
+
+/obj/machinery/door/Crossed(AM as mob|obj) //Since we can't actually quite open AS the car goes through us, we'll do the next best thing: open as the car goes into our tile.
+	if(istype(AM, /obj/structure/bed/chair/vehicle/wizmobile)) //Which is not 100% correct for things like windoors but it's close enough.
+		open()
+	return ..()
 
 /obj/machinery/door/proc/CanAStarPass(var/obj/item/weapon/card/id/ID)
 	return !density || check_access(ID)
@@ -406,11 +375,11 @@ var/list/all_doors = list()
 	. = ..()
 	if(width > 1)
 		if(dir in list(EAST, WEST))
-			bound_width = width * world.icon_size
-			bound_height = world.icon_size
+			bound_width = width * WORLD_ICON_SIZE
+			bound_height = WORLD_ICON_SIZE
 		else
-			bound_width = world.icon_size
-			bound_height = width * world.icon_size
+			bound_width = WORLD_ICON_SIZE
+			bound_height = width * WORLD_ICON_SIZE
 
 	update_nearby_tiles()
 

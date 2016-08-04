@@ -3,7 +3,7 @@
 /mob/living/carbon/human/proc/breathe()
 	if(flags & INVULNERABLE)
 		return
-	if(reagents.has_reagent("lexorin"))
+	if(reagents.has_reagent(LEXORIN))
 		return
 	if(undergoing_hypothermia() == PROFOUND_HYPOTHERMIA) // we're not breathing. see handle_hypothermia.dm for details.
 		return
@@ -53,7 +53,8 @@
 				/*if(environment.return_pressure() > ONE_ATMOSPHERE)
 					//Loads of air around (pressure effect will be handled elsewhere), so lets just take a enough to fill our lungs at normal atmos pressure (using n = Pv/RT)
 					breath_moles = (ONE_ATMOSPHERE*BREATH_VOLUME/R_IDEAL_GAS_EQUATION*environment.temperature)
-				else*/
+				else
+					*/
 					//Not enough air around, take a percentage of what's there to model this properly
 				breath_moles = environment.total_moles() * BREATH_PERCENTAGE
 
@@ -139,7 +140,7 @@
 		return 0
 
 	if(!breath || (breath.total_moles() == 0) || suiciding)
-		if(reagents.has_reagent("inaprovaline"))
+		if(reagents.has_reagent(INAPROVALINE))
 			return 0
 		if(suiciding)
 			adjustOxyLoss(2) //If you are suiciding, you should die a little bit faster

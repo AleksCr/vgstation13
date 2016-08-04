@@ -2,9 +2,9 @@
 	name = "Circuit Design (Air Alarm)"
 	desc = "Allows for the construction of circuit boards used to build an Air Alarm."
 	id = "air_alarm"
-	req_tech = list("programming" = 2)
+	req_tech = list(Tc_PROGRAMMING = 2)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Engineering Boards"
 	build_path = /obj/item/weapon/circuitboard/air_alarm
 
@@ -12,9 +12,9 @@
 	name = "Circuit Design (Fire Alarm)"
 	desc = "Allows for the construction of circuit boards used to build a Fire Alarm."
 	id = "fire_alarm"
-	req_tech = list("programming" = 2)
+	req_tech = list(Tc_PROGRAMMING = 2)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Engineering Boards"
 	build_path = /obj/item/weapon/circuitboard/fire_alarm
 
@@ -22,9 +22,9 @@
 	name = "Circuit Design (Airlock)"
 	desc = "Allows for the construction of circuit boards used to build an airlock."
 	id = "airlock"
-	req_tech = list("programming" = 2)
+	req_tech = list(Tc_PROGRAMMING = 2)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Engineering Boards"
 	build_path = /obj/item/weapon/circuitboard/airlock
 
@@ -32,9 +32,9 @@
 	name = "Circuit Design (Intercom)"
 	desc = "Allows for the construction of circuit boards used to build an intercom."
 	id = "intercom"
-	req_tech = list("programming" = 2)
+	req_tech = list(Tc_PROGRAMMING = 2)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Engineering Boards"
 	build_path = /obj/item/weapon/intercom_electronics
 
@@ -42,9 +42,9 @@
 	name = "Circuit Design (Conveyor)"
 	desc = "Allows for the construction of circuit boards used to build a conveyor belt."
 	id = "conveyor"
-	req_tech = list("programming" = 2)
+	req_tech = list(Tc_PROGRAMMING = 2)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 200, "sacid" = 5)
+	materials = list(MAT_GLASS = 200, SACID = 5)
 	category = "Machine Boards"
 	build_path = /obj/item/weapon/circuitboard/conveyor
 
@@ -52,9 +52,9 @@
 	name = "Circuit Design (Power Control Module)"
 	desc = "Allows for the construction of circuit boards used to build a new APC"
 	id = "apc_board"
-	req_tech = list("powerstorage"=2)
+	req_tech = list(Tc_POWERSTORAGE = 2)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Engineering Boards"
 	build_path = /obj/item/weapon/circuitboard/power_control
 
@@ -64,9 +64,9 @@
 	name = "Circuit Design (Access Control)"
 	desc = "Allows for the construction of ECB used to build an access control panel."
 	id = "access_control"
-	req_tech = list("programming" = 3)
+	req_tech = list(Tc_PROGRAMMING = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Engineering Boards"
 	build_path = /obj/item/weapon/circuitboard/ecb/access_controller
 
@@ -74,9 +74,9 @@
 	name = "Circuit Design (Airlock Control)"
 	desc = "Allows for the construction of ECB used to build an airlock control panel."
 	id = "airlock_control"
-	req_tech = list("programming" = 3)
+	req_tech = list(Tc_PROGRAMMING = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	category = "Engineering Boards"
 	build_path = /obj/item/weapon/circuitboard/ecb/airlock_controller
 
@@ -84,9 +84,9 @@
 	name = "Circuit Design (Advanced Airlock Control)"
 	desc = "Allows for the construction of ECB used to build an advanced control panel."
 	id = "advanced_airlock_control"
-	req_tech = list("programming" = 3)
+	req_tech = list(Tc_PROGRAMMING = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20)
+	materials = list(MAT_GLASS = 2000, SACID = 20)
 	circuitboard/ecb/access_controller
 	category = "Engineering Boards"
 	build_path = /obj/item/weapon/circuitboard/ecb/advanced_airlock_controller

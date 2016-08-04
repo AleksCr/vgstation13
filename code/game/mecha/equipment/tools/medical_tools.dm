@@ -3,7 +3,7 @@
 	desc = "Mounted Sleeper. (Can be attached to: Medical Exosuits)"
 	icon = 'icons/obj/Cryogenic2.dmi'
 	icon_state = "sleeper_0"
-	origin_tech = "programming=2;biotech=3"
+	origin_tech = Tc_PROGRAMMING + "=2;" + Tc_BIOTECH + "=3"
 	energy_drain = 20
 	range = MELEE
 	reliability = 1000
@@ -232,8 +232,8 @@
 	M.Paralyse(2)
 	M.Weaken(2)
 	M.Stun(2)
-	if(M.reagents.get_reagent_amount("inaprovaline") < 5)
-		M.reagents.add_reagent("inaprovaline", 5)
+	if(M.reagents.get_reagent_amount(INAPROVALINE) < 5)
+		M.reagents.add_reagent(INAPROVALINE, 5)
 	S.chassis.use_power(S.energy_drain)
 	S.update_equip_info()
 	return
@@ -401,13 +401,13 @@
 	var/datum/global_iterator/mech_synth/synth
 	range = MELEE|RANGED
 	equip_cooldown = 10
-	origin_tech = "materials=3;biotech=4;magnets=4;programming=3"
+	origin_tech = Tc_MATERIALS + "=3;" + Tc_BIOTECH + "=4;" + Tc_MAGNETS + "=4;" + Tc_PROGRAMMING + "=3"
 
 /obj/item/mecha_parts/mecha_equipment/tool/syringe_gun/New()
 	..()
 	flags |= NOREACT
 	syringes = new
-	known_reagents = list("inaprovaline"="Inaprovaline","anti_toxin"="Anti-Toxin (Dylovene)")
+	known_reagents = list(INAPROVALINE="Inaprovaline",ANTI_TOXIN="Anti-Toxin (Dylovene)")
 	processed_reagents = new
 	create_reagents(max_volume)
 	synth = new (list(src),0)

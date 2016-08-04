@@ -2,9 +2,9 @@
 	name = "Module Design (Safeguard)"
 	desc = "Allows for the construction of a Safeguard AI Module."
 	id = "safeguard_module"
-	req_tech = list("programming" = 3, "materials" = 4)
+	req_tech = list(Tc_PROGRAMMING = 3, Tc_MATERIALS = 4)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_GOLD = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_GOLD = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/targetted/safeguard
 
@@ -12,9 +12,9 @@
 	name = "Module Design (OneHuman)"
 	desc = "Allows for the construction of a OneHuman AI Module."
 	id = "onehuman_module"
-	req_tech = list("programming" = 4, "materials" = 6)
+	req_tech = list(Tc_PROGRAMMING = 4, Tc_MATERIALS = 6)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_DIAMOND = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_DIAMOND = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/targetted/oneHuman
 	locked = 1
@@ -24,9 +24,9 @@
 	name = "Module Design (ProtectStation)"
 	desc = "Allows for the construction of a ProtectStation AI Module."
 	id = "protectstation_module"
-	req_tech = list("programming" = 3, "materials" = 6)
+	req_tech = list(Tc_PROGRAMMING = 3, Tc_MATERIALS = 6)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_GOLD = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_GOLD = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/standard/protectStation
 
@@ -34,9 +34,9 @@
 	name = "Module Design (TeleporterOffline Module)"
 	desc = "Allows for the construction of a TeleporterOffline AI Module."
 	id = "notele_module"
-	req_tech = list("programming" = 3)
+	req_tech = list(Tc_PROGRAMMING = 3)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_GOLD = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_GOLD = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/standard/teleporterOffline
 
@@ -44,9 +44,9 @@
 	name = "Module Design (Quarantine)"
 	desc = "Allows for the construction of a Quarantine AI Module."
 	id = "quarantine_module"
-	req_tech = list("programming" = 3, "biotech" = 2, "materials" = 4)
+	req_tech = list(Tc_PROGRAMMING = 3, Tc_BIOTECH = 2, Tc_MATERIALS = 4)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_GOLD = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_GOLD = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/standard/quarantine
 
@@ -54,9 +54,9 @@
 	name = "Module Design (OxygenIsToxicToHumans)"
 	desc = "Allows for the construction of a Safeguard AI Module."
 	id = "oxygen_module"
-	req_tech = list("programming" = 3, "biotech" = 2, "materials" = 4)
+	req_tech = list(Tc_PROGRAMMING = 3, Tc_BIOTECH = 2, Tc_MATERIALS = 4)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_GOLD = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_GOLD = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/standard/oxygen
 	locked = 1
@@ -66,9 +66,9 @@
 	name = "Module Design (Freeform)"
 	desc = "Allows for the construction of a Freeform AI Module."
 	id = "freeform_module"
-	req_tech = list("programming" = 4, "materials" = 4)
+	req_tech = list(Tc_PROGRAMMING = 4, Tc_MATERIALS = 4)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_GOLD = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_GOLD = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/freeform
 
@@ -76,9 +76,9 @@
 	name = "Module Design (Reset)"
 	desc = "Allows for the construction of a Reset AI Module."
 	id = "reset_module"
-	req_tech = list("programming" = 3, "materials" = 6)
+	req_tech = list(Tc_PROGRAMMING = 3, Tc_MATERIALS = 6)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_GOLD = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_GOLD = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/reset
 
@@ -86,9 +86,9 @@
 	name = "Module Design (Purge)"
 	desc = "Allows for the construction of a Purge AI Module."
 	id = "purge_module"
-	req_tech = list("programming" = 4, "materials" = 6)
+	req_tech = list(Tc_PROGRAMMING = 4, Tc_MATERIALS = 6)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_DIAMOND = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_DIAMOND = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/purge
 
@@ -96,9 +96,9 @@
 	name = "Core Module Design (Freeform)"
 	desc = "Allows for the construction of a Freeform AI Core Module."
 	id = "freeformcore_module"
-	req_tech = list("programming" = 4, "materials" = 6)
+	req_tech = list(Tc_PROGRAMMING = 4, Tc_MATERIALS = 6)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_DIAMOND = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_DIAMOND = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/freeform/core
 
@@ -106,9 +106,9 @@
 	name = "Core Module Design (Asimov)"
 	desc = "Allows for the construction of a Asimov AI Core Module."
 	id = "asimov_module"
-	req_tech = list("programming" = 3, "materials" = 6)
+	req_tech = list(Tc_PROGRAMMING = 3, Tc_MATERIALS = 6)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_DIAMOND = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_DIAMOND = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/core/asimov
 
@@ -116,9 +116,9 @@
 	name = "Core Module Design (P.A.L.A.D.I.N.)"
 	desc = "Allows for the construction of a P.A.L.A.D.I.N. AI Core Module."
 	id = "paladin_module"
-	req_tech = list("programming" = 4, "materials" = 6)
+	req_tech = list(Tc_PROGRAMMING = 4, Tc_MATERIALS = 6)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_DIAMOND = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_DIAMOND = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/core/paladin
 
@@ -126,9 +126,9 @@
 	name = "Core Module Design (T.Y.R.A.N.T.)"
 	desc = "Allows for the construction of a T.Y.R.A.N.T. AI Module."
 	id = "tyrant_module"
-	req_tech = list("programming" = 4, "syndicate" = 2, "materials" = 6)
+	req_tech = list(Tc_PROGRAMMING = 4, Tc_SYNDICATE = 2, Tc_MATERIALS = 6)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_DIAMOND = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_DIAMOND = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/core/tyrant
 	locked = 1
@@ -138,19 +138,18 @@
 	name = "Core Module Design (CELTIC)"
 	desc = "Allows for the construction of a CELTIC AI Core Module."
 	id = "celtic_module"
-	req_tech = list("programming" = 4, "materials" = 6)
+	req_tech = list(Tc_PROGRAMMING = 4, Tc_MATERIALS = 6)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_DIAMOND = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_DIAMOND = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/core/celtic
-	
+
 /datum/design/hogan_module
 	name = "Core Module Design (HOGAN)"
 	desc = "Allows for the construction of a HOGAN AI Core Module."
 	id = "hogan_module"
-	req_tech = list("programming" = 4, "materials" = 6)
+	req_tech = list(Tc_PROGRAMMING = 4, Tc_MATERIALS = 6)
 	build_type = IMPRINTER
-	materials = list(MAT_GLASS = 2000, "sacid" = 20, MAT_DIAMOND = 100)
+	materials = list(MAT_GLASS = 2000, SACID = 20, MAT_DIAMOND = 100)
 	category = "Module Boards"
 	build_path = /obj/item/weapon/aiModule/core/hogan
-	

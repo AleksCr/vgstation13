@@ -1,12 +1,18 @@
 /mob/Logout()
 	if (isobj(loc))
 		var/obj/location = loc
-		location.on_log()
+		location.on_logout(src)
 
 	if(!(flags & HEAR_ALWAYS))
+		var/found = 0
 		for(var/mob/virtualhearer/VH in virtualhearers)
 			if(VH.attached == src)
 				returnToPool(VH)
+				found = 1
+		if(!found)
+			world.log << "Mob virtualhearer for [type] could not be found for /ref[src]"
+
+	remove_spell_channeling() //remove spell channeling before we log out
 
 	nanomanager.user_logout(src) // this is used to clean up (remove) this user's Nano UIs
 

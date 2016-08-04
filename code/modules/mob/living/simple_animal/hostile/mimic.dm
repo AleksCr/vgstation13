@@ -15,7 +15,6 @@
 	response_help = "touches"
 	response_disarm = "pushes"
 	response_harm = "hits"
-	speed = -1
 	maxHealth = 250
 	health = 250
 
@@ -36,7 +35,7 @@
 	minbodytemp = 0
 
 	faction = "mimic"
-	move_to_delay = 8
+	speed = 8
 
 	var/atom/copied_object = /obj/structure/closet/crate
 	var/angry = 0
@@ -54,7 +53,8 @@
 	return
 
 /mob/living/simple_animal/hostile/mimic/proc/environment_disguise(list/L = crate_mimic_disguises)
-	if(!L) return
+	if(!L)
+		return
 	//First, determine the environment we're in
 
 	var/our_area_type = "default"
@@ -146,8 +146,10 @@ var/global/list/crate_mimic_disguises = list(\
 				var/found_alive_mob = 0
 
 				for(var/mob/living/L in view(7,src))
-					if(L == src) continue
-					if(L.stat) continue //Dead bodies don't bother us
+					if(L == src)
+						continue
+					if(L.stat)
+						continue //Dead bodies don't bother us
 
 					found_alive_mob = 1
 					break
@@ -164,25 +166,22 @@ var/global/list/crate_mimic_disguises = list(\
 	.=..()
 
 /mob/living/simple_animal/hostile/mimic/crate/Destroy()
-	Die()
-	
+	if(copied_object)
+		var/obj/structure/C = new copied_object(get_turf(src))
+		//Drop all loot!
+		for(var/atom/movable/AM in src)
+			AM.forceMove(C)
+
 	..()
 
 /mob/living/simple_animal/hostile/mimic/crate/initialize()
 	..()
 	//Put all loot inside us!
 	for(var/obj/item/I in loc)
-		if(I.anchored || I.density) continue
+		if(I.anchored || I.density)
+			continue
 
 		I.forceMove(src)
-
-/mob/living/simple_animal/hostile/mimic/crate/Die()
-	if(copied_object)
-		var/obj/structure/C = new copied_object(get_turf(src))
-		//Drop all loot!
-		for(var/atom/movable/AM in src)
-			AM.loc = C
-	..()
 
 /mob/living/simple_animal/hostile/mimic/crate/attackby(obj/W, mob/user)
 	if(angry) //If we're angry - proceed as normal
@@ -219,11 +218,12 @@ var/global/list/crate_mimic_disguises = list(\
 		angry = 2 //Can't calm down
 		melee_damage_lower = initial(melee_damage_lower) + 4
 		melee_damage_upper = initial(melee_damage_upper) + 4 //Increase damage
-		move_to_delay = 0 //Remove delay for automated movement
+		speed = 0 //Remove delay for automated movement
 		name = "[initial(name)] mimic"
 
 /mob/living/simple_animal/hostile/mimic/crate/proc/calm_down(change_icon = 1)
-	if(angry > 1) return //If angry is 2, can't calm down!
+	if(angry > 1)
+		return //If angry is 2, can't calm down!
 
 	angry = 0
 	if(change_icon)
@@ -354,7 +354,7 @@ var/global/list/item_mimic_disguises = list(
 				/obj/item/device/aicard, /obj/item/device/analyzer, /obj/item/device/assembly/igniter, /obj/item/device/camera, /obj/item/device/codebreaker, /obj/item/device/device_analyser,\
 				/obj/item/device/flash, /obj/item/device/flashlight, /obj/item/device/hailer, /obj/item/device/material_synth, /obj/item/device/megaphone, /obj/item/device/paicard,\
 				/obj/item/device/pda/clown, /obj/item/device/rcd/matter/engineering, /obj/item/device/radio, /obj/item/device/robotanalyzer, /obj/item/device/soulstone,\
-				/obj/item/device/soundsynth, /obj/item/device/violin, /obj/item/device/wormhole_jaunter, /obj/item/weapon/gun/portalgun, /obj/item/target), //Common items
+				/obj/item/device/soundsynth, /obj/item/device/instrument/violin, /obj/item/device/wormhole_jaunter, /obj/item/weapon/gun/portalgun, /obj/item/target), //Common items
 
 	"medbay" = list(/obj/item/weapon/circular_saw, /obj/item/weapon/melee/defibrillator, /obj/item/weapon/surgicaldrill, /obj/item/weapon/hemostat, /obj/item/weapon/dnainjector/nofail/hulkmut,\
 				/obj/item/weapon/bonesetter, /obj/item/weapon/autopsy_scanner, /obj/item/weapon/FixOVein, /obj/item/stack/medical/ointment, /obj/item/weapon/storage/firstaid,\
@@ -384,7 +384,7 @@ var/global/list/item_mimic_disguises = list(
 	"botany" = existing_typesof(/obj/item/weapon/reagent_containers/food/snacks/grown), //All grown items
 
 	//Nuke, nuke disk, all coins, all minerals (except for those with no icons)
-	"vault" = list(/obj/machinery/nuclearbomb, /obj/item/weapon/disk/nuclear) + typesof(/obj/item/weapon/coin) + typesof(/obj/item/stack/sheet/mineral) - /obj/item/stack/sheet/mineral - /obj/item/stack/sheet/mineral/enruranium,
+	"vault" = list(/obj/machinery/nuclearbomb, /obj/item/weapon/disk/nuclear) + typesof(/obj/item/weapon/coin) + typesof(/obj/item/stack/sheet/mineral) - /obj/item/stack/sheet/mineral,
 
 	"chapel" = list(/obj/item/weapon/storage/bible, /obj/item/clothing/head/chaplain_hood, /obj/item/clothing/head/helmet/space/plasmaman/chaplain, /obj/item/clothing/suit/chaplain_hoodie, /obj/item/clothing/suit/space/plasmaman/chaplain,\
 				/obj/item/device/pda/chaplain, /obj/item/weapon/nullrod, /obj/item/weapon/reagent_containers/food/drinks/bottle/holywater, /obj/item/weapon/staff), //Chaplain garb, null rod, bible, holy water
@@ -394,7 +394,7 @@ var/global/list/item_mimic_disguises = list(
 	name = "item mimic"
 	density = 0
 
-	move_to_delay = 2 //Faster than crate mimics
+	speed = 2 //Faster than crate mimics
 	maxHealth = 60
 	health = 60 //Slightly less robust
 
@@ -507,21 +507,22 @@ var/global/list/protected_objects = list(
 		time_to_die=world.time+duration
 
 /mob/living/simple_animal/hostile/mimic/copy/Life()
-	if(timestopped) return 0 //under effects of time magick
+	if(timestopped)
+		return 0 //under effects of time magick
 	..()
 
 	spawn()
 		var/amplitude = 2
-		var/pixel_x_diff = rand(-amplitude, amplitude)
-		var/pixel_y_diff = rand(-amplitude, amplitude)
+		var/pixel_x_diff = rand(-amplitude, amplitude) * PIXEL_MULTIPLIER
+		var/pixel_y_diff = rand(-amplitude, amplitude) * PIXEL_MULTIPLIER
 		animate(src, pixel_x = pixel_x + pixel_x_diff, pixel_y = pixel_y + pixel_y_diff , time = 1, loop = -1)
 		animate(pixel_x = pixel_x - pixel_x_diff, pixel_y = pixel_y - pixel_y_diff, time = 1, loop = -1, easing = BOUNCE_EASING)
-		pixel_x_diff = rand(-amplitude, amplitude)
-		pixel_y_diff = rand(-amplitude, amplitude)
+		pixel_x_diff = rand(-amplitude, amplitude) * PIXEL_MULTIPLIER
+		pixel_y_diff = rand(-amplitude, amplitude) * PIXEL_MULTIPLIER
 		animate(src, pixel_x = pixel_x + pixel_x_diff, pixel_y = pixel_y + pixel_y_diff , time = 1, loop = -1)
 		animate(pixel_x = pixel_x - pixel_x_diff, pixel_y = pixel_y - pixel_y_diff, time = 1, loop = -1, easing = BOUNCE_EASING)
-		pixel_x_diff = rand(-amplitude, amplitude)
-		pixel_y_diff = rand(-amplitude, amplitude)
+		pixel_x_diff = rand(-amplitude, amplitude) * PIXEL_MULTIPLIER
+		pixel_y_diff = rand(-amplitude, amplitude) * PIXEL_MULTIPLIER
 		animate(src, pixel_x = pixel_x + pixel_x_diff, pixel_y = pixel_y + pixel_y_diff , time = 1, loop = -1)
 		animate(pixel_x = pixel_x - pixel_x_diff, pixel_y = pixel_y - pixel_y_diff, time = 1, loop = -1, easing = BOUNCE_EASING)
 
@@ -575,16 +576,16 @@ var/global/list/protected_objects = list(
 
 		spawn()
 			var/amplitude = 2
-			var/pixel_x_diff = rand(-amplitude, amplitude)
-			var/pixel_y_diff = rand(-amplitude, amplitude)
+			var/pixel_x_diff = rand(-amplitude, amplitude) * PIXEL_MULTIPLIER
+			var/pixel_y_diff = rand(-amplitude, amplitude) * PIXEL_MULTIPLIER
 			animate(src, pixel_x = pixel_x + pixel_x_diff, pixel_y = pixel_y + pixel_y_diff , time = 1, loop = -1)
 			animate(pixel_x = pixel_x - pixel_x_diff, pixel_y = pixel_y - pixel_y_diff, time = 1, loop = -1, easing = BOUNCE_EASING)
-			pixel_x_diff = rand(-amplitude, amplitude)
-			pixel_y_diff = rand(-amplitude, amplitude)
+			pixel_x_diff = rand(-amplitude, amplitude) * PIXEL_MULTIPLIER
+			pixel_y_diff = rand(-amplitude, amplitude) * PIXEL_MULTIPLIER
 			animate(src, pixel_x = pixel_x + pixel_x_diff, pixel_y = pixel_y + pixel_y_diff , time = 1, loop = -1)
 			animate(pixel_x = pixel_x - pixel_x_diff, pixel_y = pixel_y - pixel_y_diff, time = 1, loop = -1, easing = BOUNCE_EASING)
-			pixel_x_diff = rand(-amplitude, amplitude)
-			pixel_y_diff = rand(-amplitude, amplitude)
+			pixel_x_diff = rand(-amplitude, amplitude) * PIXEL_MULTIPLIER
+			pixel_y_diff = rand(-amplitude, amplitude) * PIXEL_MULTIPLIER
 			animate(src, pixel_x = pixel_x + pixel_x_diff, pixel_y = pixel_y + pixel_y_diff , time = 1, loop = -1)
 			animate(pixel_x = pixel_x - pixel_x_diff, pixel_y = pixel_y - pixel_y_diff, time = 1, loop = -1, easing = BOUNCE_EASING)
 
@@ -600,7 +601,7 @@ var/global/list/protected_objects = list(
 			health = 15 * I.w_class
 			melee_damage_lower = 2 + I.force
 			melee_damage_upper = 2 + I.force
-			move_to_delay = 2 * I.w_class
+			speed = 2 * I.w_class
 
 		maxHealth = health
 

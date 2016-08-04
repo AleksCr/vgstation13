@@ -198,7 +198,8 @@
 	flags = FPRINT
 
 /obj/item/clothing/head/fedora/OnMobLife(var/mob/living/carbon/human/wearer)
-	if(!istype(wearer)) return
+	if(!istype(wearer))
+		return
 	if(wearer.head == src)
 		if(prob(1))
 			to_chat(wearer, "<span class=\"warning\">You feel positively euphoric!</span>")
@@ -207,9 +208,19 @@
 /obj/item/clothing/head/fedora/verb/tip_fedora()
 	set name = "Tip Fedora"
 	set category = "Object"
-	set desc = "Show that CIS SCUM who's boss."
+	set desc = "Show that CIS SCUM who's boss." //I'm pretty sure you're mincing memes here, but whatever
 
-	usr.visible_message("[usr] tips his fedora.", "You tip your fedora.")
+	usr.visible_message("[usr] tips \his fedora.", "You tip your fedora.")
+
+/obj/item/clothing/head/fedora/white
+	name = "white fedora"
+	icon_state = "fedora_white"
+	desc = "A great white hat ruined by being within fifty yards of you."
+
+/obj/item/clothing/head/fedora/brown
+	name = "brown fedora"
+	icon_state = "fedora_brown"
+	desc = "Don't you even think about losing it."
 
 /obj/item/clothing/head/fez
 	name = "\improper fez"
@@ -395,3 +406,16 @@
 /obj/item/clothing/head/pajamahat/blue
 	icon_state = "pajamahat_blue"
 	item_state = "pajamahat_blue"
+
+/obj/item/clothing/head/mummy_rags
+	name = "mummy rags"
+	desc = "Ancient rags taken off from some mummy."
+	icon_state = "mummy"
+	item_state = "mummy"
+	_color = "mummy"
+
+/obj/item/clothing/head/dunce_cap
+	name = "dunce cap"
+	desc = "A conical paper hat which used to be used as a punishment in schools. Misbehaving children had to wear it while standing in a corner. The writing on it says \"DUNCE\"."
+	icon_state = "duncecap"
+	item_state = "duncecap"

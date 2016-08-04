@@ -7,7 +7,7 @@
 	icon = 'icons/mecha/mecha_equipment.dmi'
 	icon_state = "mecha_equip"
 	force = 5
-	origin_tech = "materials=2"
+	origin_tech = Tc_MATERIALS + "=2"
 	var/equip_cooldown = 0
 	var/equip_ready = 1
 	var/energy_drain = 0
@@ -65,7 +65,8 @@
 	return
 
 /obj/item/mecha_parts/mecha_equipment/proc/get_equip_info()
-	if(!chassis) return
+	if(!chassis)
+		return
 	return "<span style=\"color:[equip_ready?"#0f0":"#f00"];\">*</span>&nbsp;[chassis.selected==src?"<b>":"<a href='?src=\ref[chassis];select_equip=\ref[src]'>"][src.name][chassis.selected==src?"</b>":"</a>"]"
 
 /obj/item/mecha_parts/mecha_equipment/proc/is_ranged()//add a distance restricted equipment. Why not?

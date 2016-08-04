@@ -136,6 +136,10 @@ var/global/floorIsLava = 0
 			else
 				body += "<A href='?src=\ref[src];makeanimal=\ref[M]'>Animalize</A> | "
 
+			//Hands
+			if(ishuman(M))
+				body += "<A href='?src=\ref[src];changehands=\ref[M]'>Change amount of hands (current: [M.held_items.len])</A> | "
+
 			// DNA2 - Admin Hax
 			if(iscarbon(M) && !isbrain(M) && !isalien(M))
 				body += "<br><br>"
@@ -209,8 +213,10 @@ var/global/floorIsLava = 0
 	var/f = 1
 	for(var/k in all_languages)
 		var/datum/language/L = all_languages[k]
-		if(!f) body += " | "
-		else f = 0
+		if(!f)
+			body += " | "
+		else
+			f = 0
 		if(L in M.languages)
 			body += "<a href='?src=\ref[src];toglang=\ref[M];lang=[html_encode(k)]' style='color:#006600'>[k]</a>"
 		else
@@ -320,8 +326,10 @@ var/global/floorIsLava = 0
 	var/savefile/info = new("data/player_saves/[copytext(key, 1, 2)]/[key]/info.sav")
 	var/list/infos
 	info >> infos
-	if(!infos || !infos.len) return 0
-	else return 1
+	if(!infos || !infos.len)
+		return 0
+	else
+		return 1
 
 /proc/exportnotes(var/key as text)
 	var/savefile/info = new("data/player_saves/[copytext(key, 1, 2)]/[key]/info.sav")
@@ -636,7 +644,8 @@ var/global/floorIsLava = 0
 
 
 /datum/admins/proc/Jobbans()
-	if(!check_rights(R_BAN))	return
+	if(!check_rights(R_BAN))
+		return
 
 	var/dat = "<B>Job Bans!</B><HR><table>"
 	for(var/t in jobban_keylist)
@@ -648,7 +657,8 @@ var/global/floorIsLava = 0
 	usr << browse(dat, "window=ban;size=400x400")
 
 /datum/admins/proc/Game()
-	if(!check_rights(0))	return
+	if(!check_rights(0))
+		return
 
 	var/dat = {"
 		<center><B>Game Panel</B></center><hr>\n
@@ -677,11 +687,18 @@ var/global/floorIsLava = 0
 		<A href='?src=\ref[src];vsc=default'>Choose a default ZAS setting</A><br>
 		"}
 
+	if(wages_enabled)
+		dat += "<A href='?src=\ref[src];wages_enabled=disable'>Disable wages</A><br>"
+	else
+		dat += "<A href='?src=\ref[src];wages_enabled=enable'>Enable wages</A><br>"
+	dat += "<A href ='?src=\ref[src];econ_panel=open'>Manage accounts database</A><br>"
+
 	usr << browse(dat, "window=admin2;size=280x370")
 	return
 
 /datum/admins/proc/Secrets()
-	if(!check_rights(0))	return
+	if(!check_rights(0))
+		return
 
 	var/dat = "<B>The first rule of adminbuse is: you don't talk about the adminbuse.</B><HR>"
 
@@ -726,7 +743,8 @@ var/global/floorIsLava = 0
 			<A href='?src=\ref[src];secretsfun=silent_meteors'>Spawn a wave of meteors with no warning</A><BR>
 			<A href='?src=\ref[src];secretsfun=gravanomalies'>Spawn a gravitational anomaly (aka lagitational anomolag)</A><BR>
 			<A href='?src=\ref[src];secretsfun=timeanomalies'>Spawn wormholes</A><BR>
-			<A href='?src=\ref[src];secretsfun=goblob'>Spawn blob</A><BR>
+			<A href='?src=\ref[src];secretsfun=blobwave'>Spawn a blob cluster</A><BR>
+			<A href='?src=\ref[src];secretsfun=blobstorm'>Spawn a blob conglomerate</A><BR>
 			<A href='?src=\ref[src];secretsfun=aliens'>Trigger an Alien infestation</A><BR>
 			<A href='?src=\ref[src];secretsfun=alien_silent'>Spawn an Alien silently</A><BR>
 			<A href='?src=\ref[src];secretsfun=spiders'>Trigger a Spider infestation</A><BR>
@@ -764,7 +782,7 @@ var/global/floorIsLava = 0
 			<A href='?src=\ref[src];secretsfun=prisonwarp'>Warp all Players to Prison</A><BR>
 			<A href='?src=\ref[src];secretsfun=tripleAI'>Triple AI mode (needs to be used in the lobby)</A><BR>
 			<A href='?src=\ref[src];secretsfun=traitor_all'>Everyone is the traitor</A><BR>
-			<A href='?src=\ref[src];secretsfun=onlyone'>There can only be one!</A><BR>
+			<A href='?src=\ref[src];secretsfun=onlyone'>There can be only one!</A><BR>
 			<A href='?src=\ref[src];secretsfun=flicklights'>Ghost Mode</A><BR>
 			<A href='?src=\ref[src];secretsfun=retardify'>Make all players retarded</A><BR>
 			<A href='?src=\ref[src];secretsfun=fakeguns'>Make all items look like guns</A><BR>
@@ -791,6 +809,7 @@ var/global/floorIsLava = 0
 			<BR>
 			<A href='?src=\ref[src];secretsfun=hellonearth'>Summon Nar-Sie</A><BR>
 			<A href='?src=\ref[src];secretsfun=supermattercascade'>Start a Supermatter Cascade</A><BR>
+			<A href='?src=\ref[src];secretsfun=meteorstorm'>Trigger an undending Meteor Storm</A><BR>
 			"}
 
 	if(check_rights(R_SERVER,0))
@@ -842,6 +861,7 @@ var/global/floorIsLava = 0
 		<a href='?src=\ref[src];shuttle_create_destination=1'>Create a destination docking port</a><br>
 		<a href='?src=\ref[src];shuttle_modify_destination=1'>Add a destination docking port</a><br>
 		<a href='?src=\ref[src];shuttle_set_transit=1'>Modify transit area</a><br>
+		<a href='?src=\ref[src];shuttle_generate_transit=1'>Generate new transit area</a><br>
 		<a href='?src=\ref[src];shuttle_get_console=1'>Get control console</a><br>
 		<a href='?src=\ref[src];shuttle_edit=1'>Modify parameters[selected_shuttle.is_special() ? " and pre-defined areas" : ""]</a>
 		<hr>
@@ -1033,7 +1053,8 @@ var/global/floorIsLava = 0
 	set desc="Delay the game start/end"
 	set name="Delay"
 
-	if(!check_rights(R_ADMIN))	return
+	if(!check_rights(R_ADMIN))
+		return
 	if (!ticker || ticker.current_state != GAME_STATE_PREGAME)
 		if(ticker.delay_end == 2)
 			to_chat(world, "<font size=4><span class='danger'>World Reboot triggered by [key_name(usr)]!</font></span>")
@@ -1091,7 +1112,8 @@ var/global/floorIsLava = 0
 	set desc="Reboots the server post haste"
 	set name="Immediate Reboot"
 
-	if(!usr.client.holder)	return
+	if(!usr.client.holder)
+		return
 	if( alert("Reboot server?",,"Yes","No") == "No")
 		return
 	to_chat(world, "<span class='warning'><b>Rebooting world!</b> <span class='notice'>Initiated by [usr.client.holder.fakekey ? "Admin" : usr.key]!</span>")
@@ -1116,7 +1138,7 @@ var/global/floorIsLava = 0
 	set category = "Admin"
 	set name = "Unprison"
 
-	if (M.z == 2)
+	if (M.z == map.zCentcomm)
 		if (config.allow_admin_jump)
 			M.loc = pick(latejoin)
 			message_admins("[key_name_admin(usr)] has unprisoned [key_name_admin(M)]", 1)
@@ -1185,7 +1207,7 @@ var/global/floorIsLava = 0
 		if(3)
 			var/count = 0
 			for(var/mob/living/carbon/monkey/Monkey in world)
-				if(Monkey.z == 1)
+				if(Monkey.z == map.zMainStation)
 					count++
 			return "Kill all [count] of the monkeys on the station"
 		if(4)
@@ -1198,7 +1220,8 @@ var/global/floorIsLava = 0
 	set desc = "(atom path) Spawn an atom"
 	set name = "Spawn"
 
-	if(!check_rights(R_SPAWN))	return
+	if(!check_rights(R_SPAWN))
+		return
 
 	var/list/matches = new()
 

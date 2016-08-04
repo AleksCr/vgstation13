@@ -5,7 +5,11 @@
 	step_y = 0
 
 /mob/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
-	if(air_group || (height==0)) return 1
+	if(air_group || (height==0))
+		return 1
+
+	if(istype(mover) && mover.checkpass(PASSMOB))
+		return 1
 
 	if(ismob(mover))
 		var/mob/moving_mob = mover
@@ -32,45 +36,82 @@
 
 
 /client/Northeast()
-	swap_hand()
-	return
-
+	treat_hotkeys(NORTHEAST)
 
 /client/Southeast()
-	attack_self()
-	return
-
+	treat_hotkeys(SOUTHEAST)
 
 /client/Southwest()
-	if(iscarbon(usr))
-		var/mob/living/carbon/C = usr
-		C.toggle_throw_mode()
-	else
-		to_chat(usr, "<span class='warning'>This mob type cannot throw items.</span>")
-	return
-
+	treat_hotkeys(SOUTHWEST)
 
 /client/Northwest()
-	if(iscarbon(usr))
-		var/mob/living/carbon/C = usr
-		if(!C.get_active_hand())
-			to_chat(usr, "<span class='warning'>You have nothing to drop in your hand.</span>")
-			return
-		drop_item()
-	else if(isMoMMI(usr))
-		var/mob/living/silicon/robot/mommi/M = usr
-		if(!M.get_active_hand())
-			to_chat(M, "<span class='warning'>You have nothing to drop or store.</span>")
-			return
-		M.uneq_active()
-	else if(isrobot(usr))
-		var/mob/living/silicon/robot/R = usr
-		if(!R.module_active)
-			return
-		R.uneq_active()
-	else
-		to_chat(usr, "<span class='warning'>This mob type cannot drop items.</span>")
-	return
+	treat_hotkeys(NORTHWEST)
+
+/client/proc/treat_hotkeys(var/keypress)
+	keypress = turn(keypress, dir)
+	switch(keypress)
+		if(NORTHEAST)
+			swap_hand()
+		if(SOUTHEAST)
+			attack_self()
+		if(SOUTHWEST)
+			if(iscarbon(usr))
+				var/mob/living/carbon/C = usr
+				C.toggle_throw_mode()
+			else
+				to_chat(usr, "<span class='warning'>This mob type cannot throw items.</span>")
+		if(NORTHWEST)
+			if(mob.remove_spell_channeling()) //Interrupt to remove spell channeling on dropping
+				to_chat(usr, "<span class='notice'>You cease waiting to use your power")
+				return
+			if(iscarbon(usr))
+				var/mob/living/carbon/C = usr
+				if(!C.get_active_hand())
+					to_chat(usr, "<span class='warning'>You have nothing to drop in your hand.</span>")
+					return
+				if(ishuman(C))
+					var/mob/living/carbon/human/H = C
+					var/list/borers_in_host = H.get_brain_worms()
+					if(borers_in_host && borers_in_host.len) //to allow a host to drop an item at-range mid-extension
+						for(var/mob/living/simple_animal/borer/B in borers_in_host)
+							var/datum/organ/external/OE = H.get_organ(B.hostlimb)
+							if(OE.grasp_id == H.active_hand)
+								var/obj/item/weapon/gun/hookshot/flesh/F = B.extend_o_arm
+								F.to_be_dropped = H.get_active_hand()
+								F.item_overlay = null
+				drop_item()
+			else if(isMoMMI(usr))
+				var/mob/living/silicon/robot/mommi/M = usr
+				if(!M.get_active_hand())
+					to_chat(M, "<span class='warning'>You have nothing to drop or store.</span>")
+					return
+				M.uneq_active()
+			else if(isrobot(usr))
+				var/mob/living/silicon/robot/R = usr
+				if(!R.module_active)
+					return
+				R.uneq_active()
+			else if(isborer(usr))
+				var/mob/living/simple_animal/borer/B = usr
+				if(B.host && ishuman(B.host))
+					var/mob/living/carbon/human/H = B.host
+					var/datum/organ/external/OE = H.get_organ(B.hostlimb) //Borer is occupying an arm
+					if(OE.grasp_id)
+						if(B.extend_o_arm)
+							var/obj/item/weapon/gun/hookshot/flesh/F = B.extend_o_arm
+							var/obj/item/held = H.get_held_item_by_index(OE.grasp_id)
+
+							if(held)
+								F.to_be_dropped = held
+								F.item_overlay = null
+
+							F.attack_self(H)
+							H.drop_item(held)
+							return
+						else
+							to_chat(usr, "<span class='warning'>Your host has nothing to drop in [H.gender == FEMALE ? "her" : "his"] [H.get_index_limb_name(OE.grasp_id)].</span>")
+			else
+				to_chat(usr, "<span class='warning'>This mob type cannot drop items.</span>")
 
 //This gets called when you press the delete button.
 /client/verb/delete_key_pressed()
@@ -158,7 +199,7 @@
 
 
 
-/client/verb/attack_self()
+/client/verb/attack_self() //Called when pagedown or Z is pressed
 	set hidden = 1
 	if(mob)
 		mob.mode()
@@ -195,7 +236,8 @@
 	if(mob && mob.control_object)
 		if(mob.control_object.density)
 			step(mob.control_object,direct)
-			if(!mob.control_object)	return
+			if(!mob.control_object)
+				return
 			mob.control_object.dir = direct
 		else
 			mob.control_object.loc = get_step(mob.control_object,direct)
@@ -248,7 +290,8 @@
 	//	if(!mob.Process_Spacemove(0))	return 0
 
 	// If we're in space or our area has no gravity...
-	if(istype(mob.loc, /turf/space) || (mob.areaMaster && mob.areaMaster.has_gravity == 0))
+	var/turf/turf_loc = mob.loc
+	if(istype(turf_loc) && !turf_loc.has_gravity())
 		var/can_move_without_gravity = 0
 
 		// Here, we check to see if the object we're in doesn't need gravity to send relaymove().
@@ -356,23 +399,24 @@
 /client/proc/Process_Grab()
 	if(locate(/obj/item/weapon/grab, locate(/obj/item/weapon/grab, mob.grabbed_by.len)))
 		var/list/grabbing = list()
-		if(istype(mob.l_hand, /obj/item/weapon/grab))
-			var/obj/item/weapon/grab/G = mob.l_hand
+
+		for(var/obj/item/weapon/grab/G in mob.held_items)
 			grabbing += G.affecting
-		if(istype(mob.r_hand, /obj/item/weapon/grab))
-			var/obj/item/weapon/grab/G = mob.r_hand
-			grabbing += G.affecting
+
 		for(var/obj/item/weapon/grab/G in mob.grabbed_by)
-			if((G.state == GRAB_PASSIVE)&&(!grabbing.Find(G.assailant)))	del(G)
+			if((G.state == GRAB_PASSIVE)&&(!grabbing.Find(G.assailant)))
+				del(G)
 			if(G.state == GRAB_AGGRESSIVE)
 				mob.delayNextMove(10)
-				if(!prob(25))	return 1
+				if(!prob(25))
+					return 1
 				mob.visible_message("<span class='warning'>[mob] has broken free of [G.assailant]'s grip!</span>",
 					drugged_message="<span class='warning'>[mob] has broken free of [G.assailant]'s hug!</span>")
 				returnToPool(G)
 			if(G.state == GRAB_NECK)
 				mob.delayNextMove(10)
-				if(!prob(5))	return 1
+				if(!prob(5))
+					return 1
 				mob.visible_message("<span class='warning'>[mob] has broken free of [G.assailant]'s headlock!</span>",
 					drugged_message="<span class='warning'>[mob] has broken free of [G.assailant]'s passionate hug!</span>")
 				returnToPool(G)
@@ -439,7 +483,8 @@
 					for(var/turf/T in getline(mobloc, mob.loc))
 						anim(T,mob,'icons/mob/mob.dmi',,"shadow",,mob.dir)
 						limit--
-						if(limit<=0)	break
+						if(limit<=0)
+							break
 			else
 				anim(mobloc,mob,'icons/mob/mob.dmi',,"shadow",,mob.dir)
 				mob.forceEnter(get_step(mob, direct))
@@ -452,6 +497,7 @@
 				mob.dir = direct
 			else
 				to_chat(mob, "<span class='warning'>Some strange aura is blocking the way!</span>")
+			INVOKE_EVENT(mob.on_moved,list("dir"=direct))
 			mob.delayNextMove(2)
 			return 1
 	// Crossed is always a bit iffy
@@ -466,59 +512,22 @@
 ///Called by /client/Move()
 ///For moving in space
 ///Return 1 for movement 0 for none
-/mob/proc/Process_Spacemove(var/check_drift = 0,var/ignore_slip = 0)
+/mob/Process_Spacemove(var/check_drift = 0,var/ignore_slip = 0)
 	//First check to see if we can do things
 	if(restrained())
 		return 0
+	if(flying)
+		inertia_dir = 0
+		return 1
 
-	/*
-	if(istype(src,/mob/living/carbon))
-		if(src.l_hand && src.r_hand)
+	if(..())
+		//Check to see if we slipped
+		if(!ignore_slip && on_foot() && prob(Process_Spaceslipping(5)))
+			to_chat(src, "<span class='notice'><B>You slipped!</B></span>")
+			src.inertia_dir = src.last_move
+			step(src, src.inertia_dir)
 			return 0
-	*/
-
-	var/dense_object = 0
-	for(var/turf/turf in oview(1,src))
-		if(istype(turf,/turf/space))
-			continue
-
-		var/mob/living/carbon/human/H = src
-		if(istype(turf,/turf/simulated/floor) && (src.areaMaster && src.areaMaster.has_gravity == 0) && !(istype(H) && istype(H.shoes, /obj/item/clothing/shoes/magboots) && (H.shoes.flags & NOSLIP)))
-			continue
-
-		dense_object++
-		break
-
-	if(!dense_object && (locate(/obj/structure/lattice) in oview(1, src)))
-		dense_object++
-	if(!dense_object && (locate(/obj/structure/catwalk) in oview(1, src)))
-		dense_object++
-
-	//Lastly attempt to locate any dense objects we could push off of
-	//TODO: If we implement objects drifing in space this needs to really push them
-	//Due to a few issues only anchored and dense objects will now work.
-	if(!dense_object)
-		for(var/obj/O in oview(1, src))
-			if((O) && (O.density) && (O.anchored))
-				dense_object++
-				break
-
-	//Nothing to push off of so end here
-	if(!dense_object)
-		return 0
-
-
-
-	//Check to see if we slipped
-	if(!ignore_slip && prob(Process_Spaceslipping(5)))
-		to_chat(src, "<span class='notice'><B>You slipped!</B></span>")
-		src.inertia_dir = src.last_move
-		step(src, src.inertia_dir)
-		return 0
-	//If not then we can reset inertia and move
-	inertia_dir = 0
-	return 1
-
+		return 1
 
 /mob/proc/Process_Spaceslipping(var/prob_slip = 5)
 	//Setup slipage

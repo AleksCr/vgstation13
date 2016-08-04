@@ -25,11 +25,13 @@
 		new /obj/item/clothing/shoes/brown(src)
 		new /obj/item/device/radio/headset/heads/captain(src)
 		new /obj/item/clothing/gloves/captain(src)
+		new /obj/item/clothing/shoes/magboots(src)
 		new /obj/item/weapon/gun/energy/gun(src)
 		new /obj/item/clothing/suit/armor/captain(src)
 		new /obj/item/weapon/melee/telebaton(src)
 		new /obj/item/clothing/under/dress/dress_cap(src)
 		new /obj/item/device/gps/secure(src)
+
 		return
 
 
@@ -106,6 +108,7 @@
 			new /obj/item/weapon/storage/backpack/satchel_sec(src)
 		new /obj/item/clothing/head/helmet/tactical/HoS(src)
 		new /obj/item/device/flashlight/tactical(src)
+		new /obj/item/clothing/accessory/holster/knife/boot/preloaded(src)
 		new /obj/item/clothing/suit/armor/vest(src)
 		new /obj/item/clothing/under/rank/head_of_security/jensen(src)
 		new /obj/item/clothing/suit/armor/hos/jensen(src)
@@ -121,7 +124,7 @@
 		new /obj/item/device/flash(src)
 		new /obj/item/weapon/melee/baton/loaded(src)
 		new /obj/item/weapon/gun/energy/gun(src)
-		new /obj/item/clothing/accessory/holster/waist(src)
+		new /obj/item/clothing/accessory/holster/handgun/waist(src)
 		new /obj/item/weapon/melee/telebaton(src)
 		new /obj/item/device/gps/secure(src)
 		return
@@ -185,6 +188,7 @@
 			new /obj/item/weapon/storage/backpack/satchel_sec(src)
 		new /obj/item/clothing/suit/armor/vest/security(src)
 		new /obj/item/clothing/head/helmet/tactical/sec/preattached(src)
+		new /obj/item/clothing/accessory/holster/knife/boot/preloaded(src)
 //		new /obj/item/weapon/cartridge/security(src)
 		new /obj/item/device/radio/headset/headset_sec(src)
 		new /obj/item/weapon/storage/belt/security(src)
@@ -262,7 +266,7 @@
 		new /obj/item/ammo_storage/box/c38(src)
 		new /obj/item/ammo_storage/box/c38(src)
 		new /obj/item/weapon/gun/projectile/detective(src)
-		new /obj/item/clothing/accessory/holster/armpit(src)
+		new /obj/item/clothing/accessory/holster/handgun/wornout(src)
 		new /obj/item/device/gps/secure(src)
 		return
 

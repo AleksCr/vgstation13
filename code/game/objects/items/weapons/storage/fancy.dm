@@ -140,7 +140,8 @@
 
 /obj/item/weapon/storage/fancy/candle_box/New()
 	..()
-	if (empty) return
+	if (empty)
+		return
 	for(var/i=1; i <= storage_slots; i++)
 		new /obj/item/candle(src)
 	return
@@ -157,7 +158,7 @@
 	foldable = /obj/item/stack/sheet/cardboard
 	starting_materials = list(MAT_CARDBOARD = 3750)
 	w_type=RECYK_MISC
-	w_class = 2.0
+	w_class = W_CLASS_SMALL
 	storage_slots = 6
 	icon_type = "crayon"
 	can_only_hold = list(
@@ -169,7 +170,8 @@
 
 /obj/item/weapon/storage/fancy/crayons/New()
 	..()
-	if (empty) return
+	if (empty)
+		return
 	new /obj/item/toy/crayon/red(src)
 	new /obj/item/toy/crayon/orange(src)
 	new /obj/item/toy/crayon/yellow(src)
@@ -209,7 +211,7 @@
 	plural_type = "es"
 	storage_slots = 21 //3 rows of 7 items
 	max_combined_w_class = 21
-	w_class = 1
+	w_class = W_CLASS_TINY
 	flags = 0
 	var/matchtype = /obj/item/weapon/match
 	can_only_hold = list("/obj/item/weapon/match") // Strict type check.
@@ -268,7 +270,7 @@
 	icon = 'icons/obj/cigarettes.dmi'
 	icon_state = "cigpacket"
 	item_state = "cigpacket"
-	w_class = 1
+	w_class = W_CLASS_TINY
 	throwforce = 2
 	flags = 0
 	slot_flags = SLOT_BELT
@@ -298,7 +300,8 @@
 
 /obj/item/weapon/storage/fancy/cigarettes/remove_from_storage(obj/item/W as obj, atom/new_location)
 	var/obj/item/clothing/mask/cigarette/C = W
-	if(!istype(C)) return // what
+	if(!istype(C))
+		return // what
 	reagents.trans_to(C, (reagents.total_volume/contents.len))
 	..()
 

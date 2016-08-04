@@ -5,11 +5,11 @@
 	icon_state = "gravitywell"
 	item_state = "gravitywell"
 	slot_flags = SLOT_BELT
-	origin_tech = "materials=7;bluespace=5;magnets=5"
+	origin_tech = Tc_MATERIALS + "=7;" + Tc_BLUESPACE + "=5;" + Tc_MAGNETS + "=5"
 	inhand_states = list("left_hand" = 'icons/mob/in-hand/left/guns_experimental.dmi', "right_hand" = 'icons/mob/in-hand/right/guns_experimental.dmi')
 	recoil = 0
 	flags = FPRINT
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	fire_delay = 0
 	fire_sound = 'sound/weapons/wave.ogg'
 	var/charge = 100
@@ -25,7 +25,8 @@
 	..()
 
 /obj/item/weapon/gun/gravitywell/process_chambered()
-	if(in_chamber) return 1
+	if(in_chamber)
+		return 1
 	if(charge >= maxcharge)
 		charge = 0
 		update_icon()

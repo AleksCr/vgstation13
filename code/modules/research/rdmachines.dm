@@ -40,7 +40,8 @@ var/global/list/rnd_machines = list()
 	if(research_flags & TAKESMATIN && !materials)
 		materials = getFromPool(/datum/materials, src)
 
-	if(ticker) initialize()
+	if(ticker)
+		initialize()
 
 // Define initial output.
 /obj/machinery/r_n_d/initialize()
@@ -73,7 +74,7 @@ var/global/list/rnd_machines = list()
 /obj/machinery/r_n_d/update_icon()
 	overlays.len = 0
 	if(linked_console)
-		overlays += "[base_state]_link"
+		overlays += image(icon = icon, icon_state = "[base_state]_link")
 
 /obj/machinery/r_n_d/blob_act()
 	if (prob(50))
@@ -93,7 +94,8 @@ var/global/list/rnd_machines = list()
 	if(..())
 		return
 	if(href_list["close"])
-		if(usr.machine == src) usr.unset_machine()
+		if(usr.machine == src)
+			usr.unset_machine()
 		return 1
 	usr.set_machine(src)
 	src.add_fingerprint(usr)
@@ -115,7 +117,7 @@ var/global/list/rnd_machines = list()
 				if(/obj/machinery/r_n_d/fabricator/circuit_imprinter)
 					linked_console.linked_imprinter = null
 			linked_console = null
-			overlays -= "[base_state]_link"
+			overlays -= image(icon = icon, icon_state = "[base_state]_link")
 		return 1
 
 /obj/machinery/r_n_d/crowbarDestroy(mob/user)
@@ -215,9 +217,9 @@ var/global/list/rnd_machines = list()
 
 		if(research_flags & HASMAT_OVER)
 			update_icon()
-			overlays |= "[base_state]_[stack.name]"
+			overlays |= image(icon = icon, icon_state = "[base_state]_[stack.name]")
 			spawn(10)
-				overlays -= "[base_state]_[stack.name]"
+				overlays -= image(icon = icon, icon_state = "[base_state]_[stack.name]")
 
 		icon_state = "[base_state]"
 		use_power(max(1000, (3750*amount/10)))

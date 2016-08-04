@@ -30,17 +30,20 @@ var/global/list/alert_overlays_global = list()
 				T = get_turf(source)
 
 		var/list/rstats = new /list(stats.len)
-		if(T && istype(T) && T.zone)
-			var/datum/gas_mixture/environment = T.return_air()
-			for(var/i=1;i<=stats.len;i++)
-				rstats[i] = environment.vars[stats[i]]
-		else if(istype(T, /turf/simulated))
-			rstats = null // Exclude zone (wall, door, etc).
-		else if(istype(T, /turf))
-			// Should still work.  (/turf/return_air())
-			var/datum/gas_mixture/environment = T.return_air()
-			for(var/i=1;i<=stats.len;i++)
-				rstats[i] = environment.vars[stats[i]]
+		if(!source.Adjacent(T)) //Stop reading air contents through windows asshole
+			rstats = null
+		else
+			if(T && istype(T) && T.zone)
+				var/datum/gas_mixture/environment = T.return_air()
+				for(var/i=1;i<=stats.len;i++)
+					rstats[i] = environment.vars[stats[i]]
+			else if(istype(T, /turf/simulated))
+				rstats = null // Exclude zone (wall, door, etc).
+			else if(istype(T, /turf))
+				// Should still work.  (/turf/return_air())
+				var/datum/gas_mixture/environment = T.return_air()
+				for(var/i=1;i<=stats.len;i++)
+					rstats[i] = environment.vars[stats[i]]
 		temps[direction] = rstats
 	return temps
 
@@ -53,8 +56,6 @@ var/global/list/alert_overlays_global = list()
 #define FIREDOOR_ALERT_COLD     2
 // Not used #define FIREDOOR_ALERT_LOWPRESS 4
 
-#define FIREDOOR_CLOSED_MOD	0.8
-
 /obj/machinery/door/firedoor
 	name = "\improper Emergency Shutter"
 	desc = "Emergency air-tight shutter, capable of sealing off breached areas."
@@ -63,8 +64,9 @@ var/global/list/alert_overlays_global = list()
 	req_one_access = list(access_atmospherics, access_engine_equip)
 	opacity = 0
 	density = 0
-	layer = DOOR_LAYER - 0.2
-	base_layer = DOOR_LAYER - 0.2
+	layer = BELOW_TABLE_LAYER
+	open_layer = BELOW_TABLE_LAYER
+	closed_layer = ABOVE_DOOR_LAYER
 
 	dir = 2
 
@@ -187,7 +189,6 @@ var/global/list/alert_overlays_global = list()
 			attack_hand(M)
 	return 0
 
-
 /obj/machinery/door/firedoor/power_change()
 	if(powered(ENVIRON))
 		stat &= ~NOPOWER
@@ -204,14 +205,13 @@ var/global/list/alert_overlays_global = list()
 		ASSERT(istype(A)) // This worries me.
 		var/alarmed = A.doors_down || A.fire
 		var/old_density = src.density
-		if(old_density && alert("Override the [alarmed ? "alarming " : ""]firelock safeties and open \the [src]?",,"Yes","No") == "Yes")
+		if(old_density && alert("Override the [alarmed ? "alarming " : ""]firelock's safeties and open \the [src]?" ,,"Yes", "No") == "Yes")
 			open()
 		else if(!old_density)
 			close()
 		else
 			return
-		admin_diary << ("[user]/([user.ckey]) [density ? "closed the open" : "opened the closed"] [alarmed ? "and alarming" : ""] firelock at [formatJumpTo(get_turf(src))]")
-		message_admins("[user]/([user.ckey]) [density ? "closed the open" : "opened the closed"] [alarmed ? "and alarming" : ""] firelock at [formatJumpTo(get_turf(src))]")
+		investigation_log(I_ATMOS, "[density ? "closed" : "opened"] [alarmed ? "while alarming" : ""] by [user.real_name] ([formatPlayerPanel(user, user.ckey)]) at [formatJumpTo(get_turf(src))]")
 
 /obj/machinery/door/firedoor/attack_hand(mob/user as mob)
 	return attackby(null, user)
@@ -305,7 +305,7 @@ var/global/list/alert_overlays_global = list()
 	else
 		spawn()
 			close()
-	admin_diary << ("[user]/([user.ckey]) [density ? "closed the open" : "opened the closed"] [alarmed ? "and alarming" : ""] firelock at [formatJumpTo(get_turf(src))]")
+	investigation_log(I_ATMOS, "has been [density ? "closed" : "opened"] [alarmed ? "while alarming" : ""] by [user.real_name] ([formatPlayerPanel(user, user.ckey)]) at [formatJumpTo(get_turf(src))]")
 
 	if(needs_to_close)
 		spawn(50)
@@ -316,7 +316,7 @@ var/global/list/alert_overlays_global = list()
 		return
 	..()
 	latetoggle()
-	layer = base_layer
+	layer = open_layer
 	var/area/A = get_area_master(src)
 	ASSERT(istype(A)) // This worries me.
 	var/alarmed = A.doors_down || A.fire
@@ -345,7 +345,7 @@ var/global/list/alert_overlays_global = list()
 	else
 		spawn(0)
 			close()
-	admin_diary << ("[user]/([user.ckey]) [density ? "closed the open" : "opened the closed"] [alarmed ? "and alarming" : ""] firelock at [formatJumpTo(get_turf(src))]")
+	investigation_log(I_ATMOS, "has been [density ? "closed" : "opened"] [alarmed ? "while alarming" : ""] by [user.real_name] ([formatPlayerPanel(user, user.ckey)]) at [formatJumpTo(get_turf(src))]")
 	return
 
 /obj/machinery/door/firedoor/close()
@@ -353,7 +353,7 @@ var/global/list/alert_overlays_global = list()
 		return
 	..()
 	latetoggle()
-	layer = base_layer + FIREDOOR_CLOSED_MOD
+	layer = closed_layer
 
 /obj/machinery/door/firedoor/door_animate(animation)
 	switch(animation)
@@ -361,7 +361,6 @@ var/global/list/alert_overlays_global = list()
 			flick("door_opening", src)
 		if("closing")
 			flick("door_closing", src)
-	return
 
 
 /obj/machinery/door/firedoor/update_icon()
@@ -369,9 +368,9 @@ var/global/list/alert_overlays_global = list()
 	if(density)
 		icon_state = "door_closed"
 		if(blocked)
-			overlays += "welded"
+			overlays += image(icon = icon, icon_state = "welded")
 		if(pdiff_alert)
-			overlays += "palert"
+			overlays += image(icon = icon, icon_state = "palert")
 		if(dir_alerts)
 			for(var/d=1;d<=4;d++)
 				var/cdir = cardinal[d]
@@ -387,7 +386,7 @@ var/global/list/alert_overlays_global = list()
 	else
 		icon_state = "door_open"
 		if(blocked)
-			overlays += "welded_open"
+			overlays += image(icon = icon, icon_state = "welded_open")
 	return
 
 // CHECK PRESSURE
@@ -397,8 +396,21 @@ var/global/list/alert_overlays_global = list()
 	if(density)
 		var/changed = 0
 		lockdown=0
+
 		// Pressure alerts
-		pdiff = getOPressureDifferential(src.loc)
+		if(flags & ON_BORDER) //For border firelocks, we only need to check front and back, don't check the sides
+			var/turf/T1 = get_step(loc,dir)
+			var/turf/T2
+			if(locate(/obj/machinery/door/airlock) in get_turf(src)) //If this firelock is in the same tile as an airlock, we want to check the OTHER SIDE of the airlock, not the airlock turf itself.
+				T2 = get_step(loc,turn(dir, 180))
+			else
+				T2 = get_turf(src)
+
+			pdiff = getPressureDifferentialFromTurfList(list(T1, T2))
+
+		else
+			pdiff = getOPressureDifferential(src.loc)
+
 		if(pdiff >= FIREDOOR_MAX_PRESSURE_DIFF)
 			lockdown = 1
 			if(!pdiff_alert)
@@ -458,7 +470,7 @@ var/global/list/alert_overlays_global = list()
 	flags = ON_BORDER
 
 /obj/machinery/door/firedoor/border_only/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
-	if(istype(mover) && mover.checkpass(PASSGLASS))
+	if(istype(mover) && (mover.checkpass(PASSDOOR|PASSGLASS)))
 		return 1
 	if(get_dir(loc, target) == dir || get_dir(loc, mover) == dir)
 		return !density
@@ -470,14 +482,15 @@ var/global/list/alert_overlays_global = list()
 
 
 /obj/machinery/door/firedoor/border_only/Uncross(atom/movable/mover as mob|obj, turf/target as turf)
-	if(istype(mover) && mover.checkpass(PASSGLASS))
+	if(istype(mover) && (mover.checkpass(PASSDOOR|PASSGLASS)))
 		return 1
 	if(flags & ON_BORDER)
 		if(target) //Are we doing a manual check to see
 			if(get_dir(loc, target) == dir)
 				return !density
 		else if(mover.dir == dir) //Or are we using move code
-			if(density)	Bumped(mover)
+			if(density)
+				mover.Bump(src)
 			return !density
 	return 1
 

@@ -13,7 +13,7 @@
 	icon = 'icons/obj/structures.dmi'
 	icon_state = "window"
 	density = 1
-	layer = 3.2 //Just above airlocks //For some reason I guess
+	layer = SIDE_WINDOW_LAYER
 	pressure_resistance = 4*ONE_ATMOSPHERE
 	anchored = 1
 	var/health = 10 //This window is so bad blowing on it would break it, sucks for it
@@ -77,8 +77,9 @@
 		if(M) //Did someone pass a mob ? If so, perform a pressure check
 			var/pdiff = performWallPressureCheck(src.loc)
 			if(pdiff > 0)
-				message_admins("Window with pdiff [pdiff] at [formatJumpTo(loc)] destroyed by [M.real_name] ([formatPlayerPanel(M,M.ckey)])!")
-				log_admin("Window with pdiff [pdiff] at [loc] destroyed by [M.real_name] ([M.ckey])!")
+				investigation_log(I_ATMOS, "with a pdiff of [pdiff] has been destroyed by [M.real_name] ([formatPlayerPanel(M, M.ckey)]) at [formatJumpTo(get_turf(src))]!")
+				if(M.ckey) //Only send an admin message if it's an actual players, admins don't need to know what the carps are doing
+					message_admins("\The [src] with a pdiff of [pdiff] has been destroyed by [M.real_name] ([formatPlayerPanel(M, M.ckey)]) at [formatJumpTo(get_turf(src))]!")
 		Destroy(brokenup = 1)
 	else
 		if(sound)
@@ -152,7 +153,8 @@
 			if(get_dir(loc, target) == dir)
 				return !density
 		else if(mover.dir == dir) //Or are we using move code
-			if(density)	Bumped(mover)
+			if(density)
+				mover.Bump(src)
 			return !density
 	return 1
 
@@ -515,6 +517,10 @@
 	d_state = WINDOWSECURE
 	reinforced = 1
 	penetration_dampening = 3
+
+/obj/structure/window/reinforced/loose
+	anchored = 0
+	d_state = WINDOWLOOSE
 
 /obj/structure/window/plasma
 

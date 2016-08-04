@@ -11,10 +11,10 @@
 	icon_state = "pp_large"
 	gender = NEUTER
 	throwforce = 2
-	w_class = 3.0
+	w_class = W_CLASS_MEDIUM
 	throw_range = 5
 	throw_speed = 1
-	layer = 3.9
+	layer = ABOVE_DOOR_LAYER
 	pressure_resistance = 1
 	attack_verb = list("slaps", "baps", "whaps")
 
@@ -28,8 +28,8 @@
 /obj/item/weapon/paper_pack/New()
 	..()
 	amount = 20
-	pixel_x = rand(-5, 3)
-	pixel_y = rand(-3, 5)
+	pixel_x = rand(-5, 3) * PIXEL_MULTIPLIER
+	pixel_y = rand(-3, 5) * PIXEL_MULTIPLIER
 	update_icon()
 
 /obj/item/weapon/paper_pack/attack_self()
@@ -93,6 +93,6 @@
 	gender = NEUTER
 	slot_flags = SLOT_HEAD
 	throwforce = 0
-	w_class = 1.0
+	w_class = W_CLASS_TINY
 	throw_range = 4
 	throw_speed = 1

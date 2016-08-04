@@ -18,6 +18,7 @@
 /obj/structure/bed/chair/vehicle/wheelchair/New()
 	. = ..()
 	wheel_overlay = image("icons/obj/objects.dmi", "[icon_state]_overlay", MOB_LAYER + 0.1)
+	wheel_overlay = MOB_PLANE
 
 /obj/structure/bed/chair/vehicle/wheelchair/attackby(obj/item/weapon/W, mob/user)
 	if(occupant)
@@ -64,9 +65,30 @@
 
 	//Wheelchair's speed depends on the resulting value
 	var/mob/living/carbon/M = user
-	if(!M) return 0
+	if(!M)
+		return 0
 
-	var/left_hand_exists = 1
+	//Speed is determined by availability of hands
+	//Initial score is amount of hands * 2
+	//Each hand is checked. If the hand isn't usable, 2 is subtraced from the score. If the hand is holding an item, 1 is subtracted from the score.
+	//Because you only need two hands to use a wheelchair, the end score is capped at 4.
+
+	var/available_hands = M.held_items.len * 2
+	for(var/i = 1 to M.held_items.len)
+
+		var/datum/organ/external/OE = M.find_organ_by_grasp_index(i)
+
+		if(hasorgans(M) && (!OE || (OE.status & ORGAN_DESTROYED))) //Mob has organs, and the used hand is missing or unusable
+			available_hands -= 2
+		else if(M.held_items[i])
+			available_hands -= 1
+
+	available_hands = Clamp(available_hands, 0, 4)
+
+	return available_hands
+
+	return 1
+	/*var/left_hand_exists = 1
 	var/right_hand_exists = 1
 
 	if(M.handcuffed)
@@ -75,32 +97,37 @@
 	if(ishuman(M)) //Human check - 0 to 4
 		var/mob/living/carbon/human/H = user
 
-		if(H.l_hand == null) left_hand_exists++ //Check to see if left hand is holding anything
-		var/datum/organ/external/left_hand = H.get_organ("l_hand")
+		if(H.l_hand == null)
+			left_hand_exists++ //Check to see if left hand is holding anything
+		var/datum/organ/external/left_hand = H.get_organ(LIMB_LEFT_HAND)
 		if(!left_hand)
 			left_hand_exists = 0
 		else if(left_hand.status & ORGAN_DESTROYED)
 			left_hand_exists = 0
 
-		if(H.r_hand == null) right_hand_exists++
-		var/datum/organ/external/right_hand = H.get_organ("r_hand")
+		if(H.r_hand == null)
+			right_hand_exists++
+		var/datum/organ/external/right_hand = H.get_organ(LIMB_RIGHT_HAND)
 		if(!right_hand)
 			right_hand_exists = 0
 		else if(right_hand.status & ORGAN_DESTROYED)
 			right_hand_exists = 0
 	else if( ismonkey(M) || isalien(M) ) //Monkey and alien check - 0 to 2
 		left_hand_exists = 0
-		if(user.l_hand == null) left_hand_exists++
+		if(user.l_hand == null)
+			left_hand_exists++
 
 		right_hand_exists = 0
-		if(user.r_hand == null) right_hand_exists++
+		if(user.r_hand == null)
+			right_hand_exists++
 
-	return ( left_hand_exists + right_hand_exists )
+	return ( left_hand_exists + right_hand_exists )*/
 
 /obj/structure/bed/chair/vehicle/wheelchair/getMovementDelay()
 	//Speed is determined by amount of usable hands and whether they're carrying something
 	var/hands = check_hands(occupant) //See check_hands() proc above
-	if(hands <= 0) return 0
+	if(hands <= 0)
+		return 0
 	return movement_delay * (4 / hands)
 
 /obj/structure/bed/chair/vehicle/wheelchair/relaymove(var/mob/user, direction)
@@ -111,9 +138,9 @@
 
 /obj/structure/bed/chair/vehicle/wheelchair/handle_layer()
 	if(dir == NORTH)
-		layer = FLY_LAYER
+		plane = ABOVE_HUMAN_PLANE
 	else
-		layer = OBJ_LAYER
+		plane = OBJ_PLANE
 
 /obj/structure/bed/chair/vehicle/wheelchair/check_key(var/mob/user)
 	if(check_hands(user))
@@ -126,7 +153,7 @@
 /obj/structure/bed/chair/vehicle/wheelchair/update_mob()
 	if(occupant)
 		occupant.pixel_x = 0
-		occupant.pixel_y = 3
+		occupant.pixel_y = 3 * PIXEL_MULTIPLIER
 
 /obj/structure/bed/chair/vehicle/wheelchair/die()
 	getFromPool(/obj/item/stack/sheet/metal, get_turf(src), 4)
@@ -153,7 +180,7 @@
 	var/i = 0
 	for(var/mob/living/L in locked_atoms)
 		L.pixel_x = 0
-		L.pixel_y = 3 + (i*6) //Stack people on top of each other!
+		L.pixel_y = 3 * PIXEL_MULTIPLIER + (i * 6 * PIXEL_MULTIPLIER) //Stack people on top of each other!
 
 		i++
 
@@ -212,7 +239,8 @@
 		if(user.drop_item(W,src))
 			internal_battery = W
 			user.visible_message("<span class='notice'>[user] inserts \the [W] into the \the [src].</span>", "<span class='notice'>You insert \the [W] into \the [src].</span>", "You hear something being slid into place.")
-	else ..()
+	else
+		..()
 
 /obj/structure/bed/chair/vehicle/wheelchair/motorized/syndicate
 	nick = "medical malpractice"
@@ -242,9 +270,9 @@
 	src.visible_message("<span class='warning'>[src] drives over [H]!</span>")
 	playsound(get_turf(src), 'sound/effects/splat.ogg', 50, 1)
 	var/damage = rand(5,10) //We're not as heavy as a MULE. Where it does 30-90 damage, we do 15-30 damage
-	H.apply_damage(damage, BRUTE, "chest")
-	H.apply_damage(damage, BRUTE, "l_leg")
-	H.apply_damage(damage, BRUTE, "r_leg")
+	H.apply_damage(damage, BRUTE, LIMB_CHEST)
+	H.apply_damage(damage, BRUTE, LIMB_LEFT_LEG)
+	H.apply_damage(damage, BRUTE, LIMB_RIGHT_LEG)
 
 /obj/item/syndicate_wheelchair_kit
 	name = "Compressed Wheelchair Kit"
@@ -252,7 +280,7 @@
 	icon = 'icons/obj/objects.dmi'
 	icon_state = "wheelchair-item"
 	item_state = "syringe_kit" //This is just a grayish square
-	w_class = 4
+	w_class = W_CLASS_LARGE
 
 /obj/item/syndicate_wheelchair_kit/attack_self(mob/user)
 	new /obj/structure/bed/chair/vehicle/wheelchair/motorized/syndicate(get_turf(user))

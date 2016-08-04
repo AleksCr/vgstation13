@@ -126,7 +126,7 @@
 			if(prob(80))
 				src.ReplaceWithLattice()
 			else if(prob(50))
-				src.ChangeTurf(get_base_turf(src.z))
+				src.ChangeTurf(get_underlying_turf())
 			else
 				var/turf/simulated/floor/F = src
 				F.make_plating()
@@ -138,7 +138,6 @@
 				return
 		if(3.0)
 			return
-	return
 
 /turf/simulated/floor/engine/cult
 	name = "engraved floor"
@@ -261,7 +260,9 @@
 
 /turf/simulated/floor/beach/water/New()
 	..()
-	overlays += image("icon"='icons/misc/beach.dmi',"icon_state"="water5","layer"=MOB_LAYER+0.1)
+	var/image/water = image("icon"='icons/misc/beach.dmi',"icon_state"="water5")
+	water.plane = ABOVE_HUMAN_PLANE
+	overlays += water
 
 /turf/simulated/floor/grass
 	name = "Grass patch"
