@@ -426,9 +426,9 @@
 
 /obj/structure/holowindow/New()
 	..()
-	updatebounds()
+	update_dir()
 	
-/obj/structure/holowindow/proc/updatebounds()
+/obj/structure/holowindow/update_dir()
 	switch(dir)
 		if(NORTH)
 			bound_x = 0
