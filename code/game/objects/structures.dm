@@ -1,6 +1,7 @@
 obj/structure
 	icon = 'icons/obj/structures.dmi'
 	penetration_dampening = 5
+	var/thickness = 32 //TODO: Define
 
 obj/structure/blob_act(var/destroy = 0)
 	..()
@@ -43,3 +44,33 @@ obj/structure/ex_act(severity)
 					if(!Move(get_step(loc, kick_dir)))
 						break
 					sleep(3)
+
+/obj/structure/update_dir()
+	..()
+	if(thickness == world.icon_size)
+		return
+	switch(dir)
+		if(NORTH)
+			bound_x = 0
+			bound_y = world.icon_size - thickness
+			bound_width = world.icon_size
+			bound_height = thickness
+		if(SOUTH)
+			bound_x = 0
+			bound_y = 0
+			bound_width = world.icon_size
+			bound_height = thickness
+		if(EAST)
+			bound_x = world.icon_size - thickness
+			bound_y = 0
+			bound_width = thickness
+			bound_height = world.icon_size
+		if(WEST)
+			bound_x = 0
+			bound_y = 0
+			bound_width = thickness
+			bound_height = world.icon_size
+
+/obj/structure/New()
+	. = ..()
+	update_dir()

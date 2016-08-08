@@ -417,7 +417,7 @@
 	layer = ABOVE_DOOR_LAYER
 	pressure_resistance = 4*ONE_ATMOSPHERE
 	anchored = 1.0
-	var/thickness = 6 //Thickness in pixels
+	thickness = 6 //Thickness in pixels
 
 /obj/structure/holowindow/Cross(atom/movable/mover, turf/target, height = 0)
 	if(istype(mover) && mover.checkpass(PASSGLASS))
@@ -427,29 +427,6 @@
 /obj/structure/holowindow/New()
 	..()
 	update_dir()
-	
-/obj/structure/holowindow/update_dir()
-	switch(dir)
-		if(NORTH)
-			bound_x = 0
-			bound_y = world.icon_size - thickness
-			bound_width = world.icon_size
-			bound_height = thickness
-		if(SOUTH)
-			bound_x = 0
-			bound_y = 0
-			bound_width = world.icon_size
-			bound_height = thickness
-		if(EAST)
-			bound_x = world.icon_size - thickness
-			bound_y = 0
-			bound_width = thickness
-			bound_height = world.icon_size
-		if(WEST)
-			bound_x = 0
-			bound_y = 0
-			bound_width = thickness
-			bound_height = world.icon_size
 
 /obj/item/weapon/holo
 	damtype = HALLOSS

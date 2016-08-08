@@ -14,23 +14,15 @@
 
 	penetration_dampening = 1
 
+	thickness = 32 //TODO: Define
+
 
 	cracked_base = "fcrack"
 
-/obj/structure/window/full/New(loc)
-
-	..(loc)
-	flags |= ON_BORDER
-
-/obj/structure/window/full/Uncross(atom/movable/O as mob|obj, target as turf)
-
-	return 1
-
-/obj/structure/window/full/Cross(atom/movable/mover, turf/target, height = 1.5, air_group = 0)
-
+/obj/structure/window/Cross(atom/movable/mover, turf/target, height = 1.5, air_group = 0)
 	if(istype(mover) && mover.checkpass(PASSGLASS))
 		return 1
-	return 0
+	return !density
 
 /obj/structure/window/full/can_be_reached(mob/user)
 

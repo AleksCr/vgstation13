@@ -85,6 +85,8 @@ var/global/list/alert_overlays_global = list()
 	var/list/tile_info[4]
 	var/list/dir_alerts[4] // 4 dirs, bitflags
 
+	var/thickness = 32 //TODO: Define
+
 	// MUST be in same order as FIREDOOR_ALERT_*
 	var/list/ALERT_STATES=list(
 		"hot",
@@ -93,6 +95,7 @@ var/global/list/alert_overlays_global = list()
 
 /obj/machinery/door/firedoor/New()
 	. = ..()
+	update_dir()
 
 	if(!("[src.type]" in alert_overlays_global))
 		alert_overlays_global += list("[src.type]" = list("alert_hot" = list(),
@@ -460,6 +463,11 @@ var/global/list/alert_overlays_global = list()
 			nextstate = null
 			close()
 
+/obj/machinery/door/firedoor/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
+	if(istype(mover) && mover.checkpass(PASSGLASS))
+		return 1
+	return !density
+
 /obj/machinery/door/firedoor/border_only
 //These are playing merry hell on ZAS.  Sorry fellas :(
 //Or they were, until you disable their inherent air-blocking
@@ -469,9 +477,14 @@ var/global/list/alert_overlays_global = list()
 			  //This is needed due to BYOND limitations in controlling visibility
 	heat_proof = 1
 	air_properties_vary_with_direction = 1
+	thickness = 6
+
 	border_only = 1
 
-/obj/machinery/door/firedoor/border_only/update_dir()
+/obj/machinery/door/firedoor/update_dir()
+	..()
+	if(thickness == world.icon_size)
+		return
 	switch(dir)
 		if(NORTH)
 			bound_x = 0
@@ -493,12 +506,6 @@ var/global/list/alert_overlays_global = list()
 			bound_y = 0
 			bound_width = thickness
 			bound_height = world.icon_size
-
-/obj/machinery/door/firedoor/border_only/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
-	if(istype(mover) && (mover.checkpass(PASSDOOR|PASSGLASS)))
-		return 1
-	return !density
-
 
 //used in the AStar algorithm to determinate if the turf the door is on is passable
 /obj/machinery/door/firedoor/CanAStarPass()

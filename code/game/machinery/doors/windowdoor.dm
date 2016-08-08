@@ -7,7 +7,6 @@
 	var/health = 100
 	visible = 0.0
 	use_power = 0
-	flags = ON_BORDER
 	opacity = 0
 	var/obj/item/weapon/circuitboard/airlock/electronics = null
 	var/dismantled = 0 // To avoid playing the glass shatter sound on Destroy()
@@ -19,6 +18,7 @@
 	soundeffect = 'sound/machines/windowdoor.ogg'
 	var/shard = /obj/item/weapon/shard
 	penetration_dampening = 2
+	var/thickness = 6
 
 /obj/machinery/door/window/New()
 	..()
@@ -71,30 +71,36 @@
 /obj/machinery/door/window/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
 	if(istype(mover) && (mover.checkpass(PASSDOOR|PASSGLASS)))
 		return 1
-	if(get_dir(loc, target) == dir || get_dir(loc, mover) == dir)
-		if(air_group)
-			return 0
-		return !density
-	else
-		return 1
+	if(air_group)
+		return 0
+	return !density
+
+/obj/machinery/door/window/update_dir()
+	switch(dir)
+		if(NORTH)
+			bound_x = 0
+			bound_y = world.icon_size - thickness
+			bound_width = world.icon_size
+			bound_height = thickness
+		if(SOUTH)
+			bound_x = 0
+			bound_y = 0
+			bound_width = world.icon_size
+			bound_height = thickness
+		if(EAST)
+			bound_x = world.icon_size - thickness
+			bound_y = 0
+			bound_width = thickness
+			bound_height = world.icon_size
+		if(WEST)
+			bound_x = 0
+			bound_y = 0
+			bound_width = thickness
+			bound_height = world.icon_size
 
 //used in the AStar algorithm to determinate if the turf the door is on is passable
 /obj/machinery/door/window/CanAStarPass(var/obj/item/weapon/card/id/ID, var/to_dir)
 	return !density || (dir != to_dir) || check_access(ID)
-
-
-/obj/machinery/door/window/Uncross(atom/movable/mover as mob|obj, turf/target as turf)
-	if(istype(mover) && (mover.checkpass(PASSDOOR|PASSGLASS)))
-		return 1
-	if(flags & ON_BORDER) //but it will always be on border tho
-		if(target) //Are we doing a manual check to see
-			if(get_dir(loc, target) == dir)
-				return !density
-		else if(mover.dir == dir) //Or are we using move code
-			if(density)
-				mover.Bump(src)
-			return !density
-	return 1
 
 /obj/machinery/door/window/open()
 	if (!density) //it's already open you silly cunt

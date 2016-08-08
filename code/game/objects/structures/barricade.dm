@@ -100,9 +100,7 @@
 		return 1 //We aren't airtight, only exception to PASSGLASS
 	if(istype(mover) && mover.checkpass(PASSGLASS))
 		return 1
-	if(get_dir(loc, target) == dir || get_dir(loc, mover) == dir)
-		return !density
-	return 1
+	return 0
 
 /obj/structure/window/barricade/Destroy()
 
@@ -131,24 +129,7 @@
 	health = 150
 	sheetamount = 3
 	layer = ABOVE_DOOR_LAYER
-
-//Basically the barricade version of full windows, and inherits the former rather than the later
-/obj/structure/window/barricade/full/New(loc)
-
-	..(loc)
-	flags &= ~ON_BORDER
-
-/obj/structure/window/barricade/full/Uncross(atom/movable/O as mob|obj, target as turf)
-
-	return 1
-
-/obj/structure/window/barricade/full/Cross(atom/movable/mover, turf/target, height = 1.5, air_group = 0)
-
-	if(air_group || !height) //The mover is an airgroup
-		return 1 //We aren't airtight, only exception to PASSGLASS
-	if(istype(mover) && mover.checkpass(PASSGLASS))
-		return 1
-	return 0
+	thickness = 32 //TODO: Define
 
 /obj/structure/window/barricade/full/can_be_reached(mob/user)
 

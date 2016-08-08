@@ -31,10 +31,11 @@
 	var/fire_temp_threshold = 800
 	var/fire_volume_mod = 100
 
+	thickness = 6 //Thickness in pixels
+
 /obj/structure/window/New(loc)
 
 	..(loc)
-	flags |= ON_BORDER
 	ini_dir = dir
 
 	update_nearby_tiles()
@@ -145,25 +146,10 @@
 		health -= damage
 		healthcheck()
 
-/obj/structure/window/Uncross(var/atom/movable/mover, var/turf/target)
-	if(istype(mover) && mover.checkpass(PASSGLASS))
-		return 1
-	if(flags & ON_BORDER)
-		if(target) //Are we doing a manual check to see
-			if(get_dir(loc, target) == dir)
-				return !density
-		else if(mover.dir == dir) //Or are we using move code
-			if(density)
-				mover.Bump(src)
-			return !density
-	return 1
-
 /obj/structure/window/Cross(atom/movable/mover, turf/target, height = 0)
 	if(istype(mover) && mover.checkpass(PASSGLASS))
 		return 1
-	if(get_dir(loc, target) == dir || get_dir(loc, mover) == dir)
-		return !density
-	return 1
+	return !density
 
 //Someone threw something at us, please advise
 /obj/structure/window/hitby(AM as mob|obj)
