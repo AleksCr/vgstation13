@@ -70,6 +70,8 @@ var/global/list/alert_overlays_global = list()
 
 	dir = 2
 
+	var/border_only = 0
+
 	var/list/alert_overlays_local
 
 	var/blocked = 0
@@ -111,7 +113,7 @@ var/global/list/alert_overlays_global = list()
 
 	for(var/obj/machinery/door/firedoor/F in loc)
 		if(F != src)
-			if(F.flags & ON_BORDER && src.flags & ON_BORDER && F.dir != src.dir) //two border doors on the same tile don't collide
+			if(F.border_only && border_only && F.dir != src.dir) //two border doors on the same tile don't collide
 				continue
 			spawn(1)
 				qdel(src)
@@ -379,7 +381,7 @@ var/global/list/alert_overlays_global = list()
 					if(dir_alerts[d] & (1<<(i-1)))// Check to see if dir_alerts[d] has the i-1th bit set.
 
 						var/list/state_list = alert_overlays_local["alert_[ALERT_STATES[i]]"]
-						if(flags & ON_BORDER)
+						if(border_only)
 							overlays += turn(state_list["[turn(cdir, dir2angle(src.dir))]"], dir2angle(src.dir))
 						else
 							overlays += state_list["[cdir]"]
@@ -398,7 +400,7 @@ var/global/list/alert_overlays_global = list()
 		lockdown=0
 
 		// Pressure alerts
-		if(flags & ON_BORDER) //For border firelocks, we only need to check front and back, don't check the sides
+		if(border_only) //For border firelocks, we only need to check front and back, don't check the sides
 			var/turf/T1 = get_step(loc,dir)
 			var/turf/T2
 			if(locate(/obj/machinery/door/airlock) in get_turf(src)) //If this firelock is in the same tile as an airlock, we want to check the OTHER SIDE of the airlock, not the airlock turf itself.
@@ -467,33 +469,40 @@ var/global/list/alert_overlays_global = list()
 			  //This is needed due to BYOND limitations in controlling visibility
 	heat_proof = 1
 	air_properties_vary_with_direction = 1
-	flags = ON_BORDER
+	border_only = 1
+
+/obj/machinery/door/firedoor/border_only/update_dir()
+	switch(dir)
+		if(NORTH)
+			bound_x = 0
+			bound_y = world.icon_size - thickness
+			bound_width = world.icon_size
+			bound_height = thickness
+		if(SOUTH)
+			bound_x = 0
+			bound_y = 0
+			bound_width = world.icon_size
+			bound_height = thickness
+		if(EAST)
+			bound_x = world.icon_size - thickness
+			bound_y = 0
+			bound_width = thickness
+			bound_height = world.icon_size
+		if(WEST)
+			bound_x = 0
+			bound_y = 0
+			bound_width = thickness
+			bound_height = world.icon_size
 
 /obj/machinery/door/firedoor/border_only/Cross(atom/movable/mover, turf/target, height=1.5, air_group = 0)
 	if(istype(mover) && (mover.checkpass(PASSDOOR|PASSGLASS)))
 		return 1
-	if(get_dir(loc, target) == dir || get_dir(loc, mover) == dir)
-		return !density
-	return 1
+	return !density
+
 
 //used in the AStar algorithm to determinate if the turf the door is on is passable
 /obj/machinery/door/firedoor/CanAStarPass()
 	return !density
-
-
-/obj/machinery/door/firedoor/border_only/Uncross(atom/movable/mover as mob|obj, turf/target as turf)
-	if(istype(mover) && (mover.checkpass(PASSDOOR|PASSGLASS)))
-		return 1
-	if(flags & ON_BORDER)
-		if(target) //Are we doing a manual check to see
-			if(get_dir(loc, target) == dir)
-				return !density
-		else if(mover.dir == dir) //Or are we using move code
-			if(density)
-				mover.Bump(src)
-			return !density
-	return 1
-
 
 /obj/machinery/door/firedoor/multi_tile
 	icon = 'icons/obj/doors/DoorHazard2x1.dmi'
