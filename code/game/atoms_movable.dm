@@ -285,7 +285,7 @@
 	if (Obstacle)
 		Obstacle.Bumped(src)
 
-/atom/movable/proc/forceMove(atom/destination,var/no_tp=0)
+/atom/movable/proc/forceMove(atom/destination, var/d_step_x = 0, var/d_step_y = 0,var/no_tp=0)
 	if(destination)
 		if(loc)
 			loc.Exited(src)
@@ -294,6 +294,8 @@
 		last_moved = world.time
 
 		loc = destination
+		step_x = d_step_x
+		step_y = d_step_y
 
 		loc.Entered(src)
 		if(isturf(destination))

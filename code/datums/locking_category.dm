@@ -36,6 +36,8 @@
 // Updates the position for AM.
 /datum/locking_category/proc/update_lock(var/atom/movable/AM)
 	var/new_loc = owner.loc
+	var/new_step_x = owner.step_x
+	var/new_step_y = owner.step_y
 
 	var/new_x = x_offset
 	var/new_y = y_offset
@@ -67,7 +69,7 @@
 		if (newer_loc) // Edge (no pun intended) case for map borders.
 			new_loc = newer_loc
 
-	AM.forceMove(new_loc)
+	AM.forceMove(new_loc, new_step_x, new_step_y)
 
 // Modifies the atom to undo changes in lock().
 /datum/locking_category/proc/unlock(var/atom/movable/AM)
