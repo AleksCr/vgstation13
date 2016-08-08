@@ -82,3 +82,8 @@
 	fire_dmi = 'icons/mob/OnFire.dmi'
 	fire_sprite = "Standing"
 	plane = HUMAN_PLANE
+
+	bound_x = 8
+	bound_y = 0 //I think this will look much better than having the hitbox centered on the sprite.
+	bound_width = 16
+	bound_height = 16

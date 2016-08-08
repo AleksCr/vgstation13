@@ -417,27 +417,39 @@
 	layer = ABOVE_DOOR_LAYER
 	pressure_resistance = 4*ONE_ATMOSPHERE
 	anchored = 1.0
-	flags = ON_BORDER
-
-/obj/structure/holowindow/Uncross(var/atom/movable/mover, var/turf/target)
-	if(istype(mover) && mover.checkpass(PASSGLASS))
-		return 1
-	if(flags & ON_BORDER)
-		if(target) //Are we doing a manual check to see
-			if(get_dir(loc, target) == dir)
-				return !density
-		else if(mover.dir == dir) //Or are we using move code
-			if(density)
-				mover.Bump(src)
-			return !density
-	return 1
+	var/thickness = 6 //Thickness in pixels
 
 /obj/structure/holowindow/Cross(atom/movable/mover, turf/target, height = 0)
 	if(istype(mover) && mover.checkpass(PASSGLASS))
 		return 1
-	if(get_dir(loc, target) == dir || get_dir(loc, mover) == dir)
-		return !density
-	return 1
+	return !density
+
+/obj/structure/holowindow/New()
+	..()
+	update_dir()
+	
+/obj/structure/holowindow/update_dir()
+	switch(dir)
+		if(NORTH)
+			bound_x = 0
+			bound_y = world.icon_size - thickness
+			bound_width = world.icon_size
+			bound_height = thickness
+		if(SOUTH)
+			bound_x = 0
+			bound_y = 0
+			bound_width = world.icon_size
+			bound_height = thickness
+		if(EAST)
+			bound_x = world.icon_size - thickness
+			bound_y = 0
+			bound_width = thickness
+			bound_height = world.icon_size
+		if(WEST)
+			bound_x = 0
+			bound_y = 0
+			bound_width = thickness
+			bound_height = world.icon_size
 
 /obj/item/weapon/holo
 	damtype = HALLOSS

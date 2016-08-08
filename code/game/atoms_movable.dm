@@ -44,7 +44,7 @@
 	var/internal_gravity = 0
 	var/inertia_dir = null
 
-	step_size = 1 //honk
+	step_size = 4 //That's a bit more reasonable.
 
 /atom/movable/New()
 	. = ..()
