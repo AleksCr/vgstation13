@@ -22,6 +22,7 @@
 
 /obj/machinery/door/window/New()
 	..()
+	update_dir()
 	if ((istype(src.req_access) && src.req_access.len) || istext(req_access))
 		src.icon_state = "[src.icon_state]"
 		src.base_state = src.icon_state
