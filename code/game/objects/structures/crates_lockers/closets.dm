@@ -5,6 +5,12 @@
 	icon_state = "closed"
 	density = 1
 	flags = FPRINT
+
+	bound_x = 8
+	bound_y = 1
+	bound_width = 16
+	bound_height = 16 //Often looks ugly as fuck when things overlap like this. TODO: Maybe change layering system
+	
 	var/icon_closed = "closed"
 	var/icon_opened = "open"
 	var/opened = 0
@@ -51,8 +57,8 @@
 	return 1
 
 /obj/structure/closet/proc/can_close()
-	for(var/obj/structure/closet/closet in get_turf(src))
-		if(closet != src && !closet.wall_mounted)
+	for(var/obj/structure/closet/closet in obounds(src))
+		if(!closet.wall_mounted)
 			return 0
 	return 1
 
@@ -65,21 +71,17 @@
 			log_game("[L.name] ([L.ckey]) opened \the [src] that contained supermatter (<A HREF='?_src_=holder;adminplayerobservecoodjump=1;X=[L.x];Y=[L.y];Z=[L.z]'>JMP</a>)")
 
 
-	//Cham Projector Exception
-	for(var/obj/effect/dummy/chameleon/AD in src)
-		AD.loc = src.loc
-
 	for(var/obj/O in src)
-		O.loc = src.loc
+		O.forceMove(loc, step_x, step_y)
 
 	for(var/mob/M in src)
-		M.loc = src.loc
+		M.forceMove(loc, step_x, step_y)
 		if(M.client)
 			M.client.eye = M.client.mob
 			M.client.perspective = MOB_PERSPECTIVE
 
 /obj/structure/closet/proc/take_contents()
-	for(var/atom/movable/AM in src.loc)
+	for(var/atom/movable/AM in obounds(src))
 		if(insert(AM) == -1) // limit reached
 			break
 		INVOKE_EVENT(AM.on_moved,list("loc"=src))
@@ -293,6 +295,8 @@
 			return
 
 		user.drop_item(W, src.loc)
+		W.step_x = step_x
+		W.step_y = step_y //TODO: Maybe move to drop_item(), or make a new proc to drop an item onto something.
 
 	else if(istype(W, /obj/item/stack/package_wrap))
 		return
