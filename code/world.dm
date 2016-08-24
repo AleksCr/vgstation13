@@ -7,6 +7,7 @@
 	cache_lifespan = 0	//stops player uploaded stuff from being kept in the rsc past the current session
 	//loop_checks = 0
 	icon_size = WORLD_ICON_SIZE
+	map_format = SIDE_MAP
 #define RECOMMENDED_VERSION 510
 
 
