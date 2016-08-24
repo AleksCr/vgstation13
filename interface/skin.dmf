@@ -1,4 +1,36 @@
 macro "macro"
+	elem 
+		name = "WEST"
+		command = "MoveKey 8 1"
+		is-disabled = false
+	elem 
+		name = "WEST+UP"
+		command = "MoveKey 8 0"
+		is-disabled = false
+	elem 
+		name = "NORTH"
+		command = "MoveKey 1 1"
+		is-disabled = false
+	elem 
+		name = "NORTH+UP"
+		command = "MoveKey 1 0"
+		is-disabled = false
+	elem 
+		name = "EAST"
+		command = "MoveKey 4 1"
+		is-disabled = false
+	elem 
+		name = "EAST+UP"
+		command = "MoveKey 4 0"
+		is-disabled = false
+	elem 
+		name = "SOUTH"
+		command = "MoveKey 2 1"
+		is-disabled = false
+	elem 
+		name = "SOUTH+UP"
+		command = "MoveKey 2 0"
+		is-disabled = false
 	elem "TAB"
 		name = "TAB"
 		command = ".winset \"mainwindow.macro=hotkeymode hotkey_toggle.is-checked=true mapwindow.map.focus=true\""
@@ -27,33 +59,17 @@ macro "macro"
 		name = "CTRL+WEST"
 		command = "westface"
 		is-disabled = false
-	elem "WEST+REP"
-		name = "WEST+REP"
-		command = ".west"
-		is-disabled = false
 	elem "CTRL+NORTH"
 		name = "CTRL+NORTH"
 		command = "northface"
-		is-disabled = false
-	elem "NORTH+REP"
-		name = "NORTH+REP"
-		command = ".north"
 		is-disabled = false
 	elem "CTRL+EAST"
 		name = "CTRL+EAST"
 		command = "eastface"
 		is-disabled = false
-	elem "EAST+REP"
-		name = "EAST+REP"
-		command = ".east"
-		is-disabled = false
 	elem "CTRL+SOUTH"
 		name = "CTRL+SOUTH"
 		command = "southface"
-		is-disabled = false
-	elem "SOUTH+REP"
-		name = "SOUTH+REP"
-		command = ".south"
 		is-disabled = false
 	elem "INSERT"
 		name = "INSERT"
@@ -189,6 +205,70 @@ macro "macro"
 		is-disabled = false
 
 macro "hotkeymode"
+	elem 
+		name = "WEST"
+		command = "MoveKey 8 1"
+		is-disabled = false
+	elem 
+		name = "WEST+UP"
+		command = "MoveKey 8 0"
+		is-disabled = false
+	elem 
+		name = "NORTH"
+		command = "MoveKey 1 1"
+		is-disabled = false
+	elem 
+		name = "NORTH+UP"
+		command = "MoveKey 1 0"
+		is-disabled = false
+	elem 
+		name = "EAST"
+		command = "MoveKey 4 1"
+		is-disabled = false
+	elem 
+		name = "EAST+UP"
+		command = "MoveKey 4 0"
+		is-disabled = false
+	elem 
+		name = "SOUTH"
+		command = "MoveKey 2 1"
+		is-disabled = false
+	elem 
+		name = "SOUTH+UP"
+		command = "MoveKey 2 0"
+		is-disabled = false
+	elem 
+		name = "A"
+		command = "MoveKey 8 1"
+		is-disabled = false
+	elem 
+		name = "A+UP"
+		command = "MoveKey 8 0"
+		is-disabled = false
+	elem 
+		name = "D"
+		command = "MoveKey 4 1"
+		is-disabled = false
+	elem 
+		name = "D+UP"
+		command = "MoveKey 4 0"
+		is-disabled = false
+	elem 
+		name = "S"
+		command = "MoveKey 2 1"
+		is-disabled = false
+	elem 
+		name = "S+UP"
+		command = "MoveKey 2 0"
+		is-disabled = false
+	elem 
+		name = "W"
+		command = "MoveKey 1 1"
+		is-disabled = false
+	elem 
+		name = "W+UP"
+		command = "MoveKey 1 0"
+		is-disabled = false
 	elem "TAB"
 		name = "TAB"
 		command = ".winset \"mainwindow.macro=macro hotkey_toggle.is-checked=false input.focus=true\""
@@ -217,33 +297,17 @@ macro "hotkeymode"
 		name = "CTRL+WEST"
 		command = "westface"
 		is-disabled = false
-	elem "WEST+REP"
-		name = "WEST+REP"
-		command = ".west"
-		is-disabled = false
 	elem "CTRL+NORTH"
 		name = "CTRL+NORTH"
 		command = "northface"
-		is-disabled = false
-	elem "NORTH+REP"
-		name = "NORTH+REP"
-		command = ".north"
 		is-disabled = false
 	elem "CTRL+EAST"
 		name = "CTRL+EAST"
 		command = "eastface"
 		is-disabled = false
-	elem "EAST+REP"
-		name = "EAST+REP"
-		command = ".east"
-		is-disabled = false
 	elem "CTRL+SOUTH"
 		name = "CTRL+SOUTH"
 		command = "southface"
-		is-disabled = false
-	elem "SOUTH+REP"
-		name = "SOUTH+REP"
-		command = ".south"
 		is-disabled = false
 	elem "INSERT"
 		name = "INSERT"
@@ -301,22 +365,6 @@ macro "hotkeymode"
 		name = "CTRL+6"
 		command = "a-bite"
 		is-disabled = false
-	elem "A+REP"
-		name = "A+REP"
-		command = ".west"
-		is-disabled = false
-	elem "CTRL+A+REP"
-		name = "CTRL+A+REP"
-		command = ".west"
-		is-disabled = false
-	elem "D+REP"
-		name = "D+REP"
-		command = ".east"
-		is-disabled = false
-	elem "CTRL+D+REP"
-		name = "CTRL+D+REP"
-		command = ".east"
-		is-disabled = false
 	elem "E"
 		name = "E"
 		command = "quick-equip"
@@ -365,25 +413,9 @@ macro "hotkeymode"
 		name = "CTRL+R"
 		command = ".southwest"
 		is-disabled = false
-	elem "S+REP"
-		name = "S+REP"
-		command = ".south"
-		is-disabled = false
-	elem "CTRL+S+REP"
-		name = "CTRL+S+REP"
-		command = ".south"
-		is-disabled = false
 	elem "T"
 		name = "T"
 		command = "say"
-		is-disabled = false
-	elem "W+REP"
-		name = "W+REP"
-		command = ".north"
-		is-disabled = false
-	elem "CTRL+W+REP"
-		name = "CTRL+W+REP"
-		command = ".north"
 		is-disabled = false
 	elem "X"
 		name = "X"
