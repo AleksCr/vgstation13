@@ -1,0 +1,21 @@
+// DM Environment file for KeyState.dme.
+// All manual changes should be made outside the BEGIN_ and END_ blocks.
+// New source code should be placed in .dm files: choose File/New --> Code File.
+
+// BEGIN_INTERNALS
+// END_INTERNALS
+// BEGIN_FILE_DIR
+#define FILE_DIR .
+// END_FILE_DIR
+
+// BEGIN_PREFERENCES
+// END_PREFERENCES
+
+// BEGIN_INCLUDE
+#include "1constants.dm"
+#include "1definitions.dm"
+#include "KeyState.dm"
+#ifdef __MAIN__ // BEGIN_DEMO
+#endif          // END_DEMO
+// END_INCLUDE
+
