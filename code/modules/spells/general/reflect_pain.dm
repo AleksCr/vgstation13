@@ -92,12 +92,12 @@
 					to_chat(L, "<span class='sinister'>You feel deathly sick!</span>")
 
 		L.apply_damage(amount, damage_type, ignore_events = 1) //The ignore_events part is to prevent recursion with two wizards
-		L.attack_log += "\[[time_stamp()]\] <font color='orange'>Received [amount] [damage_type] damage, reflected from [src.holder] by the [src.name] spell</font>"
+		L.add_attack_log("\[[time_stamp()]\] <font color='orange'>Received [amount] [damage_type] damage, reflected from [src.holder] by the [src.name] spell</font>")
 		dealt_damage += amount
 
 	var/mob/living/holder = src.holder
 	if(istype(holder))
-		holder.attack_log += "\[[time_stamp()]\] <font color='orange'>Received [amount] [damage_type] damage with [src.name] active. Reflected to [affected_amount] people.</font>"
+		holder.add_attack_log("\[[time_stamp()]\] <font color='orange'>Received [amount] [damage_type] damage with [src.name] active. Reflected to [affected_amount] people.</font>")
 
 /spell/mirror_of_pain/get_scoreboard_suffix()
 	return " ([absorbed_damage] damage taken, [dealt_damage] damage dealt)"

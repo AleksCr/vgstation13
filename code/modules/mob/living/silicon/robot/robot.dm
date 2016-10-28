@@ -1126,8 +1126,8 @@
 			playsound(loc, M.attack_sound, 50, 1, 1)
 		for(var/mob/O in viewers(src, null))
 			O.show_message("<span class='danger'>[M] [M.attacktext] [src]!</span>", 1)
-		M.attack_log += text("\[[time_stamp()]\] <font color='red'>attacked [src.name] ([src.ckey])</font>")
-		src.attack_log += text("\[[time_stamp()]\] <font color='orange'>was attacked by [M.name] ([M.ckey])</font>")
+		M.add_attack_log(text("\[[time_stamp()]\] <font color='red'>attacked [src.name] ([src.ckey])</font>"))
+		src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>was attacked by [M.name] ([M.ckey])</font>"))
 		var/damage = rand(M.melee_damage_lower, M.melee_damage_upper)
 		adjustBruteLoss(damage)
 		updatehealth()
@@ -1147,8 +1147,8 @@
 			user.put_in_active_hand(cell)
 			user.visible_message("<span class='warning'>[user] removes [src]'s [cell.name].</span>", \
 			"<span class='notice'>You remove [src]'s [cell.name].</span>")
-			src.attack_log += "\[[time_stamp()]\] <font color='orange'>Has had their [cell.name] removed by [user.name] ([user.ckey])</font>"
-			user.attack_log += "\[[time_stamp()]\] <font color='red'>Removed the [cell.name] of [src.name] ([src.ckey])</font>"
+			src.add_attack_log("\[[time_stamp()]\] <font color='orange'>Has had their [cell.name] removed by [user.name] ([user.ckey])</font>")
+			user.add_attack_log("\[[time_stamp()]\] <font color='red'>Removed the [cell.name] of [src.name] ([src.ckey])</font>")
 			log_attack("<font color='red'>[user.name] ([user.ckey]) removed [src]'s [cell.name] ([src.ckey])</font>")
 			cell = null
 			cell_component.wrapped = null

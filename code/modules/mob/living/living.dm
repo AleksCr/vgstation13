@@ -181,7 +181,7 @@
 /mob/living/verb/succumb()
 	set hidden = 1
 	if (src.health < 0 && stat != DEAD)
-		src.attack_log += "[src] has succumbed to death with [health] points of health!"
+		src.add_attack_log("[src] has succumbed to death with [health] points of health!")
 		src.apply_damage(maxHealth + src.health, OXY)
 		death(0)
 		to_chat(src, "<span class='info'>You have given up life and succumbed to death.</span>")
@@ -1120,7 +1120,7 @@ Thanks.
 //shuttle_act is called when a shuttle collides with the mob
 /mob/living/shuttle_act(datum/shuttle/S)
 	if(!(src.flags & INVULNERABLE))
-		src.attack_log += "\[[time_stamp()]\] was gibbed by a shuttle ([S.name], [S.type])!"
+		src.add_attack_log("\[[time_stamp()]\] was gibbed by a shuttle ([S.name], [S.type])!")
 		gib()
 	return
 

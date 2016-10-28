@@ -22,7 +22,7 @@
 /mob/living/carbon/proc/toggle_internals(var/mob/living/user, var/obj/item/weapon/tank/T)
 	if(user.incapacitated())
 		return
-	
+
 	if(internal)
 		internal.add_fingerprint(user)
 		internal = null
@@ -31,8 +31,8 @@
 		if(user != src)
 			if(!user.isGoodPickpocket())
 				visible_message("<span class='warning'>\The [user] shuts off \the [src]'s internals!</span>")
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has disabled [src.name]'s ([src.ckey]) internals.</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='red'>Internals disabled by [user.name] ([user.ckey]).</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has disabled [src.name]'s ([src.ckey]) internals.</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Internals disabled by [user.name] ([user.ckey]).</font>"))
 			log_attack("[user.name] ([user.ckey]) has disabled [src.name]'s ([src.ckey]) internals.")
 		else
 			to_chat(user, "<span class='notice'>No longer running on internals.</span>")
@@ -63,8 +63,8 @@
 			var/gas_contents = T.air_contents.english_contents_list()
 			if(!user.isGoodPickpocket())
 				to_chat(user, "<span class='notice'>\The [user] has enabled [src]'s internals.</span>")
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has enabled [src.name]'s ([src.ckey]) internals (Gas contents: [gas_contents]).</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='red'>Internals enabled by [user.name] ([user.ckey]) (Gas contents: [gas_contents]).</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has enabled [src.name]'s ([src.ckey]) internals (Gas contents: [gas_contents]).</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Internals enabled by [user.name] ([user.ckey]) (Gas contents: [gas_contents]).</font>"))
 			log_attack("[user.name] ([user.ckey]) has enabled [src.name]'s ([src.ckey]) internals (Gas contents: [gas_contents]).")
 		else
 			to_chat(src, "<span class='notice'>You are now running on internals from \the [T].</span>")

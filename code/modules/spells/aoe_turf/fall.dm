@@ -87,7 +87,7 @@ var/global/list/falltempoverlays = list()
 		targets = before_cast(targets, user)
 		if(!targets.len)
 			return
-		user.attack_log += text("\[[time_stamp()]\] <font color='red'>[user.real_name] ([user.ckey]) cast the spell [name].</font>")
+		user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>[user.real_name] ([user.ckey]) cast the spell [name].</font>"))
 		if(prob(critfailchance))
 			critfail(targets, user)
 		else

@@ -114,8 +114,8 @@
 	target.emote("scream",,, 1) //If we're going this route, it kinda hurts
 	target.updatehealth()
 	spawn() //Logging
-		user.attack_log += "\[[time_stamp()]\]<font color='red'> Shocked [target.name] ([target.ckey]) with an emagged [src.name]</font>"
-		target.attack_log += "\[[time_stamp()]\]<font color='orange'> Shocked by [user.name] ([user.ckey]) with an emagged [src.name]</font>"
+		user.add_attack_log("\[[time_stamp()]\]<font color='red'> Shocked [target.name] ([target.ckey]) with an emagged [src.name]</font>")
+		target.add_attack_log("\[[time_stamp()]\]<font color='orange'> Shocked by [user.name] ([user.ckey]) with an emagged [src.name]</font>")
 		log_attack("<font color='red'>[user.name] ([user.ckey]) shocked [target.name] ([target.ckey]) with an emagged [src.name]</font>" )
 		if(!iscarbon(user))
 			target.LAssailant = null

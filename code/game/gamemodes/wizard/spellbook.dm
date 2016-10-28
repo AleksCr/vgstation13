@@ -361,7 +361,7 @@
 	else
 		user.add_spell(S)
 		to_chat(user, "<span class='notice'>you rapidly read through the arcane book. Suddenly you realize you understand [spellname]!</span>")
-		user.attack_log += text("\[[time_stamp()]\] <font color='orange'>[user.real_name] ([user.ckey]) learned the spell [spellname] ([S]).</font>")
+		user.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>[user.real_name] ([user.ckey]) learned the spell [spellname] ([S]).</font>"))
 		onlearned(user)
 
 /obj/item/weapon/spellbook/oneuse/proc/recoil(mob/user as mob)
@@ -710,24 +710,24 @@
 	spellname = "sculpting"
 	icon_state = "bookstatue"
 	desc = "This book is as dense as a rock."
-	
+
 /obj/item/weapon/spellbook/oneuse/ringoffire
 	spell = /spell/aoe_turf/ring_of_fire
 	spellname = "ring of fire"
 	icon_state = "bookring"
 	desc = "The cover of this book is much warmer than the pages within."
-	
+
 /obj/item/weapon/spellbook/oneuse/ringoffire/recoil(mob/living/carbon/user as mob)
 	user.adjust_fire_stacks(10)
 	user.IgniteMob()
 	to_chat(user, "<span class = 'warning'>The book sets you alight!</span>")
-	
+
 /obj/item/weapon/spellbook/oneuse/mirror_of_pain
 	spell = /spell/mirror_of_pain
 	spellname = "pain mirror"
 	icon_state = "bookmirror"
 	desc = "The cover of the book seems to stare back at you."
-	
+
 /obj/item/weapon/spellbook/oneuse/mirror_of_pain/recoil(mob/living/carbon/user as mob)
 	scramble(1, user, 100)
 	to_chat(user, "<span class = 'warning'>Your reflection becomes warped and distorted!</span>")

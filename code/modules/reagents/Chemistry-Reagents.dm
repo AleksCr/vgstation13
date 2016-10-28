@@ -577,7 +577,7 @@
 
 	if(data >= 165)
 		M.death(0)
-		M.attack_log += "\[[time_stamp()]\]<font color='red'>Died a quick and painless death by <font color='green'>Chef Excellence's Special Sauce</font>.</font>"
+		M.add_attack_log("\[[time_stamp()]\]<font color='red'>Died a quick and painless death by <font color='green'>Chef Excellence's Special Sauce</font>.</font>")
 	data++
 
 /datum/reagent/minttoxin

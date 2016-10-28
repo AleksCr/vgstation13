@@ -40,8 +40,8 @@
 	if(!user || !M) //sanity
 		return
 
-	M.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been flashed (attempt) with [src.name] by [key_name(user)]</font>")
-	user.attack_log += text("\[[time_stamp()]\] <font color='red'>Used the [src.name] to flash [key_name(M)]</font>")
+	M.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been flashed (attempt) with [src.name] by [key_name(user)]</font>"))
+	user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Used the [src.name] to flash [key_name(M)]</font>"))
 
 	log_attack("<font color='red'>[key_name(user)] Used the [src.name] to flash [key_name(M)]</font>")
 

@@ -259,8 +259,8 @@ var/paperwork_library
 		return
 	to_chat(user, "<span class='warning'>You stab [M] with the pen.</span>")
 	to_chat(M, "<span class='warning'>You feel a tiny prick!</span>")
-	M.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been stabbed with [type]  by [user.name] ([user.ckey])</font>")
-	user.attack_log += text("\[[time_stamp()]\] <font color='red'>Used the [type] to stab [M.name] ([M.ckey])</font>")
+	M.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been stabbed with [type]  by [user.name] ([user.ckey])</font>"))
+	user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Used the [type] to stab [M.name] ([M.ckey])</font>"))
 	msg_admin_attack("[user.name] ([user.ckey]) Used the [type] to stab [M.name] ([M.ckey]) (<A HREF='?_src_=holder;adminplayerobservecoodjump=1;X=[user.x];Y=[user.y];Z=[user.z]'>JMP</a>)")
 	if(!iscarbon(user))
 		M.LAssailant = null

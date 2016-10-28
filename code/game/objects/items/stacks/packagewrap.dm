@@ -48,7 +48,7 @@
 	if(!istype(target))
 		return
 
-	user.attack_log += "\[[time_stamp()]\] <font color='blue'>Has used [src.name] on \ref[target]</font>"
+	user.add_attack_log("\[[time_stamp()]\] <font color='blue'>Has used [src.name] on \ref[target]</font>")
 	target.add_fingerprint(user)
 	src.add_fingerprint(user)
 
@@ -93,8 +93,8 @@
 				H.client.eye = present
 			H.visible_message("<span class='warning'>[user] finishes wrapping [H]!</span>")
 			H.forceMove(present)
-			H.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been wrapped with [src.name]  by [user.name] ([user.ckey])</font>")
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Used the [src.name] to wrap [H.name] ([H.ckey])</font>")
+			H.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been wrapped with [src.name]  by [user.name] ([user.ckey])</font>"))
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Used the [src.name] to wrap [H.name] ([H.ckey])</font>"))
 			if(!iscarbon(user))
 				H.LAssailant = null
 			else

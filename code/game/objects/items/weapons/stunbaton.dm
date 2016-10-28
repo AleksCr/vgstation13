@@ -174,8 +174,8 @@
 			var/mob/living/carbon/human/H = L
 			H.forcesay(hit_appends)
 
-		user.attack_log += "\[[time_stamp()]\]<font color='red'> Stunned [L.name] ([L.ckey]) with [name]</font>"
-		L.attack_log += "\[[time_stamp()]\]<font color='orange'> Stunned by [user.name] ([user.ckey]) with [name]</font>"
+		user.add_attack_log("\[[time_stamp()]\]<font color='red'> Stunned [L.name] ([L.ckey]) with [name]</font>")
+		L.add_attack_log("\[[time_stamp()]\]<font color='orange'> Stunned by [user.name] ([user.ckey]) with [name]</font>")
 		log_attack("<font color='red'>[user.name] ([user.ckey]) stunned [L.name] ([L.ckey]) with [name]</font>" )
 		if(!iscarbon(user))
 			M.LAssailant = null
@@ -205,8 +205,8 @@
 					var/mob/living/carbon/human/H = L
 					H.forcesay(hit_appends)
 
-				foundmob.attack_log += "\[[time_stamp()]\]<font color='red'> Stunned [L.name] ([L.ckey]) with [name]</font>"
-				L.attack_log += "\[[time_stamp()]\]<font color='orange'> Stunned by thrown [src] by [istype(foundmob) ? foundmob.name : ""] ([istype(foundmob) ? foundmob.ckey : ""])</font>"
+				foundmob.add_attack_log("\[[time_stamp()]\]<font color='red'> Stunned [L.name] ([L.ckey]) with [name]</font>")
+				L.add_attack_log("\[[time_stamp()]\]<font color='orange'> Stunned by thrown [src] by [istype(foundmob) ? foundmob.name : ""] ([istype(foundmob) ? foundmob.ckey : ""])</font>")
 				log_attack("<font color='red'>Flying [src.name], thrown by [istype(foundmob) ? foundmob.name : ""] ([istype(foundmob) ? foundmob.ckey : ""]) stunned [L.name] ([L.ckey])</font>" )
 				if(!iscarbon(foundmob))
 					L.LAssailant = null

@@ -902,7 +902,7 @@ About the new airlock wires panel:
 						to_chat(usr, text("The door is already electrified. You can't re-electrify it while it's already electrified.<br>\n"))
 					else
 						shockedby += text("\[[time_stamp()]\][usr](ckey:[usr.ckey])")
-						usr.attack_log += text("\[[time_stamp()]\] <font color='red'>Electrified the [name] at [x] [y] [z]</font>")
+						usr.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Electrified the [name] at [x] [y] [z]</font>"))
 						investigation_log(I_WIRES, "|| temporarily electrified via robot interface by [key_name(usr)]")
 						if(isobserver(usr) && !canGhostWrite(usr,src,"electrified (30sec)"))
 							to_chat(usr, "<span class='warning'>Nope.</span>")
@@ -925,7 +925,7 @@ About the new airlock wires panel:
 						to_chat(usr, text("The door is already electrified. You can't re-electrify it while it's already electrified.<br>\n"))
 					else
 						shockedby += text("\[[time_stamp()]\][usr](ckey:[usr.ckey])")
-						usr.attack_log += text("\[[time_stamp()]\] <font color='red'>Electrified the [name] at [x] [y] [z]</font>")
+						usr.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Electrified the [name] at [x] [y] [z]</font>"))
 						investigation_log(I_WIRES, "|| electrified via robot interface by [key_name(usr)]")
 						to_chat(usr, "The door is now electrified indefinitely.")
 						if(isobserver(usr) && !canGhostWrite(usr,src,"electrified (permanent)"))

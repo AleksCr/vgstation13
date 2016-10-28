@@ -141,8 +141,8 @@
 	if(istype(G))	// handle grabbed mob
 		if(ismob(G.affecting))
 			var/mob/GM = G.affecting
-			user.attack_log += "<span class='warning'> [user]([user.ckey]) has attempted to put [GM]([GM.ckey]) in disposals.</span>"
-			GM.attack_log += "<span class='warning'> [user]([user.ckey]) has attempted to put [GM]([GM.ckey]) in disposals.</span>"
+			user.add_attack_log("<span class='warning'> [user]([user.ckey]) has attempted to put [GM]([GM.ckey]) in disposals.</span>")
+			GM.add_attack_log("<span class='warning'> [user]([user.ckey]) has attempted to put [GM]([GM.ckey]) in disposals.</span>")
 			user.visible_message("[usr] starts putting [GM.name] into \the [src].", "You start putting \the [GM.name] into the [src].", "You hear some clunking.")
 			if(do_after(usr, src, 20))
 				if (GM.client)

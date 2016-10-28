@@ -49,8 +49,8 @@
 
 	apply_damage(damage, BRUTE, affecting)
 
-	M.attack_log += text("\[[time_stamp()]\] <font color='red'>bit [src.name] ([src.ckey]) for [damage] damage</font>")
-	src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been bitten by [M.name] ([M.ckey]) for [damage] damage</font>")
+	M.add_attack_log(text("\[[time_stamp()]\] <font color='red'>bit [src.name] ([src.ckey]) for [damage] damage</font>"))
+	src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been bitten by [M.name] ([M.ckey]) for [damage] damage</font>"))
 	if(!iscarbon(M))
 		LAssailant = null
 	else
@@ -138,8 +138,8 @@
 				var/throw_strength = 3 * M.get_strength()
 				throw_at(T, throw_strength, 1)
 
-	M.attack_log += text("\[[time_stamp()]\] <font color='red'>Kicked [src.name] ([src.ckey]) for [damage] damage</font>")
-	src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been kicked by [M.name] ([M.ckey]) for [damage] damage</font>")
+	M.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Kicked [src.name] ([src.ckey]) for [damage] damage</font>"))
+	src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been kicked by [M.name] ([M.ckey]) for [damage] damage</font>"))
 	if(!iscarbon(M))
 		LAssailant = null
 	else
@@ -171,8 +171,8 @@
 				if(G.cell.charge >= 2500)
 					G.cell.use(2500)
 					visible_message("<span class='danger'>[M] touches [src] with the stun gloves!</span>")
-					M.attack_log += text("\[[time_stamp()]\] <font color='red'>Stungloved [src.name] ([src.ckey])</font>")
-					src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been stungloved by [M.name] ([M.ckey])</font>")
+					M.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Stungloved [src.name] ([src.ckey])</font>"))
+					src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been stungloved by [M.name] ([M.ckey])</font>"))
 					if(!iscarbon(M))
 						LAssailant = null
 					else
@@ -266,8 +266,8 @@
 			return 1
 
 		if(I_HURT)
-			M.attack_log += text("\[[time_stamp()]\] <font color='red'>[M.species.attack_verb != "punches" ? "Slashed" : "Punched"] [src.name] ([src.ckey])</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been [M.species.attack_verb == "slashes" ? "slashed" : "punched"] by [M.name] ([M.ckey])</font>")
+			M.add_attack_log(text("\[[time_stamp()]\] <font color='red'>[M.species.attack_verb != "punches" ? "Slashed" : "Punched"] [src.name] ([src.ckey])</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been [M.species.attack_verb == "slashes" ? "slashed" : "punched"] by [M.name] ([M.ckey])</font>"))
 			if(!iscarbon(M))
 				LAssailant = null
 			else
@@ -342,8 +342,8 @@
 
 
 		if(I_DISARM)
-			M.attack_log += text("\[[time_stamp()]\] <font color='red'>Disarmed [src.name] ([src.ckey])</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been disarmed by [M.name] ([M.ckey])</font>")
+			M.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Disarmed [src.name] ([src.ckey])</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been disarmed by [M.name] ([M.ckey])</font>"))
 
 			log_attack("[M.name] ([M.ckey]) disarmed [src.name] ([src.ckey])")
 
@@ -368,8 +368,8 @@
 				apply_effect(4, WEAKEN, run_armor_check(affecting, "melee"))
 				playsound(loc, 'sound/weapons/thudswoosh.ogg', 50, 1, -1)
 				visible_message("<span class='danger'>[M] has pushed [src]!</span>")
-				M.attack_log += text("\[[time_stamp()]\] <font color='red'>Pushed [src.name] ([src.ckey])</font>")
-				src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been pushed by [M.name] ([M.ckey])</font>")
+				M.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Pushed [src.name] ([src.ckey])</font>"))
+				src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been pushed by [M.name] ([M.ckey])</font>"))
 				if(!iscarbon(M))
 					LAssailant = null
 				else

@@ -286,7 +286,7 @@
 	src.spark_system.start()
 	src.health -= W.force * 0.5
 	visible_message("<span class='danger'>[user] attacked \the [src] with \the [W]!</span>")
-	user.attack_log += text("\[[time_stamp()]\] <font color='red'>attacked [src] with [W]</font>")
+	user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>attacked [src] with [W]</font>"))
 	if (src.health <= 0)
 		src.die()
 	return
@@ -423,8 +423,8 @@
 		return
 	if(!(stat & BROKEN))
 		visible_message("<span class='danger'>[M] [M.attacktext] [src]!</span>")
-		M.attack_log += text("\[[time_stamp()]\] <font color='red'>attacked [src.name]</font>")
-		//src.attack_log += text("\[[time_stamp()]\] <font color='orange'>was attacked by [M.name] ([M.ckey])</font>")
+		M.add_attack_log(text("\[[time_stamp()]\] <font color='red'>attacked [src.name]</font>"))
+		//src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>was attacked by [M.name] ([M.ckey])</font>"))
 		src.health -= M.melee_damage_upper
 		if (src.health <= 0)
 			src.die()

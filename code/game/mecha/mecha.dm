@@ -551,13 +551,13 @@
 			src.take_damage(damage)
 			src.check_for_internal_damage(list(MECHA_INT_TEMP_CONTROL,MECHA_INT_TANK_BREACH,MECHA_INT_CONTROL_LOST))
 			visible_message("<span class='warning'><B>[user]</B> [user.attacktext] [src]!</span>")
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>attacked [src.name]</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>attacked [src.name]</font>"))
 		else
 			src.log_append_to_last("Armor saved.")
 			playsound(get_turf(src), 'sound/weapons/slash.ogg', 50, 1, -1)
 			src.occupant_message("<span class='notice'>The [user]'s attack is stopped by the armor.</span>")
 			visible_message("<span class='notice'>The [user] rebounds off [src.name]'s armor!</span>")
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>attacked [src.name]</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>attacked [src.name]</font>"))
 	user.delayNextAttack(10)
 
 /obj/mecha/hitby(atom/movable/A as mob|obj) //wrapper

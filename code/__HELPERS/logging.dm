@@ -79,10 +79,10 @@
 	var/addition_txt = (addition ? " ([addition])" : "")
 
 	if (ismob(user))
-		user.attack_log += text("\[[time_stamp()]\] <span class='danger'>Has [what_done] [target_txt][object_txt].[intent_txt][addition_txt]</span>")
+		user.add_attack_log(text("\[[time_stamp()]\] <span class='danger'>Has [what_done] [target_txt][object_txt].[intent_txt][addition_txt]</span>"))
 
 	if (ismob(target))
-		target.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been [what_done] by [user_txt][object_txt].[intent_txt][addition_txt]</font>")
+		target.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been [what_done] by [user_txt][object_txt].[intent_txt][addition_txt]</font>"))
 		target.LAssailant = (iscarbon(user) ? user : null)
 
 	var/log_msg = "<span class='danger'>[user_txt] [what_done] [target_txt][object_txt][intent_txt].</span>[addition_txt] ([formatJumpTo(user, "JMP")])"

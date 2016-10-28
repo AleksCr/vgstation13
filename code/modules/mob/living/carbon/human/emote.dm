@@ -735,7 +735,7 @@
 
 										if(src && B)
 											to_chat(src, "<span class='danger'>You were disintegrated by [B.deity_name]'s bolt of lightning.</span>")
-											src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Farted on a bible and suffered [B.deity_name]'s wrath.</font>")
+											src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Farted on a bible and suffered [B.deity_name]'s wrath.</font>"))
 
 											explosion(get_turf(src),-1,-1,1,5) //Tiny explosion with flash
 

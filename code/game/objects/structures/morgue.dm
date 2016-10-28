@@ -364,9 +364,8 @@
 			if (M.stat!=2)
 				M.emote("scream",,, 1)
 			//Logging for this causes runtimes resulting in the cremator locking up. Commenting it out until that's figured out.
-			//M.attack_log += "\[[time_stamp()]\] Has been cremated by <b>[user]/[user.ckey]</b>" //No point in this when the mob's about to be qdeleted
-			//user.attack_log +="\[[time_stamp()]\] Cremated <b>[M]/[M.ckey]</b>"
-			//log_attack("\[[time_stamp()]\] <b>[user]/[user.ckey]</b> cremated <b>[M]/[M.ckey]</b>")
+			//M.add_attack_log(\1)\2No point in this when the mob's about to be qdeleted
+			//user.add_attack_log(\1)\2log_attack("\[[time_stamp()]\] <b>[user]/[user.ckey]</b> cremated <b>[M]/[M.ckey]</b>")
 			M.death(1)
 			M.ghostize()
 			qdel(M)

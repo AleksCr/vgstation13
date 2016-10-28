@@ -1,4 +1,4 @@
-//Windows, one of the oldest pieces of code
+ //Windows, one of the oldest pieces of code
 //Note : You might wonder where full windows are. Full windows are in fullwindow.dm. Now you know
 //And knowing is half the battle
 
@@ -266,8 +266,8 @@
 					visible_message("<span class='danger'>\The [user] crushes \the [M] into \the [src]!</span>", \
 					"<span class='danger'>You crush \the [M] into \the [src]!</span>")
 			healthcheck(user)
-			M.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been window slammed by [user.name] ([user.ckey]) ([gstate]).</font>")
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Window slammed [M.name] ([gstate]).</font>")
+			M.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been window slammed by [user.name] ([user.ckey]) ([gstate]).</font>"))
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Window slammed [M.name] ([gstate]).</font>"))
 			msg_admin_attack("[user.name] ([user.ckey]) window slammed [M.name] ([M.ckey]) ([gstate]) (<A HREF='?_src_=holder;adminplayerobservecoodjump=1;X=[user.x];Y=[user.y];Z=[user.z]'>JMP</a>)")
 			log_attack("[user.name] ([user.ckey]) window slammed [M.name] ([M.ckey]) ([gstate]) (<A HREF='?_src_=holder;adminplayerobservecoodjump=1;X=[user.x];Y=[user.y];Z=[user.z]'>JMP</a>)")
 			return

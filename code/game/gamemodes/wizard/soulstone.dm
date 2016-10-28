@@ -29,7 +29,7 @@
 /*attack(mob/living/simple_animal/shade/M as mob, mob/user as mob)//APPARENTLY THEY NEED THEIR OWN SPECIAL SNOWFLAKE CODE IN THE LIVING ANIMAL DEFINES
 	if(!istype(M, /mob/living/simple_animal/shade))//If target is not a shade
 		return ..()
-	user.attack_log += text("\[[time_stamp()]\] <font color='red'>Used the [src.name] to capture the soul of [M.name] ([M.ckey])</font>")
+	user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Used the [src.name] to capture the soul of [M.name] ([M.ckey])</font>"))
 
 	transfer_soul("SHADE", M, user)
 	return*/

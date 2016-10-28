@@ -446,7 +446,7 @@ var/global/borer_unlock_types_leg = typesof(/datum/unlockable/borer/leg) - /datu
 		host.adjustBrainLoss(100)
 		if(host.stat != DEAD)
 			host.death(0)
-			host.attack_log += "\[[time_stamp()]\]<font color='red'>Killed by an unhappy borer: [key_name(src)] Reason: [reason]</font>"
+			host.add_attack_log("\[[time_stamp()]\]<font color='red'>Killed by an unhappy borer: [key_name(src)] Reason: [reason]</font>")
 
 			message_admins("Borer [key_name_admin(src)] killed [key_name_admin(host)] for reason: [reason]")
 		detach()

@@ -220,8 +220,8 @@ obj/machinery/gibber/New()
 
 		allmeat[i] = newmeat
 
-	src.occupant.attack_log += "\[[time_stamp()]\] Was gibbed by <B>[key_name(user)]</B>" //One shall not simply gib a mob unnoticed!
-	user.attack_log += "\[[time_stamp()]\] Gibbed <B>[key_name(src.occupant)]</B>"
+	src.occupant.add_attack_log("\[[time_stamp()]\] Was gibbed by <B>[key_name(user)]</B>") //One shall not simply gib a mob unnoticed!
+	user.add_attack_log("\[[time_stamp()]\] Gibbed <B>[key_name(src.occupant)]</B>")
 	log_attack("<B>[key_name(user)]</B> gibbed <B>[key_name(src.occupant)]</B>")
 
 	if(!iscarbon(user))
@@ -317,7 +317,7 @@ obj/machinery/gibber/New()
 
 		allmeat[i] = newmeat
 
-	victim.attack_log += "\[[time_stamp()]\] Was auto-gibbed by <B>[src]</B>" //One shall not simply gib a mob unnoticed!
+	victim.add_attack_log("\[[time_stamp()]\] Was auto-gibbed by <B>[src]</B>") //One shall not simply gib a mob unnoticed!
 	log_attack("<B>[src]</B> auto-gibbed <B>[key_name(victim)]</B>")
 	victim.death(1)
 	if(ishuman(victim) || ismonkey(victim) || isalien(victim))

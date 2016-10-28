@@ -170,8 +170,8 @@ emp_act
 		--src.meatleft
 		to_chat(user, "<span class='warning'>You hack off a chunk of meat from [src.name]</span>")
 		if(!src.meatleft)
-			src.attack_log += "\[[time_stamp()]\] Was chopped up into meat by <b>[user]/[user.ckey]</b>"
-			user.attack_log += "\[[time_stamp()]\] Chopped up <b>[src]/[src.ckey]</b> into meat</b>"
+			src.add_attack_log("\[[time_stamp()]\] Was chopped up into meat by <b>[user]/[user.ckey]</b>")
+			user.add_attack_log("\[[time_stamp()]\] Chopped up <b>[src]/[src.ckey]</b> into meat</b>")
 			msg_admin_attack("[user.name] ([user.ckey]) chopped up [src] ([src.ckey]) into meat (<A HREF='?_src_=holder;adminplayerobservecoodjump=1;X=[user.x];Y=[user.y];Z=[user.z]'>JMP</a>)")
 			if(!iscarbon(user))
 				LAssailant = null

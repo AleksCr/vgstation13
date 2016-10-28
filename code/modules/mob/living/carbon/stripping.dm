@@ -75,13 +75,13 @@
 			visible_message("<span class='danger'>\The [user] is trying to remove \a [target_item] from \the [src]'s [src.slotID2slotname(slot)]!</span>")
 
 		if(strip_item_from(user, target_item, slot, pickpocket))
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has stripped \a [target_item] from [src.name]'s [src.slotID2slotname(slot)] ([src.ckey])</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has had \a [target_item] stripped from their [src.slotID2slotname(slot)] by [user.name] ([user.ckey])</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has stripped \a [target_item] from [src.name]'s [src.slotID2slotname(slot)] ([src.ckey])</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has had \a [target_item] stripped from their [src.slotID2slotname(slot)] by [user.name] ([user.ckey])</font>"))
 			log_attack("[user.name] ([user.ckey]) has stripped \a [target_item] from [src.name]'s [src.slotID2slotname(slot)] ([src.ckey])")
 			show_inv(user)
 		else
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has failed to strip \a [target_item] from [src.name]'s [src.slotID2slotname(slot)] ([src.ckey])</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to strip \a [target_item] from this mob's [src.slotID2slotname(slot)]</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has failed to strip \a [target_item] from [src.name]'s [src.slotID2slotname(slot)] ([src.ckey])</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to strip \a [target_item] from this mob's [src.slotID2slotname(slot)]</font>"))
 			log_attack("[user.name] ([user.ckey]) has failed to strip \a [target_item] from [src.name]'s [src.slotID2slotname(slot)] ([src.ckey])")
 
 	else if(istype(held) && !held.abstract)
@@ -99,13 +99,13 @@
 			visible_message("<span class='danger'>\The [user] is trying to put \a [held] on \the [src]!</span>")
 
 		if(reversestrip_into_slot(user, slot, pickpocket))
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has put \a [held] into [src.name]'s [src.slotID2slotname(slot)] ([src.ckey])</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has had \a [held] put into their [src.slotID2slotname(slot)] by [user.name] ([user.ckey])</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has put \a [held] into [src.name]'s [src.slotID2slotname(slot)] ([src.ckey])</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has had \a [held] put into their [src.slotID2slotname(slot)] by [user.name] ([user.ckey])</font>"))
 			log_attack("[user.name] ([user.ckey]) has put \a [held] into [src.name]'s [src.slotID2slotname(slot)] ([src.ckey])")
 			show_inv(user)
 		else
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has failed to place \a [held] into [src.name]'s [src.slotID2slotname(slot)] ([src.ckey])</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to place \a [held] into this mob's [src.slotID2slotname(slot)]</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has failed to place \a [held] into [src.name]'s [src.slotID2slotname(slot)] ([src.ckey])</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to place \a [held] into this mob's [src.slotID2slotname(slot)]</font>"))
 			log_attack("[user.name] ([user.ckey]) has failed to place \a [held] into [src.name]'s [src.slotID2slotname(slot)] ([src.ckey])")
 
 /mob/living/carbon/proc/handle_strip_hand(var/mob/living/user, var/index)
@@ -125,13 +125,13 @@
 			visible_message("<span class='warning'>\The [user] is trying to take \a [target_item] from \the [src]'s [src.get_index_limb_name(index)]!</span>")
 
 		if(strip_item_from(user, target_item, null, pickpocket)) //slot is null since it's a hand index
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has stripped \a [target_item] from [src.name] ([src.ckey])'s [src.get_index_limb_name(index)]</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has had \a [target_item] stripped from their [src.get_index_limb_name(index)] by [user.name] ([user.ckey])</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has stripped \a [target_item] from [src.name] ([src.ckey])'s [src.get_index_limb_name(index)]</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has had \a [target_item] stripped from their [src.get_index_limb_name(index)] by [user.name] ([user.ckey])</font>"))
 			log_attack("[user.name] ([user.ckey]) has stripped \a [target_item] from [user.name]'s ([src.ckey])'s [src.get_index_limb_name(index)]")
 			show_inv(user)
 		else
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has failed to strip \a [target_item] from [src.name]'s ([src.ckey]) [src.get_index_limb_name(index)]</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to strip \a [target_item] from this mob's [src.get_index_limb_name(index)]</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has failed to strip \a [target_item] from [src.name]'s ([src.ckey]) [src.get_index_limb_name(index)]</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to strip \a [target_item] from this mob's [src.get_index_limb_name(index)]</font>"))
 			log_attack("[user.name] ([user.ckey]) has failed to strip \a [target_item] from [src.name]'s ([src.ckey]) [src.get_index_limb_name(index)]")
 
 	else if(istype(held) && !held.abstract)
@@ -147,13 +147,13 @@
 			visible_message("<span class='warning'>\The [user] is trying to put \a [held] on \the [src]'s [src.get_index_limb_name(index)]!</span>")
 
 		if(reversestrip_into_hand(user, index, pickpocket))
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has put \a [held] into [src.name]'s ([src.ckey]) [src.get_index_limb_name(index)]</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has had \a [held] put into their [src.get_index_limb_name(index)] by [user.name] ([user.ckey])</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has put \a [held] into [src.name]'s ([src.ckey]) [src.get_index_limb_name(index)]</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has had \a [held] put into their [src.get_index_limb_name(index)] by [user.name] ([user.ckey])</font>"))
 			log_attack("[user.name] ([user.ckey]) has put \a [held] into [src.name]'s ([src.ckey]) [src.get_index_limb_name(index)]")
 			show_inv(user)
 		else
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has failed to place \a [held] into [src.name]'s ([src.ckey]) [src.get_index_limb_name(index)]</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to place \a [held] into this mob's [src.get_index_limb_name(index)]</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has failed to place \a [held] into [src.name]'s ([src.ckey]) [src.get_index_limb_name(index)]</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to place \a [held] into this mob's [src.get_index_limb_name(index)]</font>"))
 			log_attack("[user.name] ([user.ckey]) has failed to place \a [held] into [src.name]'s '([src.ckey]) [src.get_index_limb_name(index)]")
 
 /mob/living/carbon/proc/handle_strip_id(var/mob/living/user)
@@ -169,13 +169,13 @@
 		to_chat(user, "<span class='notice'>You try to take [src]'s ID.</span>")
 
 		if(strip_item_from(user, id_item, slot_wear_id, pickpocket))
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has pickpocketed \a [id_item] from [src.name]'s ([src.ckey]) ID slot.</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='red'>Has had \a [id_item] pickpocketed by [user.name] ([user.ckey]) from their ID slot.</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has pickpocketed \a [id_item] from [src.name]'s ([src.ckey]) ID slot.</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has had \a [id_item] pickpocketed by [user.name] ([user.ckey]) from their ID slot.</font>"))
 			log_attack("[user.name] ([user.ckey]) has pickpocketed \a [id_item] from [src.name]'s ([src.ckey]) ID slot.")
 			show_inv(user)
 		else
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has failed to pickpocket \a [id_item] from [src.name]'s ([src.ckey]) ID slot.</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to pickpocket \a [id_item] from this mob's ID slot.</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has failed to pickpocket \a [id_item] from [src.name]'s ([src.ckey]) ID slot.</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to pickpocket \a [id_item] from this mob's ID slot.</font>"))
 			log_attack("[user.name] ([user.ckey]) has failed to pickpocket \a [id_item] from [src.name]'s ([src.ckey]) ID slot.")
 			if(!pickpocket) // Display a warning if the user mocks up. Unless they're just that good of a pickpocket.
 				to_chat(src, "<span class='warning'>You feel your ID being fumbled with!</span>")
@@ -190,13 +190,13 @@
 		to_chat(user, "<span class='notice'>You try to place [place_item] on [src].</span>")
 
 		if(reversestrip_into_slot(user, slot_wear_id, pickpocket))
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has reverse-pickpocketed \a [place_item] into [src.name]'s ([src.ckey]) ID slot.</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has had \a [place_item] reverse-pickpocketed into their ID slot by [user.name] ([user.ckey])</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has reverse-pickpocketed \a [place_item] into [src.name]'s ([src.ckey]) ID slot.</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has had \a [place_item] reverse-pickpocketed into their ID slot by [user.name] ([user.ckey])</font>"))
 			log_attack("[user.name] ([user.ckey]) has reverse-pickpocketed \a [place_item] into [src.name]'s ([src.ckey]) ID slot.")
 			show_inv(user)
 		else
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has failed to reverse-pickpocket \a [place_item] into [src.name]'s ([src.ckey]) ID slot.</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to reverse-pickpocket \a [place_item] into this mob's ID slot.</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has failed to reverse-pickpocket \a [place_item] into [src.name]'s ([src.ckey]) ID slot.</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to reverse-pickpocket \a [place_item] into this mob's ID slot.</font>"))
 			log_attack("[user.name] ([user.ckey]) has failed to reverse-pickpocket \a [place_item] into [src.name]'s ([src.ckey]) ID slot.")
 
 /mob/living/carbon/proc/handle_strip_pocket(var/mob/living/user, var/pocket_side)
@@ -213,13 +213,13 @@
 		to_chat(user, "<span class='notice'>You try to empty [src]'s [pocket_side] pocket.</span>")
 
 		if(strip_item_from(user, pocket_item, pocket_id, pickpocket))
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has pickpocketed \the [pocket_item] from [src.name]'s ([src.ckey]) [pocket_side] pocket.</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='red'>Has had \the [pocket_item] pickpocketed by [user.name] ([user.ckey]) from their [pocket_side] pocket.</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has pickpocketed \the [pocket_item] from [src.name]'s ([src.ckey]) [pocket_side] pocket.</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has had \the [pocket_item] pickpocketed by [user.name] ([user.ckey]) from their [pocket_side] pocket.</font>"))
 			log_attack("[user.name] ([user.ckey]) has pickpocketed \the [pocket_item] from [src.name]'s ([src.ckey]) [pocket_side] pocket.")
 			show_inv(user)
 		else
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has failed to pickpocket \the [pocket_item] from [src.name]'s ([src.ckey]) [pocket_side] pocket.</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to pickpocket \the [pocket_item] from this mob's [pocket_side] pocket.</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has failed to pickpocket \the [pocket_item] from [src.name]'s ([src.ckey]) [pocket_side] pocket.</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to pickpocket \the [pocket_item] from this mob's [pocket_side] pocket.</font>"))
 			log_attack("[user.name] ([user.ckey]) has failed to pickpocket \the [pocket_item] from [src.name]'s ([src.ckey]) [pocket_side] pocket.")
 			if(!pickpocket) // Display a warning if the user mocks up. Unless they're just that good of a pickpocket.
 				to_chat(src, "<span class='warning'>You feel your [pocket_side] pocket being fumbled with!</span>")
@@ -234,13 +234,13 @@
 		to_chat(user, "<span class='notice'>You try to place [place_item] on [src]'s [pocket_side] pocket.</span>")
 
 		if(reversestrip_into_slot(user, pocket_id, pickpocket))
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has reverse-pickpocketed \a [place_item] into [src.name]'s ([src.ckey]) [pocket_side] pocket.</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has had \a [place_item] reverse-pickpocketed into their [pocket_side] pocket by [user.name] ([user.ckey])</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has reverse-pickpocketed \a [place_item] into [src.name]'s ([src.ckey]) [pocket_side] pocket.</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has had \a [place_item] reverse-pickpocketed into their [pocket_side] pocket by [user.name] ([user.ckey])</font>"))
 			log_attack("[user.name] ([user.ckey]) has reverse-pickpocketed \a [place_item] into [src.name]'s ([src.ckey]) [pocket_side] pocket.")
 			show_inv(user)
 		else
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has failed to reverse-pickpocket \a [place_item] into [src.name]'s ([src.ckey]) [pocket_side] pocket.</font>")
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to reverse-pickpocket \a [place_item] into this mob's [pocket_side] pocket.</font>")
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has failed to reverse-pickpocket \a [place_item] into [src.name]'s ([src.ckey]) [pocket_side] pocket.</font>"))
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to reverse-pickpocket \a [place_item] into this mob's [pocket_side] pocket.</font>"))
 			log_attack("[user.name] ([user.ckey]) has failed to reverse-pickpocket \a [place_item] into [src.name]'s ([src.ckey]) [pocket_side] pocket.")
 
 // Modify the current target sensor level.
@@ -260,19 +260,19 @@
 	if(do_mob(user, src, HUMAN_STRIP_DELAY))
 		var/newmode = suit.set_sensors(user)
 		if(newmode)
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has had their sensors set to [newmode] by [user.name] ([user.ckey])</font>")
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Set [src.name]'s suit sensors ([src.ckey]).</font>")
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has had their sensors set to [newmode] by [user.name] ([user.ckey])</font>"))
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Set [src.name]'s suit sensors ([src.ckey]).</font>"))
 			log_attack("[user.name] ([user.ckey]) has set [src.name]'s suit sensors ([src.ckey]) to [newmode].")
 		else
-			src.attack_log += text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to set this mob's suit sensors.</font>")
-			user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has failed to set [src.name]'s ([src.ckey]) suit sensors.</font>")
+			src.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>[user.name] ([user.ckey]) has failed to set this mob's suit sensors.</font>"))
+			user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has failed to set [src.name]'s ([src.ckey]) suit sensors.</font>"))
 			log_attack("[user.name] ([user.ckey]) has failed to set [src.name]'s ([src.ckey]) suit sensors.")
 
 // Set internals on or off.
 /mob/living/carbon/proc/set_internals(var/mob/living/user)
 	if(user.incapacitated())
 		return
-	
+
 	if(!has_breathing_mask())
 		to_chat(user, "<span class='warning'>\The [src] is not wearing a breathing mask.</span>")
 		return

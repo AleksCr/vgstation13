@@ -106,8 +106,8 @@
 			M.updatehealth()
 			occupant_message("<span class='warning'>You squeeze [target] with [src.name]. Something cracks.</span>")
 			chassis.visible_message("<span class='warning'>[chassis] squeezes [target].</span>")
-			M.attack_log +="\[[time_stamp()]\]<font color='orange'> Mech Squeezed by [chassis.occupant.name] ([chassis.occupant.ckey]) with [src.name]</font>"
-			chassis.occupant.attack_log += "\[[time_stamp()]\]<font color='red'> Mech Squeezed [M.name] ([M.ckey]) with [src.name]</font>"
+			M.add_attack_log("\[[time_stamp()]\]<font color='orange'> Mech Squeezed by [chassis.occupant.name] ([chassis.occupant.ckey]) with [src.name]</font>")
+			chassis.occupant.add_attack_log("\[[time_stamp()]\]<font color='red'> Mech Squeezed [M.name] ([M.ckey]) with [src.name]</font>")
 			log_attack("<font color='red'>[chassis.occupant.name] ([chassis.occupant.ckey]) mech squeezed [M.name] ([M.ckey]) with [src.name]</font>" )
 		else
 			step_away(M,chassis)
@@ -205,8 +205,8 @@
 		if(do_after_cooldown(target, 1) && C == chassis.loc && src == chassis.selected && target.loc == T) //also check that our target hasn't moved
 			if(istype(target, /mob/living))
 				var/mob/living/M = target
-				M.attack_log +="\[[time_stamp()]\]<font color='orange'> Mech Drilled by [chassis.occupant.name] ([chassis.occupant.ckey]) with [src.name]</font>"
-				chassis.occupant.attack_log += "\[[time_stamp()]\]<font color='red'> Mech Drilled [M.name] ([M.ckey]) with [src.name]</font>"
+				M.add_attack_log("\[[time_stamp()]\]<font color='orange'> Mech Drilled by [chassis.occupant.name] ([chassis.occupant.ckey]) with [src.name]</font>")
+				chassis.occupant.add_attack_log("\[[time_stamp()]\]<font color='red'> Mech Drilled [M.name] ([M.ckey]) with [src.name]</font>")
 				log_attack("<font color='red'>[chassis.occupant.name] ([chassis.occupant.ckey]) mech drilled [M.name] ([M.ckey]) with [src.name]</font>" )
 				if(!iscarbon(chassis.occupant))
 					M.LAssailant = null
@@ -295,8 +295,8 @@
 			M.apply_damage(dam_force, BRUTE)
 			occupant_message("<span class='danger'>You slash [target] with [src.name].</span>")
 			chassis.visible_message("<span class='danger'>[chassis] slashes at [target] with [src.name]!</span>")
-			M.attack_log +="\[[time_stamp()]\]<font color='orange'> Mech Scythed by [chassis.occupant.name] ([chassis.occupant.ckey]) with [src.name]</font>"
-			chassis.occupant.attack_log += "\[[time_stamp()]\]<font color='red'> Slashed [M.name] ([M.ckey]) with [src.name]</font>"
+			M.add_attack_log("\[[time_stamp()]\]<font color='orange'> Mech Scythed by [chassis.occupant.name] ([chassis.occupant.ckey]) with [src.name]</font>")
+			chassis.occupant.add_attack_log("\[[time_stamp()]\]<font color='red'> Slashed [M.name] ([M.ckey]) with [src.name]</font>")
 			log_attack("<font color='red'>[chassis.occupant.name] ([chassis.occupant.ckey]) mech scythed [M.name] ([M.ckey]) with [src.name]</font>" )
 			log_message("Slashed at [target] with [src.name].")
 			do_after_cooldown()

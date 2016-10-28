@@ -16,8 +16,8 @@
 	if(M.mind && M.mind.current != M)
 		return ..()
 
-	M.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been carded with [src.name] by [user.name] ([user.ckey])</font>")
-	user.attack_log += text("\[[time_stamp()]\] <font color='red'>Used the [src.name] to card [M.name] ([M.ckey])</font>")
+	M.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been carded with [src.name] by [user.name] ([user.ckey])</font>"))
+	user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Used the [src.name] to card [M.name] ([M.ckey])</font>"))
 
 	log_attack("<font color='red'>[user.name] ([user.ckey]) used the [src.name] to card [M.name] ([M.ckey])</font>")
 
@@ -104,8 +104,8 @@
 					for(var/mob/living/silicon/ai/A in src)
 						A.suiciding = 1
 						to_chat(A, "Your core files are being wiped!")
-						A.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been wiped with an [src.name] by [U.name] ([U.ckey])</font>")
-						U.attack_log += text("\[[time_stamp()]\] <font color='red'>Used an [src.name] to wipe [A.name] ([A.ckey])</font>")
+						A.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been wiped with an [src.name] by [U.name] ([U.ckey])</font>"))
+						U.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Used an [src.name] to wipe [A.name] ([A.ckey])</font>"))
 						log_attack("[key_name(U)] Used an [src.name] to wipe [key_name(A)]")
 
 						while (A.stat != 2)

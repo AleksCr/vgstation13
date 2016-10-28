@@ -37,8 +37,8 @@
 	if(M.handcuffed)
 		return
 
-	M.attack_log += text("\[[time_stamp()]] <span style='color: orange'>Has been handcuffed (attempt) by [user.name] ([user.ckey])</span>")
-	user.attack_log += text("\[[time_stamp()]] <span style='color: red'>Attempted to handcuff [M.name] ([M.ckey])</span>")
+	M.add_attack_log(text("\[[time_stamp()]] <span style='color: orange'>Has been handcuffed (attempt) by [user.name] ([user.ckey])</span>"))
+	user.add_attack_log(text("\[[time_stamp()]] <span style='color: red'>Attempted to handcuff [M.name] ([M.ckey])</span>"))
 	if(!iscarbon(user))
 		M.LAssailant = null
 	else
@@ -70,8 +70,8 @@
 			feedback_add_details("handcuffs", "H")
 
 		user.visible_message("<span class='danger'>\The [user] has put \the [src] on \the [C]!</span>")
-		user.attack_log += text("\[[time_stamp()]\] <font color='red'>Has put \the [src] on [C.name] ([C.ckey])</font>")
-		C.attack_log += text("\[[time_stamp()]\] <font color='red'>Handcuffed with \the [src] by [user.name] ([user.ckey])</font>")
+		user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Has put \the [src] on [C.name] ([C.ckey])</font>"))
+		C.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Handcuffed with \the [src] by [user.name] ([user.ckey])</font>"))
 		log_attack("[user.name] ([user.ckey]) has cuffed [C.name] ([C.ckey]) with \the [src]")
 
 		var/obj/item/weapon/handcuffs/cuffs = src

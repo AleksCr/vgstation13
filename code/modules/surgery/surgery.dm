@@ -118,16 +118,16 @@ proc/do_surgery(mob/living/M, mob/living/user, obj/item/tool)
 			if(canuse && S.is_valid_mutantrace(M) && !(M in S.doing_surgery))
 				if(!S.can_operate(user, M, user.zone_sel.selecting, tool)) //ruh oh, we picked this step, but we can't actually do it for some special raisin
 					return 1
-				M.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has had surgery [S.type] with \the [tool] started by [user.name] ([user.ckey])</font>")
-				user.attack_log += text("\[[time_stamp()]\] <font color='red'>Started surgery [S.type] with \the [tool] on [M.name] ([M.ckey])</font>")
+				M.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has had surgery [S.type] with \the [tool] started by [user.name] ([user.ckey])</font>"))
+				user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Started surgery [S.type] with \the [tool] on [M.name] ([M.ckey])</font>"))
 				log_attack("<font color='red'>[user.name] ([user.ckey]) used \the [tool] to perform surgery type [S.type] on [M.name] ([M.ckey])</font>")
 				S.doing_surgery += M
 				S.begin_step(user, M, user.zone_sel.selecting, tool)		//start on it
 				var/selection = user.zone_sel.selecting
 				//We had proper tools! (or RNG smiled.) and user did not move or change hands.
 				if(do_mob(user, M, rand(S.min_duration, S.max_duration) * tool.surgery_speed) && (prob(S.tool_quality(tool) / (sleep_fail + clumsy + 1))) && selection == user.zone_sel.selecting)
-					M.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has had surgery [S.type] with \the [tool] successfully completed by [user.name] ([user.ckey])</font>")
-					user.attack_log += text("\[[time_stamp()]\] <font color='red'>Successfully completed surgery [S.type] with \the [tool] on [M.name] ([M.ckey])</font>")
+					M.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has had surgery [S.type] with \the [tool] successfully completed by [user.name] ([user.ckey])</font>"))
+					user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Successfully completed surgery [S.type] with \the [tool] on [M.name] ([M.ckey])</font>"))
 					log_attack("<font color='red'>[user.name] ([user.ckey]) used \the [tool] to successfully complete surgery type [S.type] on [M.name] ([M.ckey])</font>")
 					S.end_step(user, M, user.zone_sel.selecting, tool)		//finish successfully
 				else
@@ -135,8 +135,8 @@ proc/do_surgery(mob/living/M, mob/living/user, obj/item/tool)
 						if(sleep_fail)
 							to_chat(user, "<span class='warning'>The patient is squirming around in pain!</span>")
 							M.emote("scream",,, 1)
-						M.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has had surgery [S.type] with \the [tool] failed by [user.name] ([user.ckey])</font>")
-						user.attack_log += text("\[[time_stamp()]\] <font color='red'>Failed surgery [S.type] with \the [tool] on [M.name] ([M.ckey])</font>")
+						M.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has had surgery [S.type] with \the [tool] failed by [user.name] ([user.ckey])</font>"))
+						user.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Failed surgery [S.type] with \the [tool] on [M.name] ([M.ckey])</font>"))
 						log_attack("<font color='red'>[user.name] ([user.ckey]) used \the [tool] to fail the surgery type [S.type] on [M.name] ([M.ckey])</font>")
 						S.fail_step(user, M, user.zone_sel.selecting, tool)		//malpractice~
 				if(M) //good, we still exist

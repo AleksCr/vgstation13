@@ -143,8 +143,8 @@
 				if(istype(firer, /mob) && isliving(AM))
 					var/mob/living/L = AM
 					log_attack("<font color='red'>[key_name(firer)] hooked [key_name(L)] with a [type]</font>")
-					L.attack_log += "\[[time_stamp()]\] <b>[key_name(firer)]</b> hooked <b>[key_name(L)]</b> with a <b>[type]</b>"
-					firer.attack_log += "\[[time_stamp()]\] <b>[key_name(firer)]</b> hooked <b>[key_name(L)]</b> with a <b>[type]</b>"
+					L.add_attack_log("\[[time_stamp()]\] <b>[key_name(firer)]</b> hooked <b>[key_name(L)]</b> with a <b>[type]</b>")
+					firer.add_attack_log("\[[time_stamp()]\] <b>[key_name(firer)]</b> hooked <b>[key_name(L)]</b> with a <b>[type]</b>")
 
 				hookshot.cancel_chain()					//then we remove the chain laid by the projectile
 			else

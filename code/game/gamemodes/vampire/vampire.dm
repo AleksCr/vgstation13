@@ -375,8 +375,8 @@ You are weak to holy things and starlight. Don't go into space and avoid the Cha
 	var/blood = 0
 	var/bloodtotal = 0 //used to see if we increased our blood total
 	var/bloodusable = 0 //used to see if we increased our blood usable
-	src.attack_log += text("\[[time_stamp()]\] <font color='red'>Bit [H.name] ([H.ckey]) in the neck and draining their blood</font>")
-	H.attack_log += text("\[[time_stamp()]\] <font color='orange'>Has been bit in the neck by [src.name] ([src.ckey])</font>")
+	src.add_attack_log(text("\[[time_stamp()]\] <font color='red'>Bit [H.name] ([H.ckey]) in the neck and draining their blood</font>"))
+	H.add_attack_log(text("\[[time_stamp()]\] <font color='orange'>Has been bit in the neck by [src.name] ([src.ckey])</font>"))
 	log_attack("[src.name] ([src.ckey]) bit [H.name] ([H.ckey]) in the neck")
 
 	to_chat(src, "<span class='danger'>You latch on firmly to \the [H]'s neck.</span>")
