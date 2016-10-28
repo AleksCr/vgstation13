@@ -17,7 +17,7 @@ var/global/list/disease2_list = list()
 
 /datum/disease2/disease/New(var/notes="No notes.")
 	uniqueID = rand(0,10000)
-	log += "<br />[timestamp()] CREATED - [notes]<br>"
+	add_virus_log("<br />[timestamp()] CREATED - [notes]<br>")
 	disease2_list["[uniqueID]"] = src
 	..()
 
@@ -55,7 +55,7 @@ var/global/list/disease2_list = list()
 		holder.chance = input(C, "Choose chance", "Chance") as num // set the chance of the symptom that can occur
 		if(holder.chance > 100 || holder.chance < 0)
 			return 0
-		D.log += "[f.name] [holder.chance]%<br>"
+		D.add_virus_log("[f.name] [holder.chance]%<br>")
 		D.effects += holder // add the holder to the disease
 
 	disease2_list -= D.uniqueID
@@ -100,7 +100,7 @@ var/global/list/disease2_list = list()
 	if(mob.reagents.has_reagent(VIRUSFOOD))
 		mob.reagents.remove_reagent(VIRUSFOOD,0.1)
 		if(!logged_virusfood)
-			log += "<br />[timestamp()] Virus Fed ([mob.reagents.get_reagent_amount(VIRUSFOOD)]U)"
+			add_virus_log("<br />[timestamp()] Virus Fed ([mob.reagents.get_reagent_amount(VIRUSFOOD)]U)")
 			logged_virusfood=1
 		clicks += 10
 	else
@@ -111,10 +111,10 @@ var/global/list/disease2_list = list()
 		if(stage == max_stage)
 			src.cure(mob)
 			mob.antibodies |= src.antigen
-			log += "<br />[timestamp()] STAGEMAX ([stage])"
+			add_virus_log("<br />[timestamp()] STAGEMAX ([stage])")
 		else
 			stage++
-			log += "<br />[timestamp()] NEXT STAGE ([stage])"
+			add_virus_log("<br />[timestamp()] NEXT STAGE ([stage])")
 			clicks = 0
 
 	//Do nasty effects
@@ -141,7 +141,7 @@ var/global/list/disease2_list = list()
 	var/datum/disease2/effectholder/holder = pick(effects)
 	holder.minormutate()
 	infectionchance = min(50,infectionchance + rand(0,10))
-	log += "<br />[timestamp()] Infection chance now [infectionchance]%"
+	add_virus_log("<br />[timestamp()] Infection chance now [infectionchance]%")
 
 /datum/disease2/disease/proc/majormutate()
 	uniqueID = rand(0,10000)

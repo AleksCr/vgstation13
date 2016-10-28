@@ -102,7 +102,7 @@
 		if(on)
 			icon_state = "incubator_on"
 			if(dish && dish.virus2)
-				dish.virus2.log += "<br />[timestamp()] Incubation starting by [key_name(usr)] {food=[foodsupply],rads=[radiation]}"
+				dish.virus2.add_virus_log("<br />[timestamp()] Incubation starting by [key_name(usr)] {food=[foodsupply],rads=[radiation]}")
 		else
 			icon_state = "incubator"
 	if (href_list["ejectdish"])
@@ -127,7 +127,7 @@
 				if (!B.data["virus2"])
 					B.data["virus2"] = list()
 				var/datum/disease2/disease/D = dish.virus2.getcopy()
-				D.log += "<br />[timestamp()] Injected into blood via [src] by [key_name(usr)]"
+				D.add_virus_log("<br />[timestamp()] Injected into blood via [src] by [key_name(usr)]")
 				var/list/virus = list("[dish.virus2.uniqueID]" = D)
 				B.data["virus2"] = virus
 
@@ -189,7 +189,7 @@
 					alert_noise("ping")
 		if(radiation)
 			if(radiation > 50 & prob(mutatechance))
-				dish.virus2.log += "<br />[timestamp()] MAJORMUTATE (incubator rads)"
+				dish.virus2.add_virus_log("<br />[timestamp()] MAJORMUTATE (incubator rads)")
 				dish.virus2.majormutate()
 				if(dish.info)
 					dish.info = "OUTDATED : [dish.info]"
