@@ -99,3 +99,5 @@
 
 	if(client)
 		client.CAN_MOVE_DIAGONALLY = 0
+
+	log_login()

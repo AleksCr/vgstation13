@@ -1,4 +1,6 @@
 /mob/Logout()
+	log_logout()
+
 	if (isobj(loc))
 		var/obj/location = loc
 		location.on_logout(src)
