@@ -245,7 +245,9 @@ Turf and target are seperate in case you want to teleport some distance from a t
 					for(var/datum/objective/objective in themind.objectives)
 						to_chat(themind.current, "<B>Objective #[obj_count]</B>: [objective.explanation_text]")
 						obj_count++
-	return 1
+
+	. = 1
+	..()
 
 //Generalised helper proc for letting mobs rename themselves. Used to be clname() and ainame()
 //Last modified by Carn

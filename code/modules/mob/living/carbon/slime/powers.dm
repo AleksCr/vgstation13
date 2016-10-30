@@ -192,7 +192,7 @@
 			new_slime.languages = languages.Copy()
 			new_slime.name = src.name
 			new_slime.real_name = src.real_name
-			new_slime.attack_log = attack_log
+			transfer_logging_persistance(src, new_slime)
 			transferImplantsTo(new_slime)
 			transferBorers(new_slime)
 
@@ -242,7 +242,7 @@
 			new_slime.name = src.name
 			add_attack_log(text("\[[time_stamp()]\] <font color='black'>Reproduced to make more slimes at x=[x],y=[y],z=[z]!</font>"))
 			new_slime.real_name = src.real_name
-			new_slime.attack_log = attack_log
+			transfer_logging_persistance(src, new_slime)
 			if(src.mind)
 				src.mind.transfer_to(new_slime)
 			else

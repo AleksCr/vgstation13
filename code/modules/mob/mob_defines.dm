@@ -294,4 +294,3 @@
 	resistances = list()
 	radar_blips = list()
 	active_genes = list()
-	attack_log = list()

@@ -142,18 +142,3 @@
 		return
 	feedback_add_details("admin_verb","SSAL") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 	return
-
-/datum/admins/proc/view_mob_attack_log(var/mob/M as mob)
-	set category	= "Admin"
-	set name		= "Show mob's attack logs"
-	set desc			= "Shows the (formatted) attack log of a mob in a HTML window."
-
-	if(!istype(M))
-		to_chat(usr, "That's not a valid mob!")
-		return
-
-	var/datum/browser/clean/popup = new (usr, "\ref[M]_admin_log_viewer", "Attack logs of [M]", 300, 300)
-	popup.set_content(jointext(M.attack_log, "<br/>"))
-	popup.open()
-
-	feedback_add_details("admin_verb","VMAL")

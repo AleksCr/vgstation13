@@ -973,16 +973,6 @@ Traitors and the like can also be revived with the previous role mostly intact.
 	log_admin("[key_name(src)] has [emergency_shuttle.deny_shuttle ? "denied" : "allowed"] the shuttle to be called.")
 	message_admins("[key_name_admin(usr)] has [emergency_shuttle.deny_shuttle ? "denied" : "allowed"] the shuttle to be called.")
 
-/client/proc/cmd_admin_attack_log(mob/M as mob in mob_list)
-	set category = "Special Verbs"
-	set name = "Attack Log"
-
-	to_chat(usr, text("<span class='danger'>Attack Log for []</span>", mob))
-	for(var/t in M.attack_log)
-		to_chat(usr, t)
-	feedback_add_details("admin_verb","ATTL") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
-
-
 /client/proc/everyone_random()
 	set category = "Fun"
 	set name = "Make Everyone Random"

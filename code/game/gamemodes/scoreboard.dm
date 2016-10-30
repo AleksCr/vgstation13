@@ -43,9 +43,12 @@
 				score["disease"]++ //One point for every disease
 
 		if(I.job == "Clown")
-			for(var/thing in I.attack_log)
-				if(findtext(thing, "<font color='orange'>")) //I just dropped 10 IQ points from seeing this
-					score["clownabuse"]++
+#warn FUCK ME THIS SHOULD BE REDONE
+			var/datum/logging/logs = mob_logging_datums[I.tag]
+			if(logs)
+				for(var/thing in logs.attack_logs)
+					if(findtext(thing, "<font color='orange'>")) //I just dropped 10 IQ points from seeing this
+						score["clownabuse"]++
 
 	for(var/mob/living/player in player_list)
 		if(player.stat != DEAD)

@@ -292,7 +292,6 @@ var/list/admin_verbs_mod = list(
 	/datum/admins/proc/show_player_info,
 	/client/proc/player_panel_new,
 	/client/proc/vv_marked_datum,
-	/datum/admins/proc/view_mob_attack_log /* Allow you to view attack logs since doing it in VV sucks */
 )
 /client/proc/add_admin_verbs()
 	if(holder)

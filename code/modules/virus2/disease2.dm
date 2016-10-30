@@ -13,6 +13,7 @@ var/global/list/disease2_list = list()
 	var/max_stage = 4
 
 	var/log = ""
+	var/mob_tag
 	var/logged_virusfood=0
 
 /datum/disease2/disease/New(var/notes="No notes.")
