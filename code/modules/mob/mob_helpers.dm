@@ -462,12 +462,12 @@ var/list/intents = list(I_HELP,I_DISARM,I_GRAB,I_HURT)
 //		H.set_attack_type(ATTACK_KICK)
 
 /mob/verb/a_bite()
-	set name = "a-bite"
-	set hidden = 1
-
-	if(ishuman(src))
-		var/mob/living/carbon/human/H = src
-		H.set_attack_type(ATTACK_BITE)
+//	set name = "a-bite"
+//	set hidden = 1
+//
+//	if(ishuman(src))
+//		var/mob/living/carbon/human/H = src
+//		H.set_attack_type(ATTACK_BITE)
 
 proc/is_blind(A)
 	if(istype(A, /mob/living/carbon))

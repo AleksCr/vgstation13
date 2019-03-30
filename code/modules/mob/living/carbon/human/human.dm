@@ -1466,20 +1466,20 @@
 
 /mob/living/carbon/human/proc/set_attack_type(new_type = NORMAL_ATTACK)
 //	kick_icon.icon_state = "act_kick"
-	bite_icon.icon_state = "act_bite"
+//	bite_icon.icon_state = "act_bite"
 
 	if(attack_type == new_type)
 		attack_type = NORMAL_ATTACK
 		return
 
 	attack_type = new_type
-	switch(attack_type)
-		if(NORMAL_ATTACK)
+//	switch(attack_type)
+//		if(NORMAL_ATTACK)
 
 //		if(ATTACK_KICK)
 //			kick_icon.icon_state = "act_kick_on"
-		if(ATTACK_BITE)
-			bite_icon.icon_state = "act_bite_on"
+//		if(ATTACK_BITE)
+//			bite_icon.icon_state = "act_bite_on"
 
 /mob/living/carbon/human/proc/can_kick(atom/target)
 	//Need two feet to kick!
