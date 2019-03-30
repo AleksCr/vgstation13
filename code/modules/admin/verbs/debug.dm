@@ -16,6 +16,12 @@
 	feedback_add_details("admin_verb","DG2") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 
 
+/client/proc/flush_template_cache()
+	set category = "Debug"
+	set name = "Flush Template Cache"
+
+	nanomanager.rebuild_asset_dirs()
+	to_chat(src, "You must re-login now")
 
 /* 21st sept 2010
 Updated by Skie -- Still not perfect but better!

@@ -165,6 +165,7 @@ var/list/admin_verbs_debug = list(
 	/client/proc/reload_admins,
 	/client/proc/restart_controller,
 	/client/proc/enable_debug_verbs,
+	/client/proc/flush_template_cache,
 	/client/proc/callproc,
 	/client/proc/cmd_admin_dump_instances, // /vg/
 	/client/proc/cmd_admin_dump_machine_type_list, // /vg/
@@ -259,6 +260,7 @@ var/list/admin_verbs_hideable = list(
 	/datum/admins/proc/adjump,
 	/client/proc/restart_controller,
 	/client/proc/cmd_admin_list_open_jobs,
+	/client/proc/flush_template_cache,
 	/client/proc/callproc,
 	/client/proc/Debug2,
 	/client/proc/reload_admins,

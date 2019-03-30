@@ -1,2 +1,2 @@
 author: AleksCr
-changes: [{'bugfix': 'Отключение возможности кусать'}]
+changes: [{'bugfix': 'Отключение возможности кусать'}, {'rscadd': 'Загрузка обновленных файлов шаблонов без рестарта раунда (Debug -> Flush Template Cache)'}]
