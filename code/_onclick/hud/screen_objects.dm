@@ -391,15 +391,15 @@
 			if(!usr.stat && isturf(usr.loc) && !usr.restrained())
 				usr:toggle_throw_mode()
 
-		if("kick")
-			if(ishuman(usr))
-				var/mob/living/carbon/human/H = usr
-
-				var/list/modifiers = params2list(params)
-				if(modifiers["middle"] || modifiers["right"] || modifiers["ctrl"] || modifiers["shift"] || modifiers["alt"])
-					H.set_attack_type() //Reset
-				else
-					H.set_attack_type(ATTACK_KICK)
+//		if("kick")
+//			if(ishuman(usr))
+//				var/mob/living/carbon/human/H = usr
+//
+//				var/list/modifiers = params2list(params)
+//				if(modifiers["middle"] || modifiers["right"] || modifiers["ctrl"] || modifiers["shift"] || modifiers["alt"])
+//					H.set_attack_type() //Reset
+//				else
+//					H.set_attack_type(ATTACK_KICK)
 		if("bite")
 			if(ishuman(usr))
 				var/mob/living/carbon/human/H = usr

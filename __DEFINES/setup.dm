@@ -1443,7 +1443,7 @@ var/proccalls = 1
 //Human attack types
 #define NORMAL_ATTACK 0
 #define ATTACK_BITE 1
-#define ATTACK_KICK 2
+//#define ATTACK_KICK 2
 
 //Special attack returns (for procs like kick_act and bite_act)
 #define SPECIAL_ATTACK_SUCCESS 0

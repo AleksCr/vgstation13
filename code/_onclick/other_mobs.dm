@@ -10,19 +10,19 @@
 	if(!is_pacified() && a_intent == "hurt" && A.loc != src)
 		var/special_attack_result = SPECIAL_ATTACK_SUCCESS
 		switch(attack_type) //Special attacks - kicks, bites
-			if(ATTACK_KICK)
-				if(can_kick(A))
-
-					delayNextAttack(10)
-
-					special_attack_result = A.kick_act(src)
-					if(special_attack_result != SPECIAL_ATTACK_CANCEL) //kick_act returns that value if there's no interaction specified
-						after_special_attack(A, attack_type, special_attack_result)
-						return
-
-					delayNextAttack(-10) //This is only called when the kick fails
-				else
-					set_attack_type() //Reset attack type
+//			if(ATTACK_KICK)
+//				if(can_kick(A))
+//
+//					delayNextAttack(10)
+//
+//					special_attack_result = A.kick_act(src)
+//					if(special_attack_result != SPECIAL_ATTACK_CANCEL) //kick_act returns that value if there's no interaction specified
+//						after_special_attack(A, attack_type, special_attack_result)
+//						return
+//
+//					delayNextAttack(-10) //This is only called when the kick fails
+//				else
+//					set_attack_type() //Reset attack type
 
 			if(ATTACK_BITE)
 				if(can_bite(A))

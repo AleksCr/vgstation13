@@ -308,14 +308,14 @@
 	mymob.throw_icon.alpha = ui_alpha
 	src.hotkeybuttons += mymob.throw_icon
 
-	mymob.kick_icon = getFromPool(/obj/abstract/screen)
-	mymob.kick_icon.name = "kick"
-	mymob.kick_icon.icon = ui_style
-	mymob.kick_icon.icon_state = "act_kick"
-	mymob.kick_icon.screen_loc = ui_kick_bite
-	mymob.kick_icon.color = ui_color
-	mymob.kick_icon.alpha = ui_alpha
-	src.hotkeybuttons += mymob.kick_icon
+//	mymob.kick_icon = getFromPool(/obj/abstract/screen)
+//	mymob.kick_icon.name = "kick"
+//	mymob.kick_icon.icon = ui_style
+//	mymob.kick_icon.icon_state = "act_kick"
+//	mymob.kick_icon.screen_loc = ui_kick_bite
+//	mymob.kick_icon.color = ui_color
+//	mymob.kick_icon.alpha = ui_alpha
+//	src.hotkeybuttons += mymob.kick_icon
 
 	mymob.bite_icon = getFromPool(/obj/abstract/screen)
 	mymob.bite_icon.name = "bite"
@@ -412,7 +412,7 @@
 
 	mymob.client.reset_screen()
 
-	mymob.client.screen += list( mymob.throw_icon, mymob.kick_icon, mymob.bite_icon, mymob.zone_sel, mymob.oxygen, mymob.pressure, mymob.toxin, mymob.bodytemp, mymob.internals, mymob.fire, mymob.healths, mymob.nutrition_icon, mymob.pullin, mymob.gun_setting_icon) //, mymob.hands, mymob.rest, mymob.sleep) //, mymob.mach )
+	mymob.client.screen += list( mymob.throw_icon, mymob.bite_icon, mymob.zone_sel, mymob.oxygen, mymob.pressure, mymob.toxin, mymob.bodytemp, mymob.internals, mymob.fire, mymob.healths, mymob.nutrition_icon, mymob.pullin, mymob.gun_setting_icon) //, mymob.hands, mymob.rest, mymob.sleep) //, mymob.mach )
 	mymob.client.screen += src.adding + src.hotkeybuttons
 	inventory_shown = 0
 

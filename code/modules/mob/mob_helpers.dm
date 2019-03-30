@@ -454,12 +454,12 @@ var/list/intents = list(I_HELP,I_DISARM,I_GRAB,I_HURT)
 //For hotkeys
 
 /mob/verb/a_kick()
-	set name = "a-kick"
-	set hidden = 1
-
-	if(ishuman(src))
-		var/mob/living/carbon/human/H = src
-		H.set_attack_type(ATTACK_KICK)
+//	set name = "a-kick"
+//	set hidden = 1
+//
+//	if(ishuman(src))
+//		var/mob/living/carbon/human/H = src
+//		H.set_attack_type(ATTACK_KICK)
 
 /mob/verb/a_bite()
 	set name = "a-bite"

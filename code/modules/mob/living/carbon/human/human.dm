@@ -1465,7 +1465,7 @@
 	make_organic_internals_robotic()
 
 /mob/living/carbon/human/proc/set_attack_type(new_type = NORMAL_ATTACK)
-	kick_icon.icon_state = "act_kick"
+//	kick_icon.icon_state = "act_kick"
 	bite_icon.icon_state = "act_bite"
 
 	if(attack_type == new_type)
@@ -1476,8 +1476,8 @@
 	switch(attack_type)
 		if(NORMAL_ATTACK)
 
-		if(ATTACK_KICK)
-			kick_icon.icon_state = "act_kick_on"
+//		if(ATTACK_KICK)
+//			kick_icon.icon_state = "act_kick_on"
 		if(ATTACK_BITE)
 			bite_icon.icon_state = "act_bite_on"
 
@@ -1525,10 +1525,10 @@
 	return 0
 
 /mob/living/carbon/human/proc/after_special_attack(atom/target, attack_type, attack_result)
-	switch(attack_type)
-		if(ATTACK_KICK)
-			if(attack_result != SPECIAL_ATTACK_FAILED) //The kick landed successfully
-				apply_inertia(get_dir(target, src))
+//	switch(attack_type)
+//		if(ATTACK_KICK)
+//			if(attack_result != SPECIAL_ATTACK_FAILED) //The kick landed successfully
+//				apply_inertia(get_dir(target, src))
 
 /mob/living/carbon/human/proc/get_footprint_type()
 	var/obj/item/clothing/shoes/S = shoes //Why isn't shoes just typecast in the first place?
