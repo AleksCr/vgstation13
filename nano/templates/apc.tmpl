@@ -22,7 +22,7 @@
 
 	<div class="item">
 		<div class="itemLabel">
-			Main Breaker:
+			{{:helper.getRes(data.lang, 'apc_breaker')}}:
 		</div>
 		<div class="itemContent">
 			{{if data.locked && !data.siliconUser}}
@@ -39,7 +39,7 @@
 
 	<div class="item">
 		<div class="itemLabel">
-			External Power:
+			{{:helper.getRes(data.lang, 'apc_external_power')}}
 		</div>
 		<div class="itemContent">
 			{{if data.externalPower == 2}}
@@ -186,4 +186,3 @@
 	{{/if}}
 
 </div>
-		

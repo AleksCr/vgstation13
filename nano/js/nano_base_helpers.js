@@ -1,4 +1,15 @@
 // NanoBaseHelpers is where the base template helpers (common to all templates) are stored
+NanoTranslate = {
+	ru: {
+		apc_breaker: '%D0%92%D1%8B%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D1%82%D0%B5%D0%BB%D1%8C',
+		apc_external_power: '%D0%92%D0%BD%D0%B5%D1%88%D0%BD%D0%B8%D0%B9%20%D0%B8%D1%81%D1%82%D0%BE%D1%87%D0%BD%D0%B8%D0%BA%20%D1%8D%D0%BD%D0%B5%D1%80%D0%B3%D0%B8%D0%B8'
+	},
+	en: {
+		apc_breaker: 'Main Breaker',
+		apc_external_power: 'External Power'
+	}
+}; // toDo: move to separate js-file
+
 NanoBaseHelpers = function ()
 {
 	var _baseHelpers = {
@@ -98,6 +109,14 @@ NanoBaseHelpers = function ()
 				var parts = x.toString().split(".");
 				parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 				return parts.join(".");
+			},
+			getRes: function (lang, resourceCode) {
+				//return NanoTranslate[lang][resourceCode];
+				if (lang == 'ru') {
+					return decodeURI(NanoTranslate[lang][resourceCode]);
+				} else {
+					return NanoTranslate[lang][resourceCode];
+				}
 			},
 			// Display a bar. Used to show health, capacity, etc.
 			displayBar: function(value, rangeMin, rangeMax, styleClass, showText) {

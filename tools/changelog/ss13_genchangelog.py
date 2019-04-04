@@ -32,11 +32,8 @@ import yaml
 import os
 import glob
 import sys
-import re
-import time
 import argparse
 from datetime import datetime, date
-from time import time
 
 today = date.today()
 MAX_DATE_ENTRIES = 100  # So changelog isn't 5000 entries long
@@ -101,7 +98,6 @@ if args.dryRun:
 
 if failed_cache_read and os.path.isfile(args.targetFile):
     from bs4 import BeautifulSoup
-    from bs4.element import NavigableString
     print(' Generating cache...')
     with open(args.targetFile, 'r') as f:
         soup = BeautifulSoup(f)
