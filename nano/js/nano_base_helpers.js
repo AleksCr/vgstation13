@@ -1,12 +1,59 @@
 // NanoBaseHelpers is where the base template helpers (common to all templates) are stored
 NanoTranslate = {
 	ru: {
-		apc_breaker: '%D0%92%D1%8B%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D1%82%D0%B5%D0%BB%D1%8C',
-		apc_external_power: '%D0%92%D0%BD%D0%B5%D1%88%D0%BD%D0%B8%D0%B9%20%D0%B8%D1%81%D1%82%D0%BE%D1%87%D0%BD%D0%B8%D0%BA%20%D1%8D%D0%BD%D0%B5%D1%80%D0%B3%D0%B8%D0%B8'
+		apc_breaker: '%D0%A1%D0%BE%D1%81%D1%82%D0%BE%D1%8F%D0%BD%D0%B8%D0%B5',
+		apc_external_power: '%D0%92%D0%BD%D0%B5%D1%88%D0%BD%D0%B8%D0%B9%20%D0%B8%D1%81%D1%82%D0%BE%D1%87%D0%BD%D0%B8%D0%BA%20%D1%8D%D0%BD%D0%B5%D1%80%D0%B3%D0%B8%D0%B8',
+		apc_power_cell: '%D0%A3%D0%A0%D0%92%20%D0%97%D0%B0%D1%80%D1%8F%D0%B4%D0%B0',
+		apc_charge_mode: '%D0%A0%D0%96%D0%9C%20%D0%97%D0%B0%D1%80%D1%8F%D0%B4%D0%B0',
+		apc_equipment: '%D0%9E%D0%B1%D0%BE%D1%80%D1%83%D0%B4%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5',
+		apc_lighting: '%D0%9E%D1%81%D0%B2%D0%B5%D1%89%D0%B5%D0%BD%D0%B8%D0%B5',
+		apc_environment: '%D0%96%D0%B8%D0%B7%D0%BD%D0%B5%D0%BE%D0%B1%D0%B5%D1%81%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D0%B5',
+		apc_total_load: '%D0%9E%D0%91%D0%A9%20%D0%9D%D0%B0%D0%B3%D1%80%D1%83%D0%B7%D0%BA%D0%B0',
+		apc_cover_lock: '%D0%91%D0%9B%D0%9A%20%D0%9F%D0%B0%D0%BD%D0%B5%D0%BB%D0%B8',
+		apc_swipe_lock_message: '%D0%9F%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B8%D1%82%D0%B5%20%D0%BA%D0%BB%D1%8E%D1%87-%D0%BA%D0%B0%D1%80%D1%82%D1%83%20%D0%B4%D0%BB%D1%8F%20%D0%B1%D0%BB%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B8%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D0%B0',
+		apc_swipe_unlock_message: '%D0%9F%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B8%D1%82%D0%B5%20%D0%BA%D0%BB%D1%8E%D1%87-%D0%BA%D0%B0%D1%80%D1%82%D1%83%20%D0%B4%D0%BB%D1%8F%20%D1%80%D0%B0%D0%B7%D0%B1%D0%BB%D0%BE%D0%BA%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B8%20%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D0%B0',
+		power_status: '%D0%A1%D1%82%D0%B0%D1%82%D1%83%D1%81',
+		power_channels: '%D0%A0%D0%B0%D1%81%D0%BF%D1%80%D0%B5%D0%B4%D0%B5%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5%20%D1%8D%D0%BD%D0%B5%D1%80%D0%B3%D0%B8%D0%B8',
+		fully_charged: '%D0%97%D0%B0%D1%80%D1%8F%D0%B6%D0%B5%D0%BD%D0%BE',
+		charging: '%D0%97%D0%B0%D1%80%D1%8F%D0%B6%D0%B0%D0%B5%D1%82%D1%81%D1%8F',
+		not_charging: '%D0%9D%D0%B5%D1%82%20%D0%B8%D1%81%D1%82%D0%BE%D1%87%D0%BD%D0%B8%D0%BA%D0%B0%20%D1%8D%D0%BD%D0%B5%D1%80%D0%B3%D0%B8%D0%B8',
+		on: '%D0%92%D0%9A%D0%9B',
+		off: '%D0%92%D0%AB%D0%9A%D0%9B',
+		auto: '%D0%90%D0%92%D0%A2',
+		manual: '%D0%A0%D0%A3%D0%A7%D0%9D',
+		engaged: '%D0%97%D0%90%D0%91%D0%9B%D0%9A',
+		disengaged: '%D0%A0%D0%90%D0%97%D0%91%D0%9B%D0%9A',
+		good: '%D0%A5%D0%A0%D0%A8',
+		bad: '%D0%9F%D0%9B%D0%A5',
+		none: '%D0%9E%D1%88%D0%B8%D0%B1%D0%BA%D0%B0'
+
 	},
 	en: {
 		apc_breaker: 'Main Breaker',
-		apc_external_power: 'External Power'
+		apc_external_power: 'External Power',
+		apc_power_cell: 'Power Cell',
+		apc_charge_mode: 'Charge Mode',
+		apc_equipment: 'Equipment',
+		apc_lighting: 'Lighting',
+		apc_environment: 'Environment',
+		apc_total_load: 'Total Load',
+		apc_cover_lock: 'Cover Lock',
+		apc_swipe_lock_message: 'Swipe an ID card to unlock this interface',
+		apc_swipe_unlock_message: 'Swipe an ID card to unlock this interface',
+		power_status: 'Power Status',
+		power_channels: 'Power Channels',
+		fully_charged: 'Fully Charged',
+		charging: 'Charging',
+		not_charging: 'Not Charging',
+		on: 'On',
+		off: 'Off',
+		auto: 'Auto',
+		manual: 'Manual',
+		engaged: 'Engaged',
+		disengaged: 'Disengaged',
+		good: 'Good',
+		bad: 'Bad',
+		none: 'None'
 	}
 }; // toDo: move to separate js-file
 

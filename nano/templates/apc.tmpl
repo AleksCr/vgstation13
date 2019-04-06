@@ -9,16 +9,16 @@
 		<div class="clearBoth"></div>
 	{{else}}
 		{{if data.locked}}
-			Swipe an ID card to unlock this interface
+			{{:helper.getRes(data.lang, 'apc_swipe_unlock_message')}}
 		{{else}}
-			Swipe an ID card to lock this interface
+			{{:helper.getRes(data.lang, 'apc_swipe_lock_message')}}
 		{{/if}}
 	{{/if}}
 </div>
 
 <div style="min-width: 480px">
 
-	<h3>Power Status</h3>
+	<h3>{{:helper.getRes(data.lang, 'power_status')}}</h3>
 
 	<div class="item">
 		<div class="itemLabel">
@@ -27,9 +27,9 @@
 		<div class="itemContent">
 			{{if data.locked && !data.siliconUser}}
 				{{if data.isOperating}}
-					<span class='good'>On</span>
+					<span class='good'>{{:helper.getRes(data.lang, 'on')}}</span>
 				{{else}}
-					<span class='bad'>Off</span>
+					<span class='bad'>{{:helper.getRes(data.lang, 'off')}}</span>
 				{{/if}}
 			{{else}}
 				{{:helper.link('On', 'power', {'breaker' : 1}, data.isOperating ? 'selected' : null)}}{{:helper.link('Off', 'close', {'breaker' : 1}, data.isOperating ? null : 'selected')}}
@@ -39,22 +39,22 @@
 
 	<div class="item">
 		<div class="itemLabel">
-			{{:helper.getRes(data.lang, 'apc_external_power')}}
+			{{:helper.getRes(data.lang, 'apc_external_power')}}:
 		</div>
 		<div class="itemContent">
 			{{if data.externalPower == 2}}
-				<span class='good'>Good</span>
+				<span class='good'>{{:helper.getRes(data.lang, 'good')}}</span>
 			{{else data.externalPower == 1}}
-				<span class='average'>Low</span>
+				<span class='average'>{{:helper.getRes(data.lang, 'bad')}}</span>
 			{{else}}
-				<span class='bad'>None</span>
+				<span class='bad'>{{:helper.getRes(data.lang, 'none')}}</span>
 			{{/if}}
 		</div>
 	</div>
 
 	<div class="item">
 		<div class="itemLabel">
-			Power Cell:
+			{{:helper.getRes(data.lang, 'apc_power_cell')}}:
 		</div>
 		{{if data.powerCellStatus == null}}
 			<div class="itemContent bad">		
@@ -72,37 +72,45 @@
 	{{if data.powerCellStatus != null}}
 		<div class="item">
 			<div class="itemLabel">
-				Charge Mode:
+				{{:helper.getRes(data.lang, 'apc_charge_mode')}}:
 			</div>
 			<div class="itemContent">
 				{{if data.locked && !data.siliconUser}}
 					{{if data.chargeMode}}
-						<span class='good'>Auto</span>
+						<span class='good'>{{:helper.getRes(data.lang, 'auto')}}</span>
 					{{else}}
-						<span class='bad'>Off</span>
+						<span class='bad'>{{:helper.getRes(data.lang, 'off')}}</span>
 					{{/if}}				
 				{{else}}
 					{{:helper.link('Auto', 'refresh', {'cmode' : 1}, data.chargeMode ? 'selected' : null)}}{{:helper.link('Off', 'close', {'cmode' : 1}, data.chargeMode ? null : 'selected')}}
 				{{/if}}
 				&nbsp;
 				{{if data.chargingStatus > 1}}
-					[<span class='good'>Fully Charged</span>]
+					[<span class='good'>{{:helper.getRes(data.lang, 'fully_charged')}}</span>]
 				{{else data.chargingStatus == 1}}
-					[<span class='average'>Charging</span>]
+					[<span class='average'>{{:helper.getRes(data.lang, 'charging')}}</span>]
 				{{else}}
-					[<span class='bad'>Not Charging</span>]
+					[<span class='bad'>{{:helper.getRes(data.lang, 'not_charging')}}</span>]
 				{{/if}}
 			</div>
 		</div>
 	{{/if}}
 
 
-	<h3>Power Channels</h3>
+	<h3>{{:helper.getRes(data.lang, 'power_channels')}}</h3>
 
 	{{for data.powerChannels}}
 		<div class="item">
 			<div class="itemLabel">
-				{{:value.title}}:
+				{{if value.title == "Equipment"}}
+					{{:helper.getRes(data.lang, 'apc_equipment')}}:
+				{{/if}}
+				{{if value.title == "Lighting"}}
+					{{:helper.getRes(data.lang, 'apc_lighting')}}:
+				{{/if}}
+				{{if value.title == "Environment"}}
+					{{:helper.getRes(data.lang, 'apc_environment')}}:
+				{{/if}}
 			</div>
 			<div class="itemContent" style="width: 70px; text-align: right">
 				{{:value.powerLoad}} W
@@ -110,15 +118,15 @@
 			<div class="itemContent" style="width: 105px">
 				&nbsp;&nbsp;
 				{{if value.status <= 1}}
-					<span class='bad'>Off</span>
+					<span class='bad'>{{:helper.getRes(data.lang, 'off')}}</span>
 				{{else value.status >= 2}}
-					<span class='good'>On</span>
+					<span class='good'>{{:helper.getRes(data.lang, 'on')}}</span>
 				{{/if}}
 				{{if data.locked}}
 					{{if value.status == 1 || value.status == 3}}
-						&nbsp;&nbsp;Auto
+						&nbsp;&nbsp;{{:helper.getRes(data.lang, 'auto')}}
 					{{else}}
-						&nbsp;&nbsp;Manual
+						&nbsp;&nbsp;{{:helper.getRes(data.lang, 'manual')}}
 					{{/if}}		
 				{{/if}}
 			</div>
@@ -134,7 +142,7 @@
 
 	<div class="item" style="font-weight: bold">
 		<div class="itemLabel">
-			Total Load:
+			{{:helper.getRes(data.lang, 'apc_total_load')}}:
 		</div>
 		<div class="itemContent" style="width: 70px; text-align: right">
 			{{:data.totalLoad}} W
@@ -145,14 +153,14 @@
 
 	<div class="item">
 		<div class="itemLabel">
-			Cover Lock:
+			{{:helper.getRes(data.lang, 'apc_cover_lock')}}:
 		</div>
 		<div class="itemContent">
 			{{if data.locked && !data.siliconUser}}
 				{{if data.coverLocked}}
-					<span class='good'>Engaged</span>
+					<span class='good'>{{:helper.getRes(data.lang, 'engaged')}}</span>
 				{{else}}
-					<span class='bad'>Disengaged</span>
+					<span class='bad'>{{:helper.getRes(data.lang, 'disengaged')}}</span>
 				{{/if}}
 			{{else}}
 				{{:helper.link('Engaged', 'locked', {'lock' : 1}, data.coverLocked ? 'selected' : null)}}{{:helper.link('Disengaged', 'unlocked', {'lock' : 1}, data.coverLocked ? null : 'selected')}}

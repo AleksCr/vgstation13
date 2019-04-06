@@ -41,7 +41,7 @@
   * @return nothing
   */
 /datum/proc/ui_interact(mob/user, ui_key = "main", var/datum/nanoui/ui = null, var/force_open = NANOUI_FOCUS)
-	return
+	return // todo: send client.lang to all templates
 
 // Used by the Nano UI Manager (/datum/nanomanager) to track UIs opened by this mob
 /client/var/list/open_uis = list()

@@ -733,7 +733,7 @@
 		"siliconUser" = istype(user, /mob/living/silicon) || isAdminGhost(user), // Allow aghosts to fuck with APCs
 		"malfLocked"= malflocked,
 		"malfStatus" = get_malf_status(user),
-		"lang" = "ru", // todo: .. = usr.lang
+		"lang" = user.client.lang,
 
 		"powerChannels" = list(
 			list(
